@@ -1,0 +1,16 @@
+# Log files
+#__________
+*.log
+
+# Database files
+# ______________
+*.json
+
+# Secret keys
+# ___________
+auth.js
+
+# Exceptions to the rule
+# ______________________
+!package.json
+!package-lock.json
