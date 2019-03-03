@@ -20,7 +20,7 @@ const Actor = ( client ) => {
     const handle = ( instructionPkg ) => {
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
         if ( ins.message ){
-            const channel = client.channels.get('533736402085478410');
+            const channel = client.channels.get(ins.channel);
             channel.send(ins.message);
         }
         if ( instructionPkg.next ) {

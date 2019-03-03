@@ -34,7 +34,8 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
                 author: msg.author.username,
                 tts: msg.tts,
                 time: msg.createdAt,
-                channel: msg.channel.name
+                channel: msg.channel.name,
+                channelId: msg.channel.id,
             };
             dispatch( msg.content, commandLinkDict[c], metaInfo )
         });
@@ -45,7 +46,7 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         const params = text.match(regex).slice(1);
         await cb.call(component, ...params, metaInfo);
         const instructions = component.commitAction();
-        actor.handle(instructions);
+        actor.handle({channel: metaInfo.channelId, ...instructions});
     };
 
     return {
