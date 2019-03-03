@@ -28,7 +28,12 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     const message = async (msg) => {
         const commands = scanner.scan(msg.content);
         commands.forEach(c => {
-            const metaInfo = { author: msg.author.username };
+            const metaInfo = {
+                author: msg.author.username,
+                tts: msg.tts,
+                time: msg.createdAt,
+                channel: msg.channel.name
+            };
             dispatch( msg.content, commandLinkDict[c], metaInfo )
         });
     };

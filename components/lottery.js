@@ -9,10 +9,11 @@ class Lottery extends Component {
     }
 
     roll(metaInfo) {
-        if (this.json[metaInfo.author] === undefined)
-            this.json[metaInfo.author] = 0;
-        const winsAmount = this.json[metaInfo.author]+1;
-        this.json[metaInfo.author] = winsAmount;
+        const {author} = metaInfo;
+        if (this.json[author] === undefined)
+            this.json[author] = 0;
+        const winsAmount = this.json[author]+1;
+        this.json[author] = winsAmount;
         this.setAction("message", "You win! This was your " + winsAmount + "th win.");
         this.saveJSON();
     }
