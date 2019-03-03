@@ -38,7 +38,7 @@ const Monitor = (client, dispatcher, logDirectory=LOG_DIRECTORY) => {
 
     client.on('messageUpdate', async (oldMsg, newMsg) => {
         if ( dispatcher.messageUpdate )
-            dispatcher.messageDelete(msg);
+            dispatcher.messageUpdate(msg);
         const logMessage = format('[OLD] %s\n[NEW] %s', formatMessage(oldMsg), formatMessage(newMsg));
         const logFile = logDirectory + "/messageEdits/" + oldMsg.channel.name + ".log";
         fs.writeFile(logFile, logMessage, {flag: 'a'}, cb);
