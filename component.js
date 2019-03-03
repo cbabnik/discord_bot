@@ -14,51 +14,42 @@
 
 const fs = require('fs');
 
-const Component = (id) => {
-
-    const jsonFile = "./storage/"+id+".json";
-    let json = require(jsonFile);
-    let action = {};
-    let actionPart = action;
-    let commands = [];
-
-    const addCommand = (regex, cb) => {
-        commands.push({regex, cb});
-    };
-
-    const getAllCommands = () => {
-        return commands;
-    };
-
-    const setAction = (option, value) => {
-        actionPart[option] = value;
-    };
-
-    const queueAction = () => {
-        actionPart.next = {};
-        actionPart = actionPart.next;
-    };
-
-    const commitAction = () => {
-        const temp = action;
+class Component {
+    constructor(id) {
+        this.jsonFile = "./storage/"+id+".json";
+        this.json = require(this.jsonFile);
         this.action = {};
+        this.actionPart = this.action;
+        this.commands = [];
+    }
+
+    addCommand(regex, cb) {
+        this.commands.push({regex, cb});
+    }
+
+    getAllCommands() {
+        return this.commands;
+    }
+
+    setAction(option, value) {
+        this.actionPart[option] = value;
+    }
+
+    queueAction() {
+        this.actionPart.next = {};
+        this.actionPart = this.actionPart.next;
+    }
+
+    commitAction() {
+        const temp = this.action;
+        this.action = {};
+        this.actionPart = this.action;
         return temp;
-    };
+    }
 
-    const saveJSON = () => {
-        fs.writeFile( jsonFile, JSON.stringify( json ), "utf8", (err) => {})
-    };
-
-    return {
-        id,
-        json,
-        addCommand,
-        getAllCommands,
-        setAction,
-        queueAction,
-        commitAction,
-        saveJSON,
-    };
-};
+    saveJSON() {
+        fs.writeFile( this.jsonFile, JSON.stringify( this.json ), "utf8", (err) => {})
+    }
+}
 
 module.exports = { Component };

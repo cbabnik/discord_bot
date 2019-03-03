@@ -12,7 +12,7 @@ const dispatcher = DispatcherGenerator( Scanner )( actor );
 Monitor(client, dispatcher);
 
 const { Lottery } = require('./components/lottery');
-dispatcher.registerComponent(Lottery());
+dispatcher.registerComponent(new Lottery());
 
 module.exports = {
     client,

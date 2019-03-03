@@ -6,14 +6,14 @@
 
 const DispatcherGenerator = ( Scanner ) => ( actor ) => {
 
-    const dict = {};
+    const commandLinkDict = {};
     const scanner = Scanner();
 
     let next_id = 0;
 
     // groups in the regex are treated as parameters to the callback
-    const registerCommand = (regex, callback) => {
-        dict[next_id] = {regex, callback};
+    const registerCommand = (regex, component, cb) => {
+        commandLinkDict[next_id] = {regex, component, cb};
         scanner.addCommand(regex, next_id);
         next_id += 1;
     };
@@ -21,22 +21,23 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     const registerComponent = (component) => {
         const clist = component.getAllCommands();
         clist.forEach(c => {
-            registerCommand(c.regex, c.cb);
+            registerCommand(c.regex, component, c.cb);
         });
     };
 
     const message = async (msg) => {
         const commands = scanner.scan(msg.content);
         commands.forEach(c => {
-            console.log(msg);
             const metaInfo = { author: msg.author.username };
-            dispatch( msg.content, dict[c].regex, dict[c].callback, metaInfo )
+            dispatch( msg.content, commandLinkDict[c], metaInfo )
         });
     };
 
-    const dispatch = async (text, regex, callback, metaInfo) => {
+    const dispatch = async (text, commandLink, metaInfo) => {
+        const {regex, component, cb} = commandLink;
         const params = text.match(regex).slice(1);
-        const instructions = await callback(...params, metaInfo);
+        await cb.call(component, ...params, metaInfo);
+        const instructions = component.commitAction();
         actor.handle(instructions);
     };
 
