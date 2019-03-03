@@ -26,6 +26,8 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     };
 
     const message = async (msg) => {
+        if(msg.author.username === "BuckBot")
+            return;
         const commands = scanner.scan(msg.content);
         commands.forEach(c => {
             const metaInfo = {
