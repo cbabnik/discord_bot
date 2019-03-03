@@ -1,8 +1,8 @@
 const { Component } = require("../component")
 
-const ID = "lottery";
+const ID = "example";
 
-class Lottery extends Component {
+class Example extends Component {
     constructor() {
         super(ID);
         this.addCommand("\\+win$", this.win);
@@ -17,9 +17,18 @@ class Lottery extends Component {
             (winsAmt%10===1?"st":winsAmt%10===2?"nd":winsAmt%10===3?"rd":"th") + " win.");
     }
 
+    countdown(metaInfo) {
+    }
+
+    delay(metaInfo) {
+    }
+
+    spam(metaInfo) {
+    }
+
     getAmt(author) {
         return this.json[author] || 0;
     }
 }
 
-module.exports = { lottery: new Lottery() };
+module.exports = { example: new Example() };
