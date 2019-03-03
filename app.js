@@ -11,8 +11,8 @@ const actor = Actor(client);
 const dispatcher = DispatcherGenerator( Scanner )( actor );
 Monitor(client, dispatcher);
 
-const { Lottery } = require('./components/lottery');
-dispatcher.registerComponent(new Lottery());
+const { lottery } = require('./components/lottery');
+dispatcher.registerComponent(lottery);
 
 module.exports = {
     client,

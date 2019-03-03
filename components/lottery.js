@@ -25,4 +25,6 @@ class Lottery extends Component {
     }
 }
 
-module.exports = { Lottery };
+const lottery = new Lottery();
+
+module.exports = { lottery };
