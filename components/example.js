@@ -6,6 +6,9 @@ class Example extends Component {
     constructor() {
         super(ID);
         this.addCommand("\\+win$", this.win);
+        this.addCommand("\\+countdown (\\d+)$", this.countdown);
+        this.addCommand("\\+delay (\\d+) (.*)$", this.delay);
+        this.addCommand("\\+spam (\\d+) (.*)$", this.spam);
     }
 
     win(metaInfo) {
@@ -17,13 +20,29 @@ class Example extends Component {
             (winsAmt%10===1?"st":winsAmt%10===2?"nd":winsAmt%10===3?"rd":"th") + " win.");
     }
 
-    countdown(metaInfo) {
+    countdown(amount) {
+        if (amount > 10)
+            amount = 10;
+        for (let a = amount; a > 0; a-=1){
+            this.setAction("message", a+"...");
+            this.setAction("delay", 1);
+            this.queueAction();
+        }
     }
 
-    delay(metaInfo) {
+    delay(seconds, message) {
+        this.setAction("delay", parseInt(seconds));
+        this.setAction("message", message);
     }
 
-    spam(metaInfo) {
+    alarm(timedate, message) {
+        this.setAction("timing", timedate);
+        this.setAction("message", "ALARM: " + message);
+    }
+
+    spam(times, message) {
+        this.setAction("repeat", parseInt(times));
+        this.setAction("message", message);
     }
 
     getAmt(author) {
