@@ -37,7 +37,10 @@ const Actor = ( client ) => {
             return;
         }
         if (ins.timing) {
-            // STUB
+            const currentMS = new Date().getTime();
+            const desiredMS = Date.parse(ins.timing);
+            handle({...ins, delay: desiredMS-currentMS, timing: undefined});
+            return;
         }
 
         // actions
