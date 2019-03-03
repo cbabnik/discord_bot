@@ -13,7 +13,3 @@ Monitor(client, dispatcher);
 
 const { example } = require('./components/example');
 dispatcher.registerComponent(example);
-
-module.exports = {
-    client,
-};
