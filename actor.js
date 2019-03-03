@@ -12,20 +12,54 @@ const { CONFIG_DEFAULTS } = require('./constants');
 const Actor = ( client ) => {
 
     const DEFAULT_INSTRUCTIONS = {
-        message: undefined,
         channel: CONFIG_DEFAULTS.MAIN_CHANNEL,
-        next: undefined
+
+        voiceChannel: undefined,
+        audioFile: undefined,
+
+        repeat: 1,
+        delay: 0,
+        timing: undefined,
+
+        message: undefined,
+        next: undefined,
     };
 
     const handle = ( instructionPkg ) => {
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
-        if ( ins.message ){
+
+        // timing
+        // ______
+        if (ins.delay > 0) {
+            setTimeout(() => {
+                handle({...ins, delay: 0});
+            }, ins.delay*1000);
+            return;
+        }
+        if (ins.timing) {
+            // STUB
+        }
+
+        // actions
+        // _______
+        if ( ins.message ) {
             const channel = client.channels.get(ins.channel);
             channel.send(ins.message);
         }
-        if ( instructionPkg.next ) {
-            handle(instructionPkg.next);
+        if ( ins.audioFile ) {
+            // STUB
         }
+
+        // chaining instructions
+        // _____________________
+        if ( ins.repeat > 1 ) {
+            if (ins.repeat > 10)
+                ins.repeat = 10;
+            handle({...ins, repeat: ins.repeat-1});
+            return;
+        }
+        if ( ins.next )
+            handle({channel:instructionPkg.channel, ...ins.next})
     };
 
     return {
