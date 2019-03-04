@@ -8,6 +8,7 @@
 // "how"
 
 const { CONFIG_DEFAULTS } = require('./constants');
+const debug = require('debug')('actor');
 
 const Actor = ( client ) => {
 
@@ -26,6 +27,7 @@ const Actor = ( client ) => {
     };
 
     const handle = ( instructionPkg ) => {
+        logForDebug(instructionPkg);
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
 
         // timing
@@ -39,7 +41,7 @@ const Actor = ( client ) => {
         if (ins.timing) {
             const currentMS = new Date().getTime();
             const desiredMS = Date.parse(ins.timing);
-            handle({...ins, delay: desiredMS-currentMS, timing: undefined});
+            handle({...ins, delay: (desiredMS-currentMS)/1000, timing: undefined});
             return;
         }
 
@@ -63,6 +65,29 @@ const Actor = ( client ) => {
         }
         if ( ins.next )
             handle({channel:instructionPkg.channel, ...ins.next})
+    };
+
+    const logForDebug = (instructionPkg) => {
+        let msgShortened = "";
+        if (instructionPkg.message)
+            if (instructionPkg.message.length > 40)
+                msgShortened = instructionPkg.message.slice(0,37) + "...";
+            else
+                msgShortened = instructionPkg.message;
+
+        let delayInfo = "";
+        if (instructionPkg.delay > 0)
+            delayInfo = " [delay "+instructionPkg.delay+"ms]";
+        else if (instructionPkg.timing)
+            delayInfo = " [timing "+instructionPkg.timing+"]";
+
+        let repeatInfo = "";
+        if (instructionPkg.repeat > 1)
+            repeatInfo = " [repeat "+instructionPkg.repeat+"x]";
+        else if (instructionPkg.next)
+            repeatInfo = " [hasNext]";
+
+        debug("%s%s%s", msgShortened, delayInfo, repeatInfo)
     };
 
     return {

@@ -16,6 +16,7 @@ const fs = require('fs');
 
 class Component {
     constructor(id) {
+        this.id = id;
         this.jsonFile = "./storage/"+id+".json";
         if (!fs.existsSync(this.jsonFile)) {
             fs.mkdir("./storage/", {}, (err) => {});

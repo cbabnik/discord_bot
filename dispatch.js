@@ -4,6 +4,8 @@
 // Dispatcher forwards the instruction results of each command to the actor.
 // Dispatcher is a glorified map of commands basically.
 
+const debug = require('debug')('dispatcher');
+
 const DispatcherGenerator = ( Scanner ) => ( actor ) => {
 
     const commandLinkDict = {};
@@ -44,6 +46,7 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     const dispatch = async (text, commandLink, metaInfo) => {
         const {regex, component, cb} = commandLink;
         const params = text.match(regex).slice(1);
+        debug("%s [%s.%s(%s)]", text, component.id, cb.name, params)
         await cb.call(component, ...params, metaInfo);
         const instructions = component.commitAction();
         actor.handle({channel: metaInfo.channelId, ...instructions});
