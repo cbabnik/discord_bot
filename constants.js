@@ -3,5 +3,6 @@ exports.PERMISSIONS = 36838464;  // find this via the developer portal -> bot ->
 
 exports.CONFIG_DEFAULTS = {
     LOG_DIRECTORY: "./logs",
-    MAIN_CHANNEL: "265430059010097162"
+    MAIN_CHANNEL: "265430059010097162",
+    MAIN_VOICE_CHANNEL: "265430059500699648",
 };
