@@ -9,7 +9,7 @@ class Example extends Component {
         this.addCommand("\\+countdown (\\d+)$", this.countdown);
         this.addCommand("\\+delay (\\d+) (.*)$", this.delay);
         this.addCommand("\\+spam (\\d+) (.*)$", this.spam);
-        this.addCommand("\\+alarm (\s*) (.*)$", this.alarm);
+        this.addCommand('\\+alarm \\[(.*)\\] (.*)$', this.alarm);
     }
 
     win(metaInfo) {
