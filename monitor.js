@@ -21,7 +21,7 @@ const Monitor = (client, dispatcher, logDirectory=LOG_DIRECTORY) => {
         msg.content
     );
 
-    const cb = (err) => {};
+    const cb = (err) => {if (err !== null) console.log("monitoring error: " + err)};
 
     client.on('message', async msg => {
         dispatcher.message(msg);
@@ -38,7 +38,7 @@ const Monitor = (client, dispatcher, logDirectory=LOG_DIRECTORY) => {
 
     client.on('messageUpdate', async (oldMsg, newMsg) => {
         if ( dispatcher.messageUpdate )
-            dispatcher.messageUpdate(msg);
+            dispatcher.messageUpdate(oldMsg, newMsg);
         const logMessage = format('[OLD] %s\n[NEW] %s', formatMessage(oldMsg), formatMessage(newMsg));
         const logFile = logDirectory + "/messageEdits/" + oldMsg.channel.name + ".log";
         fs.writeFile(logFile, logMessage, {flag: 'a'}, cb);
@@ -47,7 +47,7 @@ const Monitor = (client, dispatcher, logDirectory=LOG_DIRECTORY) => {
     client.on('messageReactionAdd', async (reaction) => {
         if ( dispatcher.messageReactionAdd )
             dispatcher.messageReactionAdd(reaction);
-        const logMessage = format('%s\n%s', formatMessage(reaction.message), reaction.emoji.name);
+        const logMessage = format('%s\n%s\n', formatMessage(reaction.message), reaction.emoji.name);
         const logFile = logDirectory + "/reactions/" + reaction.message.channel.name + ".log";
         fs.writeFile(logFile, logMessage, {flag: 'a'}, cb);
     });
