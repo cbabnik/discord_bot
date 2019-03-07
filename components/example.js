@@ -27,7 +27,8 @@ class Example extends Component {
         for (let a = amount; a > 0; a-=1){
             this.setAction("message", a+"...");
             this.setAction("delay", 1);
-            this.queueAction();
+            if (amount > 1)
+                this.queueAction();
         }
     }
 
