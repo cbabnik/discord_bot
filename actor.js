@@ -15,7 +15,7 @@ const Actor = ( client ) => {
     const DEFAULT_INSTRUCTIONS = {
         channel: CONFIG_DEFAULTS.MAIN_CHANNEL,
 
-        voiceChannel: undefined,
+        voiceChannel: "533736402085478412",
         audioFile: undefined,
 
         repeat: 1,
@@ -52,7 +52,12 @@ const Actor = ( client ) => {
             channel.send(ins.message);
         }
         if ( ins.audioFile ) {
-            // STUB
+            const vc = client.channels.get(ins.voiceChannel);
+            vc.join().then(connection => {
+                const broadcast = client.createVoiceBroadcast();
+                broadcast.playFile('./audio/' + ins.audioFile);
+                connection.playBroadcast(broadcast);
+            });
         }
 
         // chaining instructions
@@ -75,9 +80,13 @@ const Actor = ( client ) => {
             else
                 msgShortened = instructionPkg.message;
 
+        let audioInfo = "";
+        if (instructionPkg.audioFile)
+            audioInfo = "<" + instructionPkg.audioFile + ">";
+
         let delayInfo = "";
-        if (instructionPkg.delay > 0)
-            delayInfo = " [delay "+instructionPkg.delay+"ms]";
+        if (instructionPkg.delay !== 0 && instructionPkg.delay !== undefined)
+            delayInfo = " [delay "+instructionPkg.delay+"s]";
         else if (instructionPkg.timing)
             delayInfo = " [timing "+instructionPkg.timing+"]";
 
@@ -87,7 +96,7 @@ const Actor = ( client ) => {
         else if (instructionPkg.next)
             repeatInfo = " [hasNext]";
 
-        debug("%s%s%s", msgShortened, delayInfo, repeatInfo)
+        debug("%s%s%s%s", msgShortened, audioInfo, delayInfo, repeatInfo)
     };
 
     return {
