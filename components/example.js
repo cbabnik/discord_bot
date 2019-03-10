@@ -7,9 +7,12 @@ class Example extends Component {
         super(ID);
         this.addCommand("\\+win$", this.win);
         this.addCommand("\\+countdown (\\d+)$", this.countdown);
+        this.addCommand("\\+countdown$", () => this.countdown(5));
         this.addCommand("\\+delay (\\d+) (.*)$", this.delay);
         this.addCommand("\\+spam (\\d+) (.*)$", this.spam);
         this.addCommand('\\+alarm \\[(.*)\\] (.*)$', this.alarm);
+        this.addCommand('\\+play (.*)$', this.playAudio);
+        this.addCommand('\\+play$', () => this.playAudio("sample.mp3"));
     }
 
     win(metaInfo) {
@@ -47,6 +50,10 @@ class Example extends Component {
     spam(times, message) {
         this.setAction("repeat", parseInt(times));
         this.setAction("message", message);
+    }
+
+    playAudio(fileName) {
+        this.setAction("audioFile", fileName);
     }
 
     getAmt(author) {
