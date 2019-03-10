@@ -52,12 +52,16 @@ const Actor = ( client ) => {
             channel.send(ins.message);
         }
         if ( ins.audioFile ) {
-            const vc = client.channels.get(ins.voiceChannel);
-            vc.join().then(connection => {
-                const broadcast = client.createVoiceBroadcast();
-                broadcast.playFile('./audio/' + ins.audioFile);
-                connection.playBroadcast(broadcast);
-            });
+            try {
+                const vc = client.channels.get(ins.voiceChannel);
+                vc.join().then(connection => {
+                    const broadcast = client.createVoiceBroadcast();
+                    broadcast.playFile('./audio/' + ins.audioFile);
+                    connection.playBroadcast(broadcast);
+                });
+            } catch (err) {
+                console.log("Error with " + ins.audioFile + ": " + err.message);
+            }
         }
 
         // chaining instructions
