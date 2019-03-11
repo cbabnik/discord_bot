@@ -15,6 +15,9 @@ const Actor = ( client ) => {
     const DEFAULT_INSTRUCTIONS = {
         channel: CONFIG_DEFAULTS.MAIN_CHANNEL,
 
+        message: undefined,
+        image: undefined,
+
         voiceChannel: "533736402085478412",
         audioFile: undefined,
 
@@ -22,13 +25,14 @@ const Actor = ( client ) => {
         delay: 0,
         timing: undefined,
 
-        message: undefined,
         next: undefined,
     };
 
     const handle = ( instructionPkg ) => {
         logForDebug(instructionPkg);
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
+
+        const channel = client.channels.get(ins.channel);
 
         // timing
         // ______
@@ -47,10 +51,20 @@ const Actor = ( client ) => {
 
         // actions
         // _______
-        if ( ins.message ) {
-            const channel = client.channels.get(ins.channel);
-            channel.send(ins.message);
+        let embeds = {};
+        if ( ins.image ) {
+            embeds.files = [{
+                attachment: './images/' + ins.image,
+                name: ins.image
+            }]
         }
+        if ( ins.message )
+            channel.send(ins.message, embeds)
+                .catch(err => console.log("Send Error: " + err.message));
+        else if (Object.keys(embeds).length !== 0)
+            channel.send(embeds)
+                .catch(err => console.log("Send Embeds Error: " + err.message));
+
         if ( ins.audioFile ) {
             try {
                 const vc = client.channels.get(ins.voiceChannel);
