@@ -13,6 +13,9 @@ class Example extends Component {
         this.addCommand('\\+alarm \\[(.*)\\] (.*)$', this.alarm);
         this.addCommand('\\+play (.*)$', this.playAudio);
         this.addCommand('\\+play$', () => this.playAudio("sample.mp3"));
+        this.addCommand('\\+coinflip$', () => this.coinflip("", ""));
+        this.addCommand('\\+coinflip (\\S+) (\\S+)$', this.coinflip);
+        this.addCommand('\\+coinflip "(.*)" "(.*)"$', this.coinflip);
     }
 
     win(metaInfo) {
@@ -54,6 +57,17 @@ class Example extends Component {
 
     playAudio(fileName) {
         this.setAction("audioFile", fileName);
+    }
+
+    coinflip(a, b) {
+        if (Math.random() > 0.5) {
+            this.setAction("message", a);
+            this.setAction("image", "heads.jpg");
+        }
+        else {
+            this.setAction("message", b);
+            this.setAction("image", "tails.jpg");
+        }
     }
 
     getAmt(author) {
