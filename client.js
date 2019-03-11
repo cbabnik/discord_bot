@@ -23,19 +23,27 @@ const Client = (max_messages, login_token) => {
         60000
     ));
 
-    let voice_activity = {};
-    // after ~3 seconds of inactivity disconnect from voice channels
+    let bytes_sent = {};
+    let strikes = {};
+    // after ~5 seconds of inactivity disconnect from voice channels
     cli.setInterval( () => {
         cli.voiceConnections.array().forEach((c) => {
             vc = c.channel;
             n = vc.name;
 
             const streamCount = c.player.streamingData.count;
-            if (streamCount === voice_activity[n])
-                vc.leave();
-            voice_activity[n] = streamCount;
+            if (streamCount === bytes_sent[n]) {
+                strikes[n] = strikes[n]+1 || 1;
+                if (strikes[n] > 2) {
+                    vc.leave();
+                    strikes[n] = 0;
+                }
+            }
+            else
+                strikes[n] = 0;
+            bytes_sent[n] = streamCount;
         })
-    }, 3000);
+    }, 2000);
     return cli;
 };
 
