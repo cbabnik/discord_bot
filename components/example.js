@@ -56,7 +56,10 @@ class Example extends Component {
     }
 
     playAudio(fileName) {
-        this.setAction("audioFile", fileName);
+        if (fileName.includes("youtube") && fileName.includes("http"))
+            this.setAction("audioYoutube", fileName);
+        else
+            this.setAction("audioFile", fileName);
     }
 
     coinflip(a, b) {
