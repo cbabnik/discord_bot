@@ -14,12 +14,17 @@ class Help extends Component {
         this.addCommand("\\?random", this.randomHelp);
         this.addCommand("-help random", this.randomHelp);
         this.addCommand("\\?help random", this.randomHelp);
+        this.addCommand("\\?math", this.mathHelp);
+        this.addCommand("-help math", this.mathHelp);
+        this.addCommand("\\?help math", this.mathHelp);
     }
 
     help() {
         this.setAction("message",
+            "commands:\n" +
             "`-roll` - Rolls a number in a given range.\n" +
-            "`-random` - Returns a random element of a given list.\n"
+            "`-random` - Returns a random element of a given list.\n" +
+            "`-math` - Evaluates an expression.\n"
         )
     }
 
@@ -44,6 +49,14 @@ class Help extends Component {
             "Returns a random element of a given list.\n" +
             "valid use: `-random <list>` - Returns a random member of list.\n" +
             "List must contain at least two elements and can be space or comma delimited. Spaces take priority."
+        )
+    }
+
+    mathHelp() {
+        this.setAction("message",
+            "-math\n" +
+            "valid use: `-math <expression>` - Evaluates expression.\n" +
+            "Accepted Operators are `+`, `-`, `*`, `/`, `**`, `()`."
         )
     }
 }
