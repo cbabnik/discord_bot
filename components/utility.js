@@ -14,6 +14,8 @@ class Utility extends Component {
         this.addCommand("-random \\S+$", this.randomInfoB);
         this.addCommand("-random (\\S+(?: \\S+)+)$", this.random);
         this.addCommand("-random (\\S+(?:,[^\\s,]+)+)$", this.random);
+        this.addCommand("-math", this.calculateInfo);
+        this.addCommand("-math ([-\\+\\*\\/\\.\\d\\(\\)]*)$", this.calculate);
     }
 
     rollInfo(metaInfo) {
@@ -42,6 +44,21 @@ class Utility extends Component {
 
         const index = Math.floor(Math.random()*options.length);
         this.setAction("message", options[index]);
+    }
+
+    calculateInfo(metaInfo) {
+        if (metaInfo.commandMatchesCount === 1)
+            this.setAction("message", "Invalid use, try `?math` to learn more.");
+    }
+
+    // WARNING: be very careful to validate input for this function
+    calculate(str) {
+        try {
+            const result = eval(str);
+            this.setAction("message", "The result is: " + result.toString());
+        } catch {
+            this.setAction("message", "No value could be determined.");
+        }
     }
 }
 
