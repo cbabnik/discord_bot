@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node app",
     "debug": "cross-env DEBUG=actor,dispatcher, node app",
-    "tests": "mocha"
+    "tests": "mocha",
+    "lint": "eslint ./",
+    "lintfix": "eslint --fix ./"
   },
   "dependencies": {
     "big-integer": "^1.6.42",
@@ -14,6 +16,7 @@
     "cross-env": "^5.2.0",
     "debug": "^2.6.9",
     "discord.js": "^11.4.2",
+    "eslint": "^5.15.2",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "mocha": "^6.0.2",
