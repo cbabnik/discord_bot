@@ -23,8 +23,13 @@ class Pictures extends Component {
     }
 
     addBurger(link) {
-        this.json["burgers"].push(link);
-        this.saveJSON();
+        if (!link.includes("http"))
+            this.setAction("message", "Please submit a URL LINK to an image instead.");
+        else {
+            this.setAction("message", "Burger saved.");
+            this.json["burgers"].push(link);
+            this.saveJSON();
+        }
     }
 }
 
