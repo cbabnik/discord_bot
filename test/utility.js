@@ -7,7 +7,7 @@ const saveStub = sinon.stub(utility, "saveJSON");
 
 describe("Utility", () => {
 
-    describe('+random', () => {
+    describe('-random', () => {
         it('check comma seperated values', () => {
             utility.random("a,b,c");
             const result = utility.commitAction();
@@ -25,7 +25,7 @@ describe("Utility", () => {
         });
     });
 
-    describe('+roll', () => {
+    describe('-roll', () => {
         it('check negative values', () => {
             utility.roll("-5", "-5");
             const result = utility.commitAction();
