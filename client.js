@@ -3,6 +3,7 @@
 // that use it should be here. This means to reconnect the client when it disconnects, to accept or ignore invites, etc
 
 const Discord = require('discord.js');
+const { CLIENT_CONNECTED } = require('./constants');
 
 const Client = (max_messages, login_token) => {
     const cli = new Discord.Client(options = {
@@ -11,10 +12,10 @@ const Client = (max_messages, login_token) => {
 
     // try to login every 60 seconds if disconnected
     cli.login(login_token).then( () => cli.setInterval(
-        async function tryLogin() {
+        function tryLogin() {
             try {
-                if (cli.status !== Discord.isConnected)
-                    await cli.login(login_token)
+                if (cli.status !== CLIENT_CONNECTED)
+                    cli.login(login_token)
             }
             catch (err) {
                 console.log("Client error: " + err.message);
