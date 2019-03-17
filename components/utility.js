@@ -16,6 +16,9 @@ class Utility extends Component {
         this.addCommand("-random (\\S+(?:,[^\\s,]+)+)$", this.random);
         this.addCommand("-math", this.calculateInfo);
         this.addCommand("-math ([-\\+\\*\\/\\.\\d\\(\\)]*)$", this.calculate);
+        this.addCommand('-coinflip$', () => this.coinflip("", ""));
+        this.addCommand('-coinflip (\\S+) (\\S+)$', this.coinflip);
+        this.addCommand('-coinflip "(.*)" "(.*)"$', this.coinflip);
     }
 
     rollInfo(metaInfo) {
@@ -58,6 +61,17 @@ class Utility extends Component {
             this.setAction("message", "The result is: " + result.toString());
         } catch {
             this.setAction("message", "No value could be determined.");
+        }
+    }
+
+    coinflip(a, b) {
+        if (Math.random() >= 0.5) {
+            this.setAction("message", a);
+            this.setAction("image", "heads.jpg");
+        }
+        else {
+            this.setAction("message", b);
+            this.setAction("image", "tails.jpg");
         }
     }
 }
