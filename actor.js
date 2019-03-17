@@ -9,6 +9,7 @@
 
 const { CONFIG_DEFAULTS } = require('./constants');
 const debug = require('debug')('actor');
+const ytdl = require('ytdl-core');
 
 const Actor = ( client ) => {
 
@@ -20,6 +21,7 @@ const Actor = ( client ) => {
 
         voiceChannel: "533736402085478412",
         audioFile: undefined,
+        audioYoutube: undefined,
 
         repeat: 1,
         delay: 0,
@@ -71,6 +73,18 @@ const Actor = ( client ) => {
                 vc.join().then(connection => {
                     const broadcast = client.createVoiceBroadcast();
                     broadcast.playFile('./audio/' + ins.audioFile);
+                    connection.playBroadcast(broadcast);
+                });
+            } catch (err) {
+                console.log("Error with " + ins.audioFile + ": " + err.message);
+            }
+        } else if ( ins.audioYoutube ) {
+            try {
+                const vc = client.channels.get(ins.voiceChannel);
+                vc.join().then(connection => {
+                    const broadcast = client.createVoiceBroadcast();
+                    const stream = ytdl(ins.audioYoutube, { filter : 'audioonly' });
+                    broadcast.playStream(stream);
                     connection.playBroadcast(broadcast);
                 });
             } catch (err) {
