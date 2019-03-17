@@ -17,6 +17,9 @@ class Help extends Component {
         this.addCommand("\\?math", this.mathHelp);
         this.addCommand("-help math", this.mathHelp);
         this.addCommand("\\?help math", this.mathHelp);
+        this.addCommand("\\?burger", this.burgerHelp);
+        this.addCommand("-help burger", this.burgerHelp);
+        this.addCommand("\\?help burger", this.burgerHelp);
     }
 
     help() {
@@ -24,7 +27,8 @@ class Help extends Component {
             "commands:\n" +
             "`-roll` - Rolls a number in a given range.\n" +
             "`-random` - Returns a random element of a given list.\n" +
-            "`-math` - Evaluates an expression.\n"
+            "`-math` - Evaluates an expression.\n" +
+            "`-burger` - Unleashes a sweet picture.\n"
         )
     }
 
@@ -57,6 +61,13 @@ class Help extends Component {
             "-math\n" +
             "valid use: `-math <expression>` - Evaluates expression.\n" +
             "Accepted Operators are `+`, `-`, `*`, `/`, `**`, `()`."
+        )
+    }
+
+    burgerHelp() {
+        this.setAction("message",
+            "-burger\n" +
+            "Unleashes a sweet picture."
         )
     }
 }
