@@ -45,4 +45,28 @@ describe("Utility", () => {
             expect(result.message).to.include("10");
         });
     });
+
+    describe('-coinflip', () => {
+        let sandbox;
+        beforeEach(() => {
+            sandbox = sinon.createSandbox();
+        });
+        afterEach(() => {
+            sandbox.restore();
+        });
+        it('heads works', () => {
+            sandbox.stub(Math, 'random').returns(0.5);
+            utility.coinflip("heads", "tails");
+            const result = utility.commitAction();
+            expect(result.message).to.include("heads");
+            expect(result.image).to.include("heads");
+        });
+        it('tails works', () => {
+            sandbox.stub(Math, 'random').returns(0.0);
+            utility.coinflip("heads", "tails");
+            const result = utility.commitAction();
+            expect(result.message).to.include("tails");
+            expect(result.image).to.include("tails");
+        });
+    });
 });
