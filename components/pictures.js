@@ -1,4 +1,5 @@
 const { Component } = require("../component");
+const { BUCKS } = require("../constants");
 
 const ID = "pictures";
 
@@ -22,13 +23,17 @@ class Pictures extends Component {
         }
     }
 
-    addBurger(link) {
-        if (!link.includes("http"))
-            this.setAction("message", "Please submit a URL LINK to an image instead.");
-        else {
-            this.setAction("message", "Burger saved.");
-            this.json["burgers"].push(link);
-            this.saveJSON();
+    addBurger(link, metaInfo) {
+        if (metaInfo.authorId === BUCKS.BUGSLINGER) {
+            if (!link.includes("http"))
+                this.setAction("message", "Please submit a URL LINK to an image instead.");
+            else {
+                this.setAction("message", "Burger saved.");
+                this.json["burgers"].push(link);
+                this.saveJSON();
+            }
+        } else {
+            this.setAction("message", "Bugs only bro");
         }
     }
 }
