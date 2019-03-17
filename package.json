@@ -8,6 +8,7 @@
     "tests": "mocha"
   },
   "dependencies": {
+    "big-integer": "^1.6.42",
     "chai": "^4.2.0",
     "cookie-parser": "~1.4.3",
     "cross-env": "^5.2.0",
