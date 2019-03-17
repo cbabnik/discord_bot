@@ -34,10 +34,12 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         commands.forEach(c => {
             const metaInfo = {
                 author: msg.author.username,
+                authorId: msg.author.id,
                 tts: msg.tts,
                 time: msg.createdAt,
                 channel: msg.channel.name,
                 channelId: msg.channel.id,
+                commandMatchesCount: commands.length,
             };
             dispatch( msg.content, commandLinkDict[c], metaInfo )
         });
