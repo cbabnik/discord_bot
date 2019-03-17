@@ -17,10 +17,10 @@ const fs = require('fs');
 class Component {
     constructor(id) {
         this.id = id;
-        this.jsonFile = "./storage/"+id+".json";
+        this.jsonFile = './storage/'+id+'.json';
         if (!fs.existsSync(this.jsonFile)) {
-            fs.mkdir("./storage/", {}, (err) => {});
-            fs.writeFileSync(this.jsonFile, "{}");
+            fs.mkdir('./storage/', {}, () => {});
+            fs.writeFileSync(this.jsonFile, '{}');
         }
         this.json = require(this.jsonFile);
         this.action = {};
@@ -53,7 +53,7 @@ class Component {
     }
 
     saveJSON() {
-        fs.writeFile( this.jsonFile, JSON.stringify( this.json ), "utf8", (err) => {})
+        fs.writeFile( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {});
     }
 }
 

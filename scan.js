@@ -11,10 +11,10 @@ const Scanner = () => {
     const scan = text => {
         for (let i=0; i<regexList.length; i+=1) {
             if (text.match(regexList[i].regex) !== null) {
-                return regexList[i]
+                return regexList[i];
             }
         }
-        return null
+        return null;
     };
 
     return {

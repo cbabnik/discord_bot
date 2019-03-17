@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "debug": "cross-env DEBUG=actor,dispatcher, node app",
+    "debug": "cross-env DEBUG=actor,dispatcher,basic node app",
     "tests": "mocha",
     "lint": "eslint ./",
     "lintfix": "eslint --fix ./"
