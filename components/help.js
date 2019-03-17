@@ -17,6 +17,9 @@ class Help extends Component {
         this.addCommand("\\?math", this.mathHelp);
         this.addCommand("-help math", this.mathHelp);
         this.addCommand("\\?help math", this.mathHelp);
+        this.addCommand("\\?coinflip", this.coinflipHelp);
+        this.addCommand("-help coinflip", this.coinflipHelp);
+        this.addCommand("\\?help coinflip", this.coinflipHelp);
         this.addCommand("\\?burger", this.burgerHelp);
         this.addCommand("-help burger", this.burgerHelp);
         this.addCommand("\\?help burger", this.burgerHelp);
@@ -28,6 +31,7 @@ class Help extends Component {
             "`-roll` - Rolls a number in a given range.\n" +
             "`-random` - Returns a random element of a given list.\n" +
             "`-math` - Evaluates an expression.\n" +
+            "`-coinflip` - Returns heads or tails.\n" +
             "`-burger` - Unleashes a sweet picture.\n"
         )
     }
@@ -61,6 +65,15 @@ class Help extends Component {
             "-math\n" +
             "valid use: `-math <expression>` - Evaluates expression.\n" +
             "Accepted Operators are `+`, `-`, `*`, `/`, `**`, `()`."
+        )
+    }
+
+    coinflipHelp() {
+        this.setAction("message",
+            "-coinflip\n" +
+            "valid uses:\n" +
+            "   `-coinflip` - Returns heads or tails.\n" +
+            "   `-coinflip <heads> <tails>` - Returns heads or tails, with an assigned message to each.\n"
         )
     }
 
