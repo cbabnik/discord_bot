@@ -18,6 +18,7 @@ const Actor = ( client ) => {
 
         message: undefined,
         image: undefined,
+        imageLink: undefined,
 
         voiceChannel: "533736402085478412",
         audioFile: undefined,
@@ -59,6 +60,9 @@ const Actor = ( client ) => {
                 attachment: './images/' + ins.image,
                 name: ins.image
             }]
+        }
+        else if ( ins.imageLink ) {
+            embeds.files = [ins.imageLink]
         }
         if ( ins.message )
             channel.send(ins.message, embeds)
