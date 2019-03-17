@@ -23,6 +23,9 @@ class Help extends Component {
         this.addCommand("\\?burger", this.burgerHelp);
         this.addCommand("-help burger", this.burgerHelp);
         this.addCommand("\\?help burger", this.burgerHelp);
+        this.addCommand("\\?add[bB]urger", this.addBurgerHelp);
+        this.addCommand("-help add[bB]urger", this.addBurgerHelp);
+        this.addCommand("\\?help add[bB]urger", this.addBurgerHelp);
     }
 
     help() {
@@ -32,7 +35,8 @@ class Help extends Component {
             "`-random` - Returns a random element of a given list.\n" +
             "`-math` - Evaluates an expression.\n" +
             "`-coinflip` - Returns heads or tails.\n" +
-            "`-burger` - Unleashes a sweet picture.\n"
+            "`-burger` - Unleashes a sweet picture.\n" +
+            "`-addburger` - Share a sweet picture.\n"
         )
     }
 
@@ -81,6 +85,13 @@ class Help extends Component {
         this.setAction("message",
             "-burger\n" +
             "Unleashes a sweet picture."
+        )
+    }
+
+    addBurgerHelp() {
+        this.setAction("message",
+            "-addburger\n" +
+            "valid use: `-addburger <link url>` - Add another burger!\n"
         )
     }
 }
