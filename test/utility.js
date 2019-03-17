@@ -37,4 +37,12 @@ describe("Utility", () => {
             expect(result.message).to.equal("10000000000000000000000");
         });
     });
+
+    describe('-math', () => {
+        it('evaluates complicated expressions', () => {
+            utility.calculate("((5**2 + 100)/5)**.5/.5");
+            const result = utility.commitAction();
+            expect(result.message).to.include("10");
+        });
+    });
 });
