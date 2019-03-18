@@ -15,10 +15,10 @@ const Client = (max_messages, login_token) => {
     cli.login(login_token).then( () => cli.setInterval(
         function tryLogin() {
             try {
-                if (cli.status !== CLIENT_CONNECTED)
-                {cli.login(login_token);}
-            }
-            catch (err) {
+                if (cli.status !== CLIENT_CONNECTED) {
+                    cli.login(login_token);
+                }
+            } catch (err) {
                 debug('Client error: ' + err.message);
             }
         },
@@ -40,9 +40,9 @@ const Client = (max_messages, login_token) => {
                     vc.leave();
                     strikes[n] = 0;
                 }
+            } else {
+                strikes[n] = 0;
             }
-            else
-            {strikes[n] = 0;}
             bytes_sent[n] = streamCount;
         });
     }, 2000);

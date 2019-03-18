@@ -11,6 +11,10 @@ module.exports = {
             "error",
             4
         ],
+        "brace-style": [
+            "error",
+            "1tbs"
+        ],
         "linebreak-style": [
             "error"
         ],

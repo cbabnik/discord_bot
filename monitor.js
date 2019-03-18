@@ -22,7 +22,11 @@ const Monitor = (client, dispatcher, logDirectory=LOG_DIRECTORY) => {
         msg.content
     );
 
-    const cb = (err) => {if (err !== null) {debug('monitoring error: ' + err);}};
+    const cb = (err) => {
+        if (err !== null) {
+            debug('monitoring error: ' + err);
+        }
+    };
 
     client.on('message', async (msg) => {
         dispatcher.message(msg);
@@ -31,23 +35,26 @@ const Monitor = (client, dispatcher, logDirectory=LOG_DIRECTORY) => {
     });
 
     client.on('messageDelete', async (msg) => {
-        if ( dispatcher.messageDelete )
-        {dispatcher.messageDelete(msg);}
+        if ( dispatcher.messageDelete ) {
+            dispatcher.messageDelete(msg);
+        }
         const logFile = logDirectory + '/messageDeletions/' + msg.channel.name + '.log';
         fs.writeFile(logFile, formatMessage(msg), {flag: 'a'}, cb);
     });
 
     client.on('messageUpdate', async (oldMsg, newMsg) => {
-        if ( dispatcher.messageUpdate )
-        {dispatcher.messageUpdate(oldMsg, newMsg);}
+        if ( dispatcher.messageUpdate ) {
+            dispatcher.messageUpdate(oldMsg, newMsg);
+        }
         const logMessage = format('[OLD] %s\n[NEW] %s', formatMessage(oldMsg), formatMessage(newMsg));
         const logFile = logDirectory + '/messageEdits/' + oldMsg.channel.name + '.log';
         fs.writeFile(logFile, logMessage, {flag: 'a'}, cb);
     });
 
     client.on('messageReactionAdd', async (reaction) => {
-        if ( dispatcher.messageReactionAdd )
-        {dispatcher.messageReactionAdd(reaction);}
+        if ( dispatcher.messageReactionAdd ) {
+            dispatcher.messageReactionAdd(reaction);
+        }
         const logMessage = format('%s\n%s\n', formatMessage(reaction.message), reaction.emoji.name);
         const logFile = logDirectory + '/reactions/' + reaction.message.channel.name + '.log';
         fs.writeFile(logFile, logMessage, {flag: 'a'}, cb);

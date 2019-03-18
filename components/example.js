@@ -28,13 +28,15 @@ class Example extends Component {
     }
 
     countdown(amount) {
-        if (amount > 10)
-        {amount = 10;}
+        if (amount > 10) {
+            amount = 10;
+        }
         for (let a = amount; a > 0; a-=1){
             this.setAction('message', a+'...');
             this.setAction('delay', 1);
-            if (amount > 1)
-            {this.queueAction();}
+            if (amount > 1) {
+                this.queueAction();
+            }
         }
     }
 
@@ -56,18 +58,18 @@ class Example extends Component {
     }
 
     playAudio(fileName) {
-        if (fileName.includes('youtube') && fileName.includes('http'))
-        {this.setAction('audioYoutube', fileName);}
-        else
-        {this.setAction('audioFile', fileName);}
+        if (fileName.includes('youtube') && fileName.includes('http')) {
+            this.setAction('audioYoutube', fileName);
+        } else {
+            this.setAction('audioFile', fileName);
+        }
     }
 
     coinflip(a, b) {
         if (Math.random() > 0.5) {
             this.setAction('message', a);
             this.setAction('image', 'heads.jpg');
-        }
-        else {
+        } else {
             this.setAction('message', b);
             this.setAction('image', 'tails.jpg');
         }

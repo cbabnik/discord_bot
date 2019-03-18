@@ -70,8 +70,7 @@ class Utility extends Component {
         if (Math.random() >= 0.5) {
             this.setAction('message', a);
             this.setAction('image', 'heads.jpg');
-        }
-        else {
+        } else {
             this.setAction('message', b);
             this.setAction('image', 'tails.jpg');
         }

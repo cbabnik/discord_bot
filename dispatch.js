@@ -28,11 +28,13 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     };
 
     const message = async (msg) => {
-        if(msg.author.username === 'BuckBot')
-        {return;}
+        if(msg.author.username === 'BuckBot') {
+            return;
+        }
         const command = scanner.scan(msg.content);
-        if (command === null)
-        {return;}
+        if (command === null) {
+            return;
+        }
         const metaInfo = {
             author: msg.author.username,
             authorId: msg.author.id,

@@ -9,10 +9,11 @@ class Audio extends Component {
     }
 
     playAudio(fileName) {
-        if (fileName.includes('youtube') && fileName.includes('http'))
-        {this.setAction('audioYoutube', fileName);}
-        else
-        {this.setAction('audioFile', fileName);}
+        if (fileName.includes('youtube') && fileName.includes('http')) {
+            this.setAction('audioYoutube', fileName);
+        } else {
+            this.setAction('audioFile', fileName);
+        }
     }
 }
 
