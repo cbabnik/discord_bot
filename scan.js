@@ -8,11 +8,14 @@ const Scanner = () => {
         regexList.push({regex, id});
     };
 
-    const scan = text => regexList.filter(
-        elem => text.match(elem.regex) !== null
-    ).map(
-        elem => elem.id
-    );
+    const scan = text => {
+        for (let i=0; i<regexList.length; i+=1) {
+            if (text.match(regexList[i].regex) !== null) {
+                return regexList[i];
+            }
+        }
+        return null;
+    };
 
     return {
         addCommand,
