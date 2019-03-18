@@ -30,19 +30,18 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     const message = async (msg) => {
         if(msg.author.username === "BuckBot")
             return;
-        const commands = scanner.scan(msg.content);
-        commands.forEach(c => {
-            const metaInfo = {
-                author: msg.author.username,
-                authorId: msg.author.id,
-                tts: msg.tts,
-                time: msg.createdAt,
-                channel: msg.channel.name,
-                channelId: msg.channel.id,
-                commandMatchesCount: commands.length,
-            };
-            dispatch( msg.content, commandLinkDict[c], metaInfo )
-        });
+        const command = scanner.scan(msg.content);
+        if (command === null)
+            return;
+        const metaInfo = {
+            author: msg.author.username,
+            authorId: msg.author.id,
+            tts: msg.tts,
+            time: msg.createdAt,
+            channel: msg.channel.name,
+            channelId: msg.channel.id
+        };
+        dispatch( msg.content, commandLinkDict[command], metaInfo );
     };
 
     const dispatch = async (text, commandLink, metaInfo) => {
