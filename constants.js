@@ -8,3 +8,7 @@ exports.CONFIG_DEFAULTS = {
 };
 
 exports.CLIENT_CONNECTED = 0;
+
+exports.BUCKS = {
+    BUGSLINGER: 106853033526247424
+};
