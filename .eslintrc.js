@@ -29,6 +29,9 @@ module.exports = {
         "curly": [
             "error",
             "all"
+        ],
+        "keyword-spacing": [
+            "error"
         ]
     }
 };

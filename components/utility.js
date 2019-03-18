@@ -22,7 +22,7 @@ class Utility extends Component {
 
     rollInfo(metaInfo) {
         if (metaInfo.commandMatchesCount === 1) {
-            this.setAction('message', 'Try `+roll [min] [max]`');
+            this.setAction('message', 'Try `-roll [min] [max]`');
         }
     }
 
@@ -33,7 +33,7 @@ class Utility extends Component {
 
     randomInfo(metaInfo) {
         if (metaInfo.commandMatchesCount === 1) {
-            this.setAction('message', 'Try `+random [a] [b] [c]`');
+            this.setAction('message', 'Try `-random [a] [b] [c]`');
         }
     }
     randomInfoB() {
@@ -41,7 +41,7 @@ class Utility extends Component {
     }
 
     random(options) {
-        if(options.includes(' ')) {
+        if (options.includes(' ')) {
             options = options.split(' ');
         } else {
             options = options.split(',');
@@ -61,7 +61,7 @@ class Utility extends Component {
         try {
             const result = eval(str);
             this.setAction('message', 'The result is: ' + result.toString());
-        } catch(_) {
+        } catch (_) {
             this.setAction('message', 'No value could be determined.');
         }
     }

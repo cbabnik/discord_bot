@@ -28,7 +28,7 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     };
 
     const message = async (msg) => {
-        if(msg.author.username === 'BuckBot') {
+        if (msg.author.username === 'BuckBot') {
             return;
         }
         const command = scanner.scan(msg.content);
