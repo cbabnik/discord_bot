@@ -7,23 +7,21 @@ const ID = 'utility';
 class Utility extends Component {
     constructor() {
         super(ID);
-        this.addCommand(/-roll/, this.rollInfo);
         this.addCommand(/-roll (\d+)$/, (max) => this.roll(1,max));
         this.addCommand(/-roll (-?\d+) (-?\d+)$/, this.roll);
-        this.addCommand(/-random/, this.randomInfo);
-        this.addCommand(/-random \S+$/, this.randomInfoB);
+        this.addCommand(/-roll/, this.rollInfo);
         this.addCommand(/-random (\S+(?: \S+)+)$/, this.random);
         this.addCommand(/-random (\S+(?:,[^\s,]+)+)$/, this.random);
-        this.addCommand(/-math/, this.calculateInfo);
+        this.addCommand(/-random \S+$/, this.randomInfoB);
+        this.addCommand(/-random/, this.randomInfo);
         this.addCommand(/-math ([-+*/.()\d]*)$/, this.calculate);
+        this.addCommand(/-math/, this.calculateInfo);
         this.addCommand(/-coinflip$/, () => this.coinflip('', ''));
         this.addCommand(/-coinflip (\S+) (\S+)$/, this.coinflip);
     }
 
-    rollInfo(metaInfo) {
-        if (metaInfo.commandMatchesCount === 1) {
-            this.setAction('message', 'Try `-roll [min] [max]`');
-        }
+    rollInfo() {
+        this.setAction('message', 'Try `-roll [min] [max]`');
     }
 
     roll(min, max) {
@@ -31,10 +29,8 @@ class Utility extends Component {
         this.setAction('message', result.toString());
     }
 
-    randomInfo(metaInfo) {
-        if (metaInfo.commandMatchesCount === 1) {
-            this.setAction('message', 'Try `-random [a] [b] [c]`');
-        }
+    randomInfo() {
+        this.setAction('message', 'Try `-random [a] [b] [c]`');
     }
     randomInfoB() {
         this.setAction('message', 'You need more than one option to random between');
@@ -50,10 +46,8 @@ class Utility extends Component {
         this.setAction('message', options[index]);
     }
 
-    calculateInfo(metaInfo) {
-        if (metaInfo.commandMatchesCount === 1) {
-            this.setAction('message', 'Invalid use, try `?math` to learn more.');
-        }
+    calculateInfo() {
+        this.setAction('message', 'Invalid use, try `?math` to learn more.');
     }
 
     // WARNING: be very careful to validate input for this function
