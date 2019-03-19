@@ -28,10 +28,8 @@ class Help extends Component {
         );
     }
 
-    helpInfo(val, metaInfo) {
-        if (metaInfo.commandMatchesCount === 1) {
-            this.setAction('message', `There is no help file for ${val}. try just \`-help\` to see most commands.`);
-        }
+    helpInfo(val) {
+        this.setAction('message', `There is no help file for ${val}. try just \`-help\` to see most commands.`);
     }
 
     rollHelp() {
