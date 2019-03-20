@@ -19,6 +19,7 @@
     "eslint": "^5.15.2",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
+    "lodash": "^4.17.11",
     "mocha": "^6.0.2",
     "morgan": "~1.9.0",
     "opusscript": "0.0.6",
