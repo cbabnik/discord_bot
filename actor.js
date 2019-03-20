@@ -9,6 +9,7 @@
 
 const { CONFIG_DEFAULTS } = require('./constants');
 const debug = require('debug')('actor');
+const ytdl = require('ytdl-core');
 
 const Actor = ( client ) => {
 
@@ -17,9 +18,11 @@ const Actor = ( client ) => {
 
         message: undefined,
         image: undefined,
+        imageLink: undefined,
 
-        voiceChannel: "533736402085478412",
+        voiceChannel: '533736402085478412',
         audioFile: undefined,
+        audioYoutube: undefined,
 
         repeat: 1,
         delay: 0,
@@ -56,14 +59,17 @@ const Actor = ( client ) => {
             embeds.files = [{
                 attachment: './images/' + ins.image,
                 name: ins.image
-            }]
+            }];
+        } else if ( ins.imageLink ) {
+            embeds.files = [ins.imageLink];
         }
-        if ( ins.message )
+        if ( ins.message ) {
             channel.send(ins.message, embeds)
-                .catch(err => console.log("Send Error: " + err.message));
-        else if (Object.keys(embeds).length !== 0)
+                .catch(err => debug('Send Error: ' + err.message));
+        } else if (Object.keys(embeds).length !== 0) {
             channel.send(embeds)
-                .catch(err => console.log("Send Embeds Error: " + err.message));
+                .catch(err => debug('Send Embeds Error: ' + err.message));
+        }
 
         if ( ins.audioFile ) {
             try {
@@ -74,47 +80,66 @@ const Actor = ( client ) => {
                     connection.playBroadcast(broadcast);
                 });
             } catch (err) {
-                console.log("Error with " + ins.audioFile + ": " + err.message);
+                debug('Error with ' + ins.audioFile + ': ' + err.message);
+            }
+        } else if ( ins.audioYoutube ) {
+            try {
+                const vc = client.channels.get(ins.voiceChannel);
+                vc.join().then(connection => {
+                    const broadcast = client.createVoiceBroadcast();
+                    const stream = ytdl(ins.audioYoutube, { filter : 'audioonly' });
+                    broadcast.playStream(stream);
+                    connection.playBroadcast(broadcast);
+                });
+            } catch (err) {
+                debug('Error with ' + ins.audioFile + ': ' + err.message);
             }
         }
 
         // chaining instructions
         // _____________________
         if ( ins.repeat > 1 ) {
-            if (ins.repeat > 10)
+            if (ins.repeat > 10) {
                 ins.repeat = 10;
+            }
             handle({...ins, repeat: ins.repeat-1});
             return;
         }
-        if ( ins.next )
-            handle({channel:instructionPkg.channel, ...ins.next})
+        if ( ins.next ) {
+            handle({channel:instructionPkg.channel, ...ins.next});
+        }
     };
 
     const logForDebug = (instructionPkg) => {
-        let msgShortened = "";
-        if (instructionPkg.message)
-            if (instructionPkg.message.length > 40)
-                msgShortened = instructionPkg.message.slice(0,37) + "...";
-            else
+        let msgShortened = '';
+        if (instructionPkg.message) {
+            if (instructionPkg.message.length > 40) {
+                msgShortened = instructionPkg.message.slice(0,37) + '...';
+            } else {
                 msgShortened = instructionPkg.message;
+            }
+        }
 
-        let audioInfo = "";
-        if (instructionPkg.audioFile)
-            audioInfo = "<" + instructionPkg.audioFile + ">";
+        let audioInfo = '';
+        if (instructionPkg.audioFile) {
+            audioInfo = '<' + instructionPkg.audioFile + '>';
+        }
 
-        let delayInfo = "";
-        if (instructionPkg.delay !== 0 && instructionPkg.delay !== undefined)
-            delayInfo = " [delay "+instructionPkg.delay+"s]";
-        else if (instructionPkg.timing)
-            delayInfo = " [timing "+instructionPkg.timing+"]";
+        let delayInfo = '';
+        if (instructionPkg.delay !== 0 && instructionPkg.delay !== undefined) {
+            delayInfo = ' [delay '+instructionPkg.delay+'s]';
+        } else if (instructionPkg.timing) {
+            delayInfo = ' [timing '+instructionPkg.timing+']';
+        }
 
-        let repeatInfo = "";
-        if (instructionPkg.repeat > 1)
-            repeatInfo = " [repeat "+instructionPkg.repeat+"x]";
-        else if (instructionPkg.next)
-            repeatInfo = " [hasNext]";
+        let repeatInfo = '';
+        if (instructionPkg.repeat > 1) {
+            repeatInfo = ' [repeat '+instructionPkg.repeat+'x]';
+        } else if (instructionPkg.next) {
+            repeatInfo = ' [hasNext]';
+        }
 
-        debug("%s%s%s%s", msgShortened, audioInfo, delayInfo, repeatInfo)
+        debug('%s%s%s%s', msgShortened, audioInfo, delayInfo, repeatInfo);
     };
 
     return {
