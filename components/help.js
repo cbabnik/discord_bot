@@ -13,6 +13,7 @@ class Help extends Component {
         this.addCommand(/^\?coinflip/, this.coinflipHelp);
         this.addCommand(/^\?burger/, this.burgerHelp);
         this.addCommand(/^\?add[bB]urger/, this.addBurgerHelp);
+        this.addCommand(/^\?slots/, this.slotsHelp);
         this.addCommand(/^\?(.*)/, this.helpInfo);
     }
 
@@ -23,7 +24,8 @@ class Help extends Component {
 \`-random\` - Returns a random element of a given list.
 \`-math\` - Evaluates an expression.
 \`-coinflip\` - Returns heads or tails.
-\`-burger\` - Unleashes a sweet picture.`
+\`-burger\` - Unleashes a sweet picture.
+\`-slots\` - Have some fun.`
         );
     }
 
@@ -71,6 +73,16 @@ valid uses:
         this.setAction('message',
             `\`-burger\`
 Unleashes a sweet picture.`
+        );
+    }
+
+    slotsHelp() {
+        this.setAction('message',
+            `\`-slots\`
+valid uses:
+\`-slots coin\`
+\`-slots grid\`
+\`-slots maze\``
         );
     }
 
