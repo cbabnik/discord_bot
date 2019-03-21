@@ -9,14 +9,19 @@
 
 const { CONFIG_DEFAULTS } = require('./constants');
 const debug = require('debug')('actor');
+const debugExtra = require('debug')('extra');
 const ytdl = require('ytdl-core');
+
+let messagesForEdit = {};
 
 const Actor = ( client ) => {
 
     const DEFAULT_INSTRUCTIONS = {
-        channel: CONFIG_DEFAULTS.MAIN_CHANNEL,
+        channel: "use_source",
 
         message: undefined,
+        messageId: undefined,
+        editId: undefined,
         image: undefined,
         imageLink: undefined,
 
@@ -31,26 +36,31 @@ const Actor = ( client ) => {
         next: undefined,
     };
 
-    const handle = ( instructionPkg ) => {
+    const handle = ( instructionPkg, msg ) => {
         logForDebug(instructionPkg);
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
-
-        const channel = client.channels.get(ins.channel);
 
         // timing
         // ______
         if (ins.delay > 0) {
             setTimeout(() => {
-                handle({...ins, delay: 0});
+                handle({...ins, delay: 0}, msg);
             }, ins.delay*1000);
             return;
         }
         if (ins.timing) {
             const currentMS = new Date().getTime();
             const desiredMS = Date.parse(ins.timing);
-            handle({...ins, delay: (desiredMS-currentMS)/1000, timing: undefined});
+            handle({...ins, delay: (desiredMS-currentMS)/1000, timing: undefined}, msg);
             return;
         }
+
+        // set
+        // ___
+        if ( ins.channel==="use_source" ) {
+            ins.channel = msg.channel.id;
+        }
+        const channel = client.channels.get(ins.channel);
 
         // actions
         // _______
@@ -63,12 +73,32 @@ const Actor = ( client ) => {
         } else if ( ins.imageLink ) {
             embeds.files = [ins.imageLink];
         }
-        if ( ins.message ) {
-            channel.send(ins.message, embeds)
-                .catch(err => debug('Send Error: ' + err.message));
-        } else if (Object.keys(embeds).length !== 0) {
-            channel.send(embeds)
-                .catch(err => debug('Send Embeds Error: ' + err.message));
+        if ( ins.editId ) {
+            if (ins.message) {
+                messagesForEdit[ins.editId].edit(ins.message, embeds)
+                    .catch(err => debug('Edit Error: ' + err.message));
+            } else if (Object.keys(embeds).length !== 0) {
+                messagesForEdit[ins.editId].edit(embeds)
+                    .catch(err => debug('Edit Embeds Error: ' + err.message));
+            }
+        } else {
+            if (ins.message) {
+                channel.send(ins.message, embeds)
+                    .then(newMsg => {if (ins.messageId) {
+                        messagesForEdit[ins.messageId] = newMsg;
+                        handle({...ins, message: undefined, messageId: undefined}, msg);
+                    }})
+                    .catch(err => debug('Send Error: ' + err.message));
+                if (ins.messageId) return;
+            } else if (Object.keys(embeds).length !== 0) {
+                channel.send(embeds)
+                    .then(newMsg => {if (ins.messageId) {
+                        messagesForEdit[ins.messageId] = newMsg;
+                        handle({...ins, message: undefined, messageId: undefined}, msg);
+                    }})
+                    .catch(err => debug('Send Embeds Error: ' + err.message));
+                if (ins.messageId) return;
+            }
         }
 
         if ( ins.audioFile ) {
@@ -102,11 +132,11 @@ const Actor = ( client ) => {
             if (ins.repeat > 10) {
                 ins.repeat = 10;
             }
-            handle({...ins, repeat: ins.repeat-1});
+            handle({...ins, repeat: ins.repeat-1}, msg);
             return;
         }
         if ( ins.next ) {
-            handle({channel:instructionPkg.channel, ...ins.next});
+            handle({channel:instructionPkg.channel, ...ins.next}, msg);
         }
     };
 
@@ -140,6 +170,7 @@ const Actor = ( client ) => {
         }
 
         debug('%s%s%s%s', msgShortened, audioInfo, delayInfo, repeatInfo);
+        debugExtra(instructionPkg);
     };
 
     return {
