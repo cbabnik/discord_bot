@@ -249,6 +249,54 @@ Reward: ${winnings}`);
         _.set(this.json, `${user}.maze.attempts`, _.get(this.json, `${user}.maze.longest_streak`, 0) + 1);
         this.saveJSON();
     }
+
+    buckSlots(user) {
+        let bag = ['eight', 'seven', 'one', 'deer', 'bee', 'scary', 'girl', 'kiwi'];
+        let roll = [_.sample(bag), _.sample(bag), _.sample(bag)];
+
+        let winnings = 0;
+
+        switch(roll.join(','))
+        {
+            case 'eight,seven,one':
+                break;
+            case 'seven,seven,seven':
+                break;
+            case 'seven,deer,seven':
+                break;
+            case 'deer,deer,deer':
+                break;
+            case 'bee,bee,bee':
+                break;
+            case 'scary,scary,scary':
+                break;
+            case 'girl,girl,girl':
+                break;
+            case 'kiwi,kiwi,kiwi':
+                break;
+            default:
+                let strNum = '';
+                roll.forEach((elem) => {
+                    switch(elem)
+                    {
+                        case 'eight':
+                            strNum += '8';
+                            break;
+                        case 'seven':
+                            strNum += '7';
+                            break;
+                        case 'one':
+                            strNum += '1';
+                            break;
+                    }
+                });
+                winnings = Number(strNum);
+        }
+
+        _.set(this.json, `${user}.maze.winnings`, _.get(this.json, `${user}.maze.winnings`, 0) + winnings);
+        _.set(this.json, `${user}.maze.attempts`, _.get(this.json, `${user}.maze.longest_streak`, 0) + 1);
+        this.saveJSON();
+    }
 }
 
 module.exports = { lottery: new Lottery() };
