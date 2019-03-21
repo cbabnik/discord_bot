@@ -5,7 +5,7 @@ const ID = 'audio';
 class Audio extends Component {
     constructor() {
         super(ID);
-        this.addCommand(/-play (.*)/, this.playAudio);
+        this.addCommand(/^-play (.*)/, this.playAudio);
     }
 
     playAudio(fileName) {

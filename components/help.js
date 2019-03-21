@@ -5,15 +5,15 @@ const ID = 'help';
 class Help extends Component {
     constructor() {
         super(ID);
-        this.addCommand(/-help$/, this.help);
-        this.addCommand(/\?help$/, this.help);
-        this.addCommand(/\?roll/, this.rollHelp);
-        this.addCommand(/\?random/, this.randomHelp);
-        this.addCommand(/\?math/, this.mathHelp);
-        this.addCommand(/\?coinflip/, this.coinflipHelp);
-        this.addCommand(/\?burger/, this.burgerHelp);
-        this.addCommand(/\?add[bB]urger/, this.addBurgerHelp);
-        this.addCommand(/\?(.*)/, this.helpInfo);
+        this.addCommand(/^-help$/, this.help);
+        this.addCommand(/^\?help$/, this.help);
+        this.addCommand(/^\?roll/, this.rollHelp);
+        this.addCommand(/^\?random/, this.randomHelp);
+        this.addCommand(/^\?math/, this.mathHelp);
+        this.addCommand(/^\?coinflip/, this.coinflipHelp);
+        this.addCommand(/^\?burger/, this.burgerHelp);
+        this.addCommand(/^\?add[bB]urger/, this.addBurgerHelp);
+        this.addCommand(/^\?(.*)/, this.helpInfo);
     }
 
     help() {
@@ -23,8 +23,7 @@ class Help extends Component {
 \`-random\` - Returns a random element of a given list.
 \`-math\` - Evaluates an expression.
 \`-coinflip\` - Returns heads or tails.
-\`-burger\` - Unleashes a sweet picture.
-\`-addburger\` - Share a sweet picture.`
+\`-burger\` - Unleashes a sweet picture.`
         );
     }
 
