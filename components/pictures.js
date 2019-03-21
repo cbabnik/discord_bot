@@ -6,8 +6,8 @@ const ID = 'pictures';
 class Pictures extends Component {
     constructor() {
         super(ID);
-        this.addCommand(/-burger/, this.burger);
-        this.addCommand(/-add[bB]urger (.*)/, this.addBurger);
+        this.addCommand(/^-burger/, this.burger);
+        this.addCommand(/^-add[bB]urger (.*)/, this.addBurger);
 
         if (!this.json.burgers) {
             this.json['burgers'] = [];

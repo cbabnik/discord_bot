@@ -7,17 +7,17 @@ const ID = 'utility';
 class Utility extends Component {
     constructor() {
         super(ID);
-        this.addCommand(/-roll (\d+)$/, (max) => this.roll(1,max));
-        this.addCommand(/-roll (-?\d+) (-?\d+)$/, this.roll);
-        this.addCommand(/-roll/, this.rollInfo);
-        this.addCommand(/-random (\S+(?: \S+)+)$/, this.random);
-        this.addCommand(/-random (\S+(?:,[^\s,]+)+)$/, this.random);
-        this.addCommand(/-random \S+$/, this.randomInfoB);
-        this.addCommand(/-random/, this.randomInfo);
-        this.addCommand(/-math ([-+*/.()\d]*)$/, this.calculate);
-        this.addCommand(/-math/, this.calculateInfo);
-        this.addCommand(/-coinflip$/, () => this.coinflip('', ''));
-        this.addCommand(/-coinflip (\S+) (\S+)$/, this.coinflip);
+        this.addCommand(/^-roll (\d+)$/, (max) => this.roll(1,max));
+        this.addCommand(/^-roll (-?\d+) (-?\d+)$/, this.roll);
+        this.addCommand(/^-roll/, this.rollInfo);
+        this.addCommand(/^-random (\S+(?: \S+)+)$/, this.random);
+        this.addCommand(/^-random (\S+(?:,[^\s,]+)+)$/, this.random);
+        this.addCommand(/^-random \S+$/, this.randomInfoB);
+        this.addCommand(/^-random/, this.randomInfo);
+        this.addCommand(/^-math ([-+*/.()\d]*)$/, this.calculate);
+        this.addCommand(/^-math/, this.calculateInfo);
+        this.addCommand(/^-coinflip$/, () => this.coinflip('', ''));
+        this.addCommand(/^-coinflip (\S+) (\S+)$/, this.coinflip);
     }
 
     rollInfo() {
