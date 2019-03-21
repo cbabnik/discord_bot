@@ -35,6 +35,10 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         if (command === null) {
             return;
         }
+        dispatch( msg.content, commandLinkDict[command], msg );
+    };
+
+    const dispatch = async (text, commandLink, msg) => {
         const metaInfo = {
             author: msg.author.username,
             authorId: msg.author.id,
@@ -43,16 +47,12 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
             channel: msg.channel.name,
             channelId: msg.channel.id
         };
-        dispatch( msg.content, commandLinkDict[command], metaInfo );
-    };
-
-    const dispatch = async (text, commandLink, metaInfo) => {
         const {regex, component, cb} = commandLink;
         const params = text.match(regex).slice(1);
         debug('%s [%s.%s(%s)]', text, component.id, cb.name, params);
         await cb.call(component, ...params, metaInfo);
         const instructions = component.commitAction();
-        actor.handle({channel: metaInfo.channelId, ...instructions});
+        actor.handle(instructions, msg);
     };
 
     return {
