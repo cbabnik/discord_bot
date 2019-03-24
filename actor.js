@@ -115,6 +115,10 @@ const Actor = ( client ) => {
             try {
                 const vc = client.channels.get(ins.voiceChannel);
                 vc.join().then(connection => {
+                    // if no extension, assume .mp3
+                    if ( !ins.audioFile.includes('.') ) {
+                        ins.audioFile += '.mp3';
+                    }
                     const broadcast = client.createVoiceBroadcast();
                     broadcast.playFile('./audio/' + ins.audioFile);
                     connection.playBroadcast(broadcast);
