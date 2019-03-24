@@ -1,4 +1,6 @@
 const { Component } = require('../component');
+const fs = require('fs');
+const _ = require('lodash');
 
 const ID = 'help';
 
@@ -13,7 +15,9 @@ class Help extends Component {
         this.addCommand(/^\?coinflip/, this.coinflipHelp);
         this.addCommand(/^\?burger/, this.burgerHelp);
         this.addCommand(/^\?add[bB]urger/, this.addBurgerHelp);
-        this.addCommand(/^\?(.*)/, this.helpInfo);
+        this.addCommand(/^\?!/, this.playHelp);
+        this.addCommand(/^\?play/, this.playHelp);
+        this.addCommand(/^\?(.+)/, this.helpInfo);
     }
 
     help() {
@@ -78,6 +82,13 @@ Unleashes a sweet picture.`
         this.setAction('message',
             `\`-addburger\`
 valid use: \`-addburger <link url>\` - Add another burger!`
+        );
+    }
+
+    playHelp() {
+        const files = fs.readdirSync('./audio').map(f => f.padEnd(30));
+        this.setAction('message', 'Play a sound!\n' +
+            _.chunk(files, 3).map(chunk => `\`${chunk.join('')}\``).join('\n')
         );
     }
 }
