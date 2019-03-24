@@ -27,7 +27,8 @@ class Help extends Component {
 \`-random\` - Returns a random element of a given list.
 \`-math\` - Evaluates an expression.
 \`-coinflip\` - Returns heads or tails.
-\`-burger\` - Unleashes a sweet picture.`
+\`-burger\` - Unleashes a sweet picture.
+\`-play\` - Guys, there's no limit or permissions attached to this yet.`
         );
     }
 
@@ -86,9 +87,9 @@ valid use: \`-addburger <link url>\` - Add another burger!`
     }
 
     playHelp() {
-        const files = fs.readdirSync('./audio').map(f => f.padEnd(30));
+        const files = fs.readdirSync('./audio').map(f => f.padEnd(25));
         this.setAction('message', 'Play a sound!\n' +
-            _.chunk(files, 3).map(chunk => `\`${chunk.join('')}\``).join('\n')
+            _.chunk(files, 4).map(chunk => `\`${chunk.join('')}\``).join('\n')
         );
     }
 }
