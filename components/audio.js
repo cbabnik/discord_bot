@@ -1,10 +1,14 @@
 const { Component } = require('../component');
+const _ = require('lodash');
+const fs = require('fs');
 
 const ID = 'audio';
 
 class Audio extends Component {
     constructor() {
         super(ID);
+        this.addCommand(/^-play random$/, this.playRandom);
+        this.addCommand(/^!random$/, this.playRandom);
         this.addCommand(/^-play ([^/\\]+)$/, this.playAudio);
         this.addCommand(/^-end$/, this.endAudio);
         this.addCommand(/^!([^/\\]+)$/, this.playAudio);
@@ -20,6 +24,11 @@ class Audio extends Component {
 
     endAudio() {
         this.setAction('endAudio', true);
+    }
+
+    playRandom() {
+        const f = _.sample(fs.readdirSync('./audio'));
+        this.setAction('audioFile', f);
     }
 }
 
