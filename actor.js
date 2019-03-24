@@ -28,6 +28,7 @@ const Actor = ( client ) => {
         voiceChannel: '533736402085478412',
         audioFile: undefined,
         audioYoutube: undefined,
+        endAudio: false,
 
         repeat: 1,
         delay: 0,
@@ -101,6 +102,15 @@ const Actor = ( client ) => {
             }
         }
 
+        if ( ins.endAudio ) {
+            try {
+                client.voiceConnections.array().forEach((c) => {
+                    c.channel.leave();
+                });
+            } catch (err) {
+                debug('Error leaving channels: ' + err.message);
+            }
+        }
         if ( ins.audioFile ) {
             try {
                 const vc = client.channels.get(ins.voiceChannel);

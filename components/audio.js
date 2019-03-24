@@ -6,6 +6,7 @@ class Audio extends Component {
     constructor() {
         super(ID);
         this.addCommand(/^-play (.*)/, this.playAudio);
+        this.addCommand(/^-end$/, this.endAudio);
     }
 
     playAudio(fileName) {
@@ -14,6 +15,10 @@ class Audio extends Component {
         } else {
             this.setAction('audioFile', fileName);
         }
+    }
+
+    endAudio() {
+        this.setAction('endAudio', true);
     }
 }
 
