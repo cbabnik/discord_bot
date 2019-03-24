@@ -11,6 +11,7 @@ const { CONFIG_DEFAULTS } = require('./constants');
 const debug = require('debug')('actor');
 const debugExtra = require('debug')('extra');
 const ytdl = require('ytdl-core');
+const fs = require('fs');
 
 let messagesForEdit = {};
 
@@ -112,17 +113,22 @@ const Actor = ( client ) => {
             }
         }
         if ( ins.audioFile ) {
+            if ( !ins.audioFile.includes('.') ) {
+                ins.audioFile += '.mp3';
+            }
+            const path = './audio/' + ins.audioFile;
             try {
-                const vc = client.channels.get(ins.voiceChannel);
-                vc.join().then(connection => {
-                    // if no extension, assume .mp3
-                    if ( !ins.audioFile.includes('.') ) {
-                        ins.audioFile += '.mp3';
-                    }
-                    const broadcast = client.createVoiceBroadcast();
-                    broadcast.playFile('./audio/' + ins.audioFile);
-                    connection.playBroadcast(broadcast);
-                });
+                if ( fs.existsSync(path) ) {
+                    const vc = client.channels.get(ins.voiceChannel);
+                    vc.join().then(connection => {
+                        // if no extension, assume .mp3
+                        const broadcast = client.createVoiceBroadcast();
+                        broadcast.playFile(path);
+                        connection.playBroadcast(broadcast);
+                    });
+                } else {
+                    debug(`File ${ins.audioFile} not found`);
+                }
             } catch (err) {
                 debug('Error with ' + ins.audioFile + ': ' + err.message);
             }
