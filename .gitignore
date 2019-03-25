@@ -18,3 +18,7 @@ auth.js
 # Don't include all the node modules
 # __________________________________
 node_modules
+
+# Easter egg component
+# ____________________
+secret.js
