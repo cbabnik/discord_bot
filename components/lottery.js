@@ -25,6 +25,10 @@ class Lottery extends Component {
         this.addCommand(/^-slots coin/, this.coinslots);
         this.addCommand(/^-slots grid/, this.gridslots);
         this.addCommand(/^-slots maze/, this.mazeSlots);
+        this.addCommand(/^-cslots/, this.coinslots);
+        this.addCommand(/^-gslots/, this.gridslots);
+        this.addCommand(/^-mslots/, this.mazeSlots);
+        this.addCommand(/^-bslots/, this.buckSlots);
     }
 
     watchLottery(user, result, metaInfo) {
@@ -33,15 +37,15 @@ class Lottery extends Component {
             return;
         }
         if (!this.json[user]) {
-            this.json[user] = {kawaii: {wins:0, losses:0, almost: 0}}
+            this.json[user] = {kawaii: {wins:0, losses:0, almost: 0}};
         }
-        if (result === "won") {
+        if (result === 'won') {
             this.setAction('message', 'telling colton');
             this.setAction('audio', 'sample.mp3');
             _.set(this.json, `${user}.kawaii.wins`, _.get(this.json, `${user}.kawaii.wins`, 0) + 1);
-        } else if (result === "lost") {
+        } else if (result === 'lost') {
             _.set(this.json, `${user}.kawaii.losses`, _.get(this.json, `${user}.kawaii.losses`, 0) + 1);
-        } else if (result === "almost") {
+        } else if (result === 'almost') {
             _.set(this.json, `${user}.kawaii.almost`, _.get(this.json, `${user}.kawaii.almost`, 0) + 1);
             _.set(this.json, `${user}.kawaii.losses`, _.get(this.json, `${user}.kawaii.losses`, 0) + 1);
         }
@@ -54,7 +58,7 @@ class Lottery extends Component {
         }
         if (!this.json[user]) {
             this.setAction('message', `No stats for \`${user}\``);
-            return
+            return;
         }
         const p = this.json[user];
         const [k, b, c, m, g] = [p.kawaii, p.buck, p.coin, p.maze, p.grid];
@@ -63,7 +67,7 @@ class Lottery extends Component {
 **Coin Slots**: ${c.attempts} attempts. Best streak is ${c.longest_streak} which won $${c.best}. Total winnings are $${c.winnings}. Average winnings are $${(c.winnings/c.attempts).toFixed(2)}
 **Grid Slots**: ${g.attempts} attempts. Best roll gave $${g.best}. Total winnings are $${g.winnings} Average winnings are $${(g.winnings/g.attempts).toFixed(2)}
 **Maze Slots**: ${m.attempts} attempts. Best roll gave $${m.best}. Longest streak is ${m.longest_streak}. Total winnings are $${m.winnings}. Average winnings are $${(m.winnings/m.attempts).toFixed(2)}
-`+(this.json['buckSlotsFound']?`Buck Slots: ${m.attempts} attempts. ${b.bucks} of ${b.wins} wins were ultimate wins. Total winnings are $${b.winnings}`:`???`))
+`+(this.json['buckSlotsFound']?`Buck Slots: ${m.attempts} attempts. ${b.bucks} of ${b.wins} wins were ultimate wins. Total winnings are $${b.winnings}`:''));
     }
 
     coinslots(metaInfo) {
@@ -121,7 +125,9 @@ class Lottery extends Component {
 
         let grid = [[0,0,0],[0,0,0],[0,0,0]];
         let bag = [];
-        SIGNS.forEach((sign) => {bag.push(...Array(sign.grid_amount).fill(sign.emote))});
+        SIGNS.forEach((sign) => {
+            bag.push(...Array(sign.grid_amount).fill(sign.emote));
+        });
         grid = grid.map((row) => row.map(() => _.sample(bag)));
 
         const valid_lines = [
@@ -256,41 +262,39 @@ Reward: ${winnings}`);
 
         let winnings = 0;
 
-        switch(roll.join(','))
-        {
-            case 'eight,seven,one':
-                break;
-            case 'seven,seven,seven':
-                break;
-            case 'seven,deer,seven':
-                break;
-            case 'deer,deer,deer':
-                break;
-            case 'bee,bee,bee':
-                break;
-            case 'scary,scary,scary':
-                break;
-            case 'girl,girl,girl':
-                break;
-            case 'kiwi,kiwi,kiwi':
-                break;
-            default:
-                let strNum = '';
-                roll.forEach((elem) => {
-                    switch(elem)
-                    {
-                        case 'eight':
-                            strNum += '8';
-                            break;
-                        case 'seven':
-                            strNum += '7';
-                            break;
-                        case 'one':
-                            strNum += '1';
-                            break;
-                    }
-                });
-                winnings = Number(strNum);
+        let strNum = '';
+        switch (roll.join(',')) {
+        case 'eight,seven,one':
+            break;
+        case 'seven,seven,seven':
+            break;
+        case 'seven,deer,seven':
+            break;
+        case 'deer,deer,deer':
+            break;
+        case 'bee,bee,bee':
+            break;
+        case 'scary,scary,scary':
+            break;
+        case 'girl,girl,girl':
+            break;
+        case 'kiwi,kiwi,kiwi':
+            break;
+        default:
+            roll.forEach((elem) => {
+                switch (elem) {
+                case 'eight':
+                    strNum += '8';
+                    break;
+                case 'seven':
+                    strNum += '7';
+                    break;
+                case 'one':
+                    strNum += '1';
+                    break;
+                }
+            });
+            winnings = Number(strNum);
         }
 
         _.set(this.json, `${user}.maze.winnings`, _.get(this.json, `${user}.maze.winnings`, 0) + winnings);
