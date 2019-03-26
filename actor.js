@@ -68,8 +68,8 @@ const Actor = ( client ) => {
         // _______
         let embeds = {};
         if ( ins.image ) {
-            if ( !ins.audioFile.includes('.') ) {
-                ins.audioFile += '.jpg';
+            if ( !ins.image.includes('.') ) {
+                ins.image += '.jpg';
             }
             embeds.files = [{
                 attachment: './images/' + ins.image,
