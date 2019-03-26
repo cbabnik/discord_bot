@@ -11,6 +11,9 @@ const { CONFIG_DEFAULTS } = require('./constants');
 const debug = require('debug')('actor');
 const debugExtra = require('debug')('extra');
 const ytdl = require('ytdl-core');
+const fs = require('fs');
+
+let messagesForEdit = {};
 
 let messagesForEdit = {};
 
@@ -28,6 +31,7 @@ const Actor = ( client ) => {
         voiceChannel: '533736402085478412',
         audioFile: undefined,
         audioYoutube: undefined,
+        endAudio: false,
 
         repeat: 1,
         delay: 0,
@@ -66,6 +70,9 @@ const Actor = ( client ) => {
         // _______
         let embeds = {};
         if ( ins.image ) {
+            if ( !ins.audioFile.includes('.') ) {
+                ins.audioFile += '.jpg';
+            }
             embeds.files = [{
                 attachment: './images/' + ins.image,
                 name: ins.image
@@ -101,14 +108,32 @@ const Actor = ( client ) => {
             }
         }
 
-        if ( ins.audioFile ) {
+        if ( ins.endAudio ) {
             try {
-                const vc = client.channels.get(ins.voiceChannel);
-                vc.join().then(connection => {
-                    const broadcast = client.createVoiceBroadcast();
-                    broadcast.playFile('./audio/' + ins.audioFile);
-                    connection.playBroadcast(broadcast);
+                client.voiceConnections.array().forEach((c) => {
+                    c.channel.leave();
                 });
+            } catch (err) {
+                debug('Error leaving channels: ' + err.message);
+            }
+        }
+        if ( ins.audioFile ) {
+            if ( !ins.audioFile.includes('.') ) {
+                ins.audioFile += '.mp3';
+            }
+            const path = './audio/' + ins.audioFile;
+            try {
+                if ( fs.existsSync(path) ) {
+                    const vc = client.channels.get(ins.voiceChannel);
+                    vc.join().then(connection => {
+                        // if no extension, assume .mp3
+                        const broadcast = client.createVoiceBroadcast();
+                        broadcast.playFile(path);
+                        connection.playBroadcast(broadcast);
+                    });
+                } else {
+                    debug(`File ${ins.audioFile} not found`);
+                }
             } catch (err) {
                 debug('Error with ' + ins.audioFile + ': ' + err.message);
             }
