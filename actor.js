@@ -15,8 +15,6 @@ const fs = require('fs');
 
 let messagesForEdit = {};
 
-let messagesForEdit = {};
-
 const Actor = ( client ) => {
 
     const DEFAULT_INSTRUCTIONS = {

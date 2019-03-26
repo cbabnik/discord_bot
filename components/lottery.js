@@ -59,7 +59,7 @@ class Lottery extends Component {
         const p = this.json[user];
         const [k, b, c, m, g] = [p.kawaii, p.buck, p.coin, p.maze, p.grid];
         this.setAction('message', `Slots Stats for ${user}:
-**Kawaii Casino**: \`${k.wins} wins\` and \`${k.losses+k.almost} losses\`. ${k.almost} of those losses were almost wins. Win ratio is **${k.wins/(k.wins+k.losses+k.almost*100).toFixed(2)}%**
+**Kawaii Casino**: \`${k.wins} wins\` and \`${k.losses+k.almost} losses\`. ${k.almost} of those losses were almost wins. Win ratio is **${(k.wins/(k.wins+k.losses+k.almost)*100).toFixed(2)}%**
 **Coin Slots**: ${c.attempts} attempts. Best streak is ${c.longest_streak} which won $${c.best}. Total winnings are $${c.winnings}. Average winnings are $${(c.winnings/c.attempts).toFixed(2)}
 **Grid Slots**: ${g.attempts} attempts. Best roll gave $${g.best}. Total winnings are $${g.winnings} Average winnings are $${(g.winnings/g.attempts).toFixed(2)}
 **Maze Slots**: ${m.attempts} attempts. Best roll gave $${m.best}. Longest streak is ${m.longest_streak}. Total winnings are $${m.winnings}. Average winnings are $${(m.winnings/m.attempts).toFixed(2)}
