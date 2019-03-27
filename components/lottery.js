@@ -265,20 +265,29 @@ Reward: ${winnings}`);
         let strNum = '';
         switch (roll.join(',')) {
         case 'eight,seven,one':
+            _.set(this.json, `${user}.buck.wins`, _.get(this.json, `${user}.buck.wins`, 0) + 1);
             break;
         case 'seven,seven,seven':
+            _.set(this.json, `${user}.buck.wins`, _.get(this.json, `${user}.buck.wins`, 0) + 1);
             break;
         case 'seven,deer,seven':
+            _.set(this.json, `${user}.buck.wins`, _.get(this.json, `${user}.buck.wins`, 0) + 1);
             break;
         case 'deer,deer,deer':
+            _.set(this.json, `${user}.buck.wins`, _.get(this.json, `${user}.buck.wins`, 0) + 1);
+            _.set(this.json, `${user}.buck.bucks`, _.get(this.json, `${user}.buck.bucks`, 0) + 1);
             break;
         case 'bee,bee,bee':
+            _.set(this.json, `${user}.buck.wins`, _.get(this.json, `${user}.buck.wins`, 0) + 1);
             break;
         case 'scary,scary,scary':
+            _.set(this.json, `${user}.buck.wins`, _.get(this.json, `${user}.buck.wins`, 0) + 1);
             break;
         case 'girl,girl,girl':
+            _.set(this.json, `${user}.buck.wins`, _.get(this.json, `${user}.buck.wins`, 0) + 1);
             break;
         case 'kiwi,kiwi,kiwi':
+            _.set(this.json, `${user}.buck.wi  ns`, _.get(this.json, `${user}.buck.wins`, 0) + 1);
             break;
         default:
             roll.forEach((elem) => {
@@ -297,8 +306,8 @@ Reward: ${winnings}`);
             winnings = Number(strNum);
         }
 
-        _.set(this.json, `${user}.maze.winnings`, _.get(this.json, `${user}.maze.winnings`, 0) + winnings);
-        _.set(this.json, `${user}.maze.attempts`, _.get(this.json, `${user}.maze.longest_streak`, 0) + 1);
+        _.set(this.json, `${user}.buck.winnings`, _.get(this.json, `${user}.buck.winnings`, 0) + winnings);
+        _.set(this.json, `${user}.buck.attempts`, _.get(this.json, `${user}.buck.longest_streak`, 0) + 1);
         this.saveJSON();
     }
 }
