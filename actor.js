@@ -126,7 +126,7 @@ const Actor = ( client ) => {
                     vc.join().then(connection => {
                         // if no extension, assume .mp3
                         const broadcast = client.createVoiceBroadcast();
-                        broadcast.playFile(path);
+                        broadcast.playFile(path, {bitrate: 192000});
                         connection.playBroadcast(broadcast);
                     });
                 } else {
@@ -141,7 +141,7 @@ const Actor = ( client ) => {
                 vc.join().then(connection => {
                     const broadcast = client.createVoiceBroadcast();
                     const stream = ytdl(ins.audioYoutube, { filter : 'audioonly' });
-                    broadcast.playStream(stream);
+                    broadcast.playStream(stream, {bitrate: 192000});
                     connection.playBroadcast(broadcast);
                 });
             } catch (err) {
