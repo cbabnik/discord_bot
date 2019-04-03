@@ -4,13 +4,13 @@
 const Scanner = () => {
     const regexList = [];
 
-    const addCommand = (regex, id) => {
-        regexList.push({regex, id});
+    const addCommand = ( regex, id ) => {
+        regexList.push( {regex, id} );
     };
 
     const scan = text => {
-        for (let i=0; i<regexList.length; i+=1) {
-            if (text.match(regexList[i].regex) !== null) {
+        for ( let i=0; i<regexList.length; i+=1 ) {
+            if ( text.match( regexList[i].regex ) !== null ) {
                 return regexList[i].id;
             }
         }

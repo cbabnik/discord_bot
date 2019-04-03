@@ -12,31 +12,31 @@
 // point to a central service collection object. For now the list of other services are simply references to the
 // components themselves
 
-const fs = require('fs');
+const fs = require( 'fs' );
 
 class Component {
-    constructor(id) {
+    constructor( id ) {
         this.id = id;
         this.jsonFile = './storage/'+id+'.json';
-        if (!fs.existsSync(this.jsonFile)) {
-            fs.mkdir('./storage/', {}, () => {});
-            fs.writeFileSync(this.jsonFile, '{}');
+        if ( !fs.existsSync( this.jsonFile ) ) {
+            fs.mkdir( './storage/', {}, () => {} );
+            fs.writeFileSync( this.jsonFile, '{}' );
         }
-        this.json = require(this.jsonFile);
+        this.json = require( this.jsonFile );
         this.action = {};
         this.actionPart = this.action;
         this.commands = [];
     }
 
-    addCommand(regex, cb) {
-        this.commands.push({regex, cb});
+    addCommand( regex, cb ) {
+        this.commands.push( {regex, cb} );
     }
 
     getAllCommands() {
         return this.commands;
     }
 
-    setAction(option, value) {
+    setAction( option, value ) {
         this.actionPart[option] = value;
     }
 
@@ -53,7 +53,7 @@ class Component {
     }
 
     saveJSON() {
-        fs.writeFile( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {});
+        fs.writeFile( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {} );
     }
 }
 

@@ -4,7 +4,7 @@
 // Dispatcher forwards the instruction results of each command to the actor.
 // Dispatcher is a glorified map of commands basically.
 
-const debug = require('debug')('dispatcher');
+const debug = require( 'debug' )( 'dispatcher' );
 
 const DispatcherGenerator = ( Scanner ) => ( actor ) => {
 
@@ -14,31 +14,30 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     let next_id = 0;
 
     // groups in the regex are treated as parameters to the callback
-    const registerCommand = (regex, component, cb) => {
+    const registerCommand = ( regex, component, cb ) => {
         commandLinkDict[next_id] = {regex, component, cb};
-        scanner.addCommand(regex, next_id);
+        scanner.addCommand( regex, next_id );
         next_id += 1;
     };
 
-    const registerComponent = (component) => {
+    const registerComponent = ( component ) => {
         const clist = component.getAllCommands();
-        clist.forEach(c => {
-            registerCommand(c.regex, component, c.cb);
-        });
+        clist.forEach( c => {
+            registerCommand( c.regex, component, c.cb );
+        } );
     };
 
-    const message = async (msg) => {
-        if (msg.author.username === 'BuckBot') {
+    const message = async ( msg ) => {
+        if ( ['BuckBotAlpha','BuckBotBeta','BuckBot'].includes( msg.author.username ) ) {
             return;
         }
-        const command = scanner.scan(msg.content);
-        if (command === null) {
-            return;
+        const command = scanner.scan( msg.content );
+        if ( command ) {
+            dispatch( msg.content, commandLinkDict[command], msg );
         }
-        dispatch( msg.content, commandLinkDict[command], msg );
     };
 
-    const dispatch = async (text, commandLink, msg) => {
+    const dispatch = async ( text, commandLink, msg ) => {
         const metaInfo = {
             author: msg.author.username,
             authorId: msg.author.id,
@@ -48,11 +47,11 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
             channelId: msg.channel.id
         };
         const {regex, component, cb} = commandLink;
-        const params = text.match(regex).slice(1);
-        debug('%s [%s.%s(%s)]', text, component.id, cb.name, params);
-        await cb.call(component, ...params, metaInfo);
+        const params = text.match( regex ).slice( 1 );
+        debug( '%s [%s.%s(%s)]', text, component.id, cb.name, params );
+        await cb.call( component, ...params, metaInfo );
         const instructions = component.commitAction();
-        actor.handle(instructions, msg);
+        actor.handle( instructions, msg );
     };
 
     return {

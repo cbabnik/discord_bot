@@ -3,62 +3,62 @@
 // Monitor acts as the funnel for all INPUT on client. It makes no decisions on filtering input, but forwards potential
 // command input to the dispatcher. Monitor may also watch audio, images, etc. Monitor is responsible for logging too.
 
-const fs = require('fs');
-const { format } = require('util');
-const debug = require('debug')('basic');
-const { LOG_DIRECTORY } = require('./constants').CONFIG_DEFAULTS;
+const fs = require( 'fs' );
+const { format } = require( 'util' );
+const debug = require( 'debug' )( 'basic' );
+const { LOG_DIRECTORY } = require( './constants' ).CONFIG_DEFAULTS;
 
-const Monitor = (client, dispatcher, logDirectory=LOG_DIRECTORY) => {
+const Monitor = ( client, dispatcher, logDirectory=LOG_DIRECTORY ) => {
 
-    fs.mkdir(logDirectory+'/messages', { recursive: true }, () => {});
-    fs.mkdir(logDirectory+'/messageDeletions', { recursive: true }, () => {});
-    fs.mkdir(logDirectory+'/messageEdits', { recursive: true }, () => {});
-    fs.mkdir(logDirectory+'/reactions', { recursive: true }, () => {});
+    fs.mkdir( logDirectory+'/messages', { recursive: true }, () => {} );
+    fs.mkdir( logDirectory+'/messageDeletions', { recursive: true }, () => {} );
+    fs.mkdir( logDirectory+'/messageEdits', { recursive: true }, () => {} );
+    fs.mkdir( logDirectory+'/reactions', { recursive: true }, () => {} );
 
-    const formatMessage = (msg) => format('[%s] %s: %s%s\r\n',
+    const formatMessage = ( msg ) => format( '[%s] %s: %s%s\r\n',
         msg.createdAt,
         msg.author.username,
         msg.tts?'[tts] ':'',
         msg.content
     );
 
-    const cb = (err) => {
-        if (err !== null) {
-            debug('monitoring error: ' + err);
+    const cb = ( err ) => {
+        if ( err !== null ) {
+            debug( 'monitoring error: ' + err );
         }
     };
 
-    client.on('message', async (msg) => {
-        dispatcher.message(msg);
+    client.on( 'message', async ( msg ) => {
+        dispatcher.message( msg );
         const logFile = logDirectory + '/messages/' + msg.channel.name + '.log';
-        fs.writeFile(logFile, formatMessage(msg), {flag: 'a'}, cb);
-    });
+        fs.writeFile( logFile, formatMessage( msg ), {flag: 'a'}, cb );
+    } );
 
-    client.on('messageDelete', async (msg) => {
+    client.on( 'messageDelete', async ( msg ) => {
         if ( dispatcher.messageDelete ) {
-            dispatcher.messageDelete(msg);
+            dispatcher.messageDelete( msg );
         }
         const logFile = logDirectory + '/messageDeletions/' + msg.channel.name + '.log';
-        fs.writeFile(logFile, formatMessage(msg), {flag: 'a'}, cb);
-    });
+        fs.writeFile( logFile, formatMessage( msg ), {flag: 'a'}, cb );
+    } );
 
-    client.on('messageUpdate', async (oldMsg, newMsg) => {
+    client.on( 'messageUpdate', async ( oldMsg, newMsg ) => {
         if ( dispatcher.messageUpdate ) {
-            dispatcher.messageUpdate(oldMsg, newMsg);
+            dispatcher.messageUpdate( oldMsg, newMsg );
         }
-        const logMessage = format('[OLD] %s\n[NEW] %s', formatMessage(oldMsg), formatMessage(newMsg));
+        const logMessage = format( '[OLD] %s\n[NEW] %s', formatMessage( oldMsg ), formatMessage( newMsg ) );
         const logFile = logDirectory + '/messageEdits/' + oldMsg.channel.name + '.log';
-        fs.writeFile(logFile, logMessage, {flag: 'a'}, cb);
-    });
+        fs.writeFile( logFile, logMessage, {flag: 'a'}, cb );
+    } );
 
-    client.on('messageReactionAdd', async (reaction) => {
+    client.on( 'messageReactionAdd', async ( reaction ) => {
         if ( dispatcher.messageReactionAdd ) {
-            dispatcher.messageReactionAdd(reaction);
+            dispatcher.messageReactionAdd( reaction );
         }
-        const logMessage = format('%s\n%s\n', formatMessage(reaction.message), reaction.emoji.name);
+        const logMessage = format( '%s\n%s\n', formatMessage( reaction.message ), reaction.emoji.name );
         const logFile = logDirectory + '/reactions/' + reaction.message.channel.name + '.log';
-        fs.writeFile(logFile, logMessage, {flag: 'a'}, cb);
-    });
+        fs.writeFile( logFile, logMessage, {flag: 'a'}, cb );
+    } );
 };
 
 module.exports = { Monitor };
