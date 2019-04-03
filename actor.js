@@ -7,193 +7,214 @@
 // muted or given a different volume for awhile. The instructions specify "what" but this class has a lot of say on the
 // "how"
 
-const { CONFIG_DEFAULTS } = require('./constants');
-const debug = require('debug')('actor');
-const debugExtra = require('debug')('extra');
-const ytdl = require('ytdl-core');
-const fs = require('fs');
+const { CONFIG_DEFAULTS, DMCHANNEL } = require( './constants' );
+const debug = require( 'debug' )( 'actor' );
+const debugExtra = require( 'debug' )( 'extra' );
+const ytdl = require( 'ytdl-core' );
+const fs = require( 'fs' );
 
-let messagesForEdit = {};
+const messagesForEdit = {};
+
+const NAME = 'BuckBotAlpha';
+let nickname = NAME;
 
 const Actor = ( client ) => {
 
     const DEFAULT_INSTRUCTIONS = {
-        channel: "use_source",
+        channelId: 'use_source',
+
+        security: undefined,
+        location: undefined,
 
         message: undefined,
         messageId: undefined,
         editId: undefined,
+        asUsername: undefined,
+
         image: undefined,
         imageLink: undefined,
 
-        voiceChannel: '533736402085478412',
+        voiceChannel: CONFIG_DEFAULTS.MAIN_VOICE_CHANNEL,
         audioFile: undefined,
         audioYoutube: undefined,
+        audioLink: undefined,
         endAudio: false,
 
         repeat: 1,
         delay: 0,
         timing: undefined,
-
         next: undefined,
     };
 
     const handle = ( instructionPkg, msg ) => {
-        logForDebug(instructionPkg);
+        logForDebug( instructionPkg );
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
-
-        // timing
-        // ______
-        if (ins.delay > 0) {
-            setTimeout(() => {
-                handle({...ins, delay: 0}, msg);
-            }, ins.delay*1000);
-            return;
-        }
-        if (ins.timing) {
-            const currentMS = new Date().getTime();
-            const desiredMS = Date.parse(ins.timing);
-            handle({...ins, delay: (desiredMS-currentMS)/1000, timing: undefined}, msg);
-            return;
-        }
 
         // set
         // ___
-        if ( ins.channel==="use_source" ) {
-            ins.channel = msg.channel.id;
+        let channel;
+        if ( ins.channelId==='use_source' ) {
+            channel = msg.channel;
+            ins.channelId = channel.id;
+        } else {
+            channel = client.channels.get( ins.channelId );
         }
-        const channel = client.channels.get(ins.channel);
+        if ( !channel ) {
+            debug( 'There was a problem with setting channel' );
+            return;
+        }
 
-        // actions
-        // _______
-        let embeds = {};
+        // permission gating
+        // _________________
+        if ( ins.security && !ins.security.includes( msg.author.id ) ) {
+            channel.send( `**${msg.author.name}**, You don't have the required security clearance to do that!` );
+        }
+        if ( ins.location === 'public' && msg.channel.type === DMCHANNEL ) {
+            channel.send( 'Please do this in a public channel.' );
+        } else if ( ins.location && ins.location !== channel.name ) {
+            channel.send( `Please do this in the \`${ins.location}\` channel.` );
+        }
+
+        // timing
+        // ______
+        if ( ins.delay > 0 ) {
+            setTimeout( () => {
+                handle( {...ins, delay: 0}, msg );
+            }, ins.delay*1000 );
+            return;
+        }
+        if ( ins.timing ) {
+            const currentMS = new Date().getTime();
+            const desiredMS = ins.timing.getTime();
+            handle( {...ins, delay: ( desiredMS-currentMS )/1000, timing: undefined}, msg );
+            return;
+        }
+
+        // messages
+        // ________
+        if ( ins.asUsername ) {
+            msg.guild.members.get( client.user.id ).setNickname( ins.asUsername ).then( () => {
+                nickname = ins.asUsername;
+                setTimeout( () => {
+                    channel.send( ins.message ).then( () => {
+                        msg.guild.members.get( client.user.id ).setNickname( NAME );
+                        nickname = NAME;
+                    } );
+                } );
+            } );
+        }
+        if ( nickname !== NAME ) {
+            msg.guild.members.get( client.user.id ).setNickname( NAME ).then( () => {
+                nickname = NAME;
+                handle( ins, msg );
+            } );
+            return;
+        }
+        const embeds = {};
         if ( ins.image ) {
-            if ( !ins.image.includes('.') ) {
-                ins.image += '.jpg';
+            let path = './images/' + ins.image;
+            if ( ins.image.includes( 'C:\\' ) ) {
+                path = ins.image;
+            } else if ( !ins.image.includes( '.' ) ) {
+                path += '.jpg';
             }
             embeds.files = [{
-                attachment: './images/' + ins.image,
+                attachment: path,
                 name: ins.image
             }];
         } else if ( ins.imageLink ) {
-            embeds.files = [ins.imageLink];
+            embeds.files = Array.isArray( ins.imageLink ) ? ins.imageLink : [ins.imageLink];
         }
-        if ( ins.editId ) {
-            if (ins.message) {
-                messagesForEdit[ins.editId].edit(ins.message, embeds)
-                    .catch(err => debug('Edit Error: ' + err.message));
-            } else if (Object.keys(embeds).length !== 0) {
-                messagesForEdit[ins.editId].edit(embeds)
-                    .catch(err => debug('Edit Embeds Error: ' + err.message));
-            }
-        } else {
-            if (ins.message) {
-                channel.send(ins.message, embeds)
-                    .then(newMsg => {if (ins.messageId) {
-                        messagesForEdit[ins.messageId] = newMsg;
-                        handle({...ins, message: undefined, messageId: undefined}, msg);
-                    }})
-                    .catch(err => debug('Send Error: ' + err.message));
-                if (ins.messageId) return;
-            } else if (Object.keys(embeds).length !== 0) {
-                channel.send(embeds)
-                    .then(newMsg => {if (ins.messageId) {
-                        messagesForEdit[ins.messageId] = newMsg;
-                        handle({...ins, message: undefined, messageId: undefined}, msg);
-                    }})
-                    .catch(err => debug('Send Embeds Error: ' + err.message));
-                if (ins.messageId) return;
+        const fn = ins.editId ? messagesForEdit[ins.editId].edit : channel.send;
+        const params = ins.message ? [ins.message, embeds] : [embeds];
+        if ( ins.message || Object.keys( embeds ) > 0 ) {
+            fn( ...params ).then( newMsg => {
+                if ( ins.messageId ) {
+                    messagesForEdit[ins.messageId] = newMsg;
+                    handle( {...ins, message: undefined, messageId: undefined}, msg );
+                }
+            } ).catch( err => {
+                debug( 'Message Error: ' + err.message );
+            } );
+            if ( ins.messageId ) {
+                return; // give time for the new message to appear before doing edits and stuff
             }
         }
 
+        // audio
+        // _____
         if ( ins.endAudio ) {
-            try {
-                client.voiceConnections.array().forEach((c) => {
-                    c.channel.leave();
-                });
-            } catch (err) {
-                debug('Error leaving channels: ' + err.message);
-            }
+            client.voiceConnections.array().forEach( ( c ) => {
+                c.channel.leave();
+            } );
         }
-        if ( ins.audioFile ) {
-            if ( !ins.audioFile.includes('.') ) {
-                ins.audioFile += '.mp3';
-            }
-            const path = './audio/' + ins.audioFile;
-            try {
-                if ( fs.existsSync(path) ) {
-                    const vc = client.channels.get(ins.voiceChannel);
-                    vc.join().then(connection => {
-                        // if no extension, assume .mp3
-                        const broadcast = client.createVoiceBroadcast();
-                        broadcast.playFile(path, {bitrate: 192000});
-                        connection.playBroadcast(broadcast);
-                    });
-                } else {
-                    debug(`File ${ins.audioFile} not found`);
+        try {
+            const broadcast = client.createVoiceBroadcast();
+            if ( ins.audioFile ) {
+                if ( !ins.audioFile.includes( '.' ) ) {
+                    ins.audioFile += '.mp3';
                 }
-            } catch (err) {
-                debug('Error with ' + ins.audioFile + ': ' + err.message);
+                const path = './audio/' + ins.audioFile;
+                if ( fs.existsSync( path ) ) {
+                    broadcast.playFile( path, {bitrate: 192000} );
+                } else {
+                    debug( `File ${ins.audioFile} not found` );
+                }
+            } else if ( ins.audioYoutube ) {
+                const stream = ytdl( ins.audioYoutube, { filter : 'audioonly' } );
+                broadcast.playStream( stream, {bitrate: 192000} );
+            } else if ( ins.audioLink ) {
+                broadcast.playArbitraryInput( ins.audioLink, {bitrate: 192000} );
             }
-        } else if ( ins.audioYoutube ) {
-            try {
-                const vc = client.channels.get(ins.voiceChannel);
-                vc.join().then(connection => {
-                    const broadcast = client.createVoiceBroadcast();
-                    const stream = ytdl(ins.audioYoutube, { filter : 'audioonly' });
-                    broadcast.playStream(stream, {bitrate: 192000});
-                    connection.playBroadcast(broadcast);
-                });
-            } catch (err) {
-                debug('Error with ' + ins.audioFile + ': ' + err.message);
-            }
+        } catch ( err ) {
+            debug( 'Audio error: ' + err.message );
         }
 
         // chaining instructions
         // _____________________
         if ( ins.repeat > 1 ) {
-            if (ins.repeat > 10) {
+            if ( ins.repeat > 10 ) {
                 ins.repeat = 10;
             }
-            handle({...ins, repeat: ins.repeat-1}, msg);
+            handle( {...ins, repeat: ins.repeat-1}, msg );
             return;
         }
         if ( ins.next ) {
-            handle({channel:instructionPkg.channel, ...ins.next}, msg);
+            handle( {channel:instructionPkg.channel, ...ins.next}, msg );
         }
     };
 
-    const logForDebug = (instructionPkg) => {
+    const logForDebug = ( instructionPkg ) => {
         let msgShortened = '';
-        if (instructionPkg.message) {
-            if (instructionPkg.message.length > 40) {
-                msgShortened = instructionPkg.message.slice(0,37) + '...';
+        if ( instructionPkg.message ) {
+            if ( instructionPkg.message.length > 40 ) {
+                msgShortened = instructionPkg.message.slice( 0,37 ) + '...';
             } else {
                 msgShortened = instructionPkg.message;
             }
         }
 
         let audioInfo = '';
-        if (instructionPkg.audioFile) {
+        if ( instructionPkg.audioFile ) {
             audioInfo = '<' + instructionPkg.audioFile + '>';
         }
 
         let delayInfo = '';
-        if (instructionPkg.delay !== 0 && instructionPkg.delay !== undefined) {
+        if ( instructionPkg.delay !== 0 && instructionPkg.delay !== undefined ) {
             delayInfo = ' [delay '+instructionPkg.delay+'s]';
-        } else if (instructionPkg.timing) {
+        } else if ( instructionPkg.timing ) {
             delayInfo = ' [timing '+instructionPkg.timing+']';
         }
 
         let repeatInfo = '';
-        if (instructionPkg.repeat > 1) {
+        if ( instructionPkg.repeat > 1 ) {
             repeatInfo = ' [repeat '+instructionPkg.repeat+'x]';
-        } else if (instructionPkg.next) {
+        } else if ( instructionPkg.next ) {
             repeatInfo = ' [hasNext]';
         }
 
-        debug('%s%s%s%s', msgShortened, audioInfo, delayInfo, repeatInfo);
-        debugExtra(instructionPkg);
+        debug( '%s%s%s%s', msgShortened, audioInfo, delayInfo, repeatInfo );
+        debugExtra( instructionPkg );
     };
 
     return {
