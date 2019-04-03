@@ -32,6 +32,17 @@ module.exports = {
         ],
         "keyword-spacing": [
             "error"
+        ],
+        "no-constant-condition": [
+            "off"
+        ],
+        "space-in-parens": [
+            "error",
+            "always",
+            { "exceptions": ["empty"] }
+        ],
+        "prefer-const": [
+            "error"
         ]
     }
 };
