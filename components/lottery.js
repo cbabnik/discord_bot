@@ -160,7 +160,7 @@ class Lottery extends Component {
         }
 
         if ( id === BUCKS.GINGE ) {
-            if ( Math.random() > 0.98 ) {
+            if ( Math.random() > 0.99 ) {
                 this.setAction( 'message', `Holy Mantle triggered. **${user}** doesn't have to pay this time.` );
                 bank.addAmount( id, 5 );
             }
@@ -173,7 +173,7 @@ class Lottery extends Component {
             let multiply = 1;
             SIGNS.forEach( ( e ) => {
                 if ( lines[e.emote] ) {
-                    if ( e.emote === ':poop:' ) {
+                    if ( e.emote === ':poop:' && metaInfo.authorId !== BUCKS.GINGE) {
                         winnings -= 10*lines[e.emote];
                     } else if ( e.multiply ) {
                         multiply *= e.multiply**lines[e.emote];
@@ -258,7 +258,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         }
 
         if ( id === BUCKS.GINGE ) {
-            if ( Math.random() > 0.98 ) {
+            if ( Math.random() > 0.99 ) {
                 this.setAction( 'message', `Holy Mantle triggered. **${user}** doesn't have to pay this time.` );
                 bank.addAmount( id, 20 );
             }
@@ -294,6 +294,9 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
             } );
             if ( winnings === 0 && multiply !== 1 ) {
                 winnings = 1;
+            }
+            if (multiply < 0 && metaInfo.authorId === BUCKS.GINGE ) {
+                multiply *= -1;
             }
             winnings *= multiply;
             deerWins *= multiply;
