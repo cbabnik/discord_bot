@@ -72,7 +72,6 @@ const Actor = ( client ) => {
             return;
         }
         if ( ins.location === 'public' && msg.channel.type === DMCHANNEL ) {
-            console.log(msg.channel.type);
             channel.send( 'Please do this in a public channel.' );
             return;
         } else if ( ins.location && ins.location !== 'public' && ins.location !== channel.name ) {
@@ -102,10 +101,10 @@ const Actor = ( client ) => {
                 nickname = ins.asUsername;
                 setTimeout( () => {
                     channel.send( ins.message ).then( () => {
-                        msg.guild.members.get( client.user.id ).setNickname( NAME ).then(() => {
+                        msg.guild.members.get( client.user.id ).setNickname( NAME ).then( () => {
                             nickname = NAME;
                             handle( {...ins, asUsername: undefined, message: undefined, messageId: undefined}, msg );
-                        });
+                        } );
                     } );
                 } );
             } );

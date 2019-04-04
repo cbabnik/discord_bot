@@ -60,23 +60,23 @@ class Bank extends Component {
         return true;
     }
 
-    give(user, amnt, metaInfo) {
-        const id = BUCKS[player.toUpperCase()];
-        if (!id) {
-            this.setAction('message', `Sorry, I could not find user **${user}**`);
+    give( user, amnt, metaInfo ) {
+        const id = BUCKS[user.toUpperCase()];
+        if ( !id ) {
+            this.setAction( 'message', `Sorry, I could not find user **${user}**` );
             return;
         }
 
-        if (this.payAmount(metaInfo.authorId, amnt)) {
-            this.addAmount(id, amnt);
-            this.setAction('message', `**${metaInfo.author}** has given ${amnt} credits to **${user}**`);
+        if ( this.payAmount( metaInfo.authorId, amnt ) ) {
+            this.addAmount( id, amnt );
+            this.setAction( 'message', `**${metaInfo.author}** has given ${amnt} credits to **${user}**` );
         } else {
-            this.setAction('message', `**${metaInfo.author}**, you don't have enough credits. Check with \`-balance\``);
+            this.setAction( 'message', `**${metaInfo.author}**, you don't have enough credits. Check with \`-balance\`` );
         }
     }
 
     stealWarning() {
-        this.setAction('message', 'Are you trying to steal? shame on you.');
+        this.setAction( 'message', 'Are you trying to steal? shame on you.' );
     }
 }
 

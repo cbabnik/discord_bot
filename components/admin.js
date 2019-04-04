@@ -21,9 +21,9 @@ class Admin extends Component {
         this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
         this.setAction( 'channelId', BETA.MAIN_CHANNEL );
         this.setAction( 'message', `**user#${id}** has been granted ${val} credits!` );
-        if ( PERMISSION_LEVELS.ADMIN.includes(metaInfo.authorId) ) {
+        if ( PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
             bank.addAmount( id, val );
-        };
+        }
     }
 }
 
