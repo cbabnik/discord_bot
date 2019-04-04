@@ -30,7 +30,7 @@ class Payroll extends Component {
                 previousPayout.setHours( previousPayout.getHours()-HOURS_BETWEEN_PAYMENT );
 
                 this.setAction( 'message', `Sorry guys, I missed ${paysPassed} pay period! I believe I owe you all ${ALLOWANCE_AMOUNT*paysPassed} credits in allowance.` );
-                this.setAction( 'channel', CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
                 debug( 'Payroll just paid out!' );
                 actor.handle( this.commitAction(), null );
 
@@ -41,13 +41,13 @@ class Payroll extends Component {
             this.payout( ALLOWANCE_AMOUNT );
             debug( 'Payroll just paid out!' );
             this.setAction( 'message', `Allowance of ${ALLOWANCE_AMOUNT} credits has been paid out!` );
-            this.setAction( 'channel', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
             actor.handle( this.commitAction(), null );
             setInterval( () => {
                 this.payout( ALLOWANCE_AMOUNT );
                 debug( 'Payroll just paid out!' );
                 this.setAction( 'message', `Allowance of ${ALLOWANCE_AMOUNT} credits has been paid out!` );
-                this.setAction( 'channel', CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
                 actor.handle( this.commitAction(), null );
             }, PERIOD );
         }, nextPayout.getTime() - currentTime.getTime() );
