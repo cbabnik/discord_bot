@@ -44,7 +44,8 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
             tts: msg.tts,
             time: msg.createdAt,
             channel: msg.channel.name,
-            channelId: msg.channel.id
+            channelId: msg.channel.id,
+            channelType: msg.channel.type,
         };
         const {regex, component, cb} = commandLink;
         const params = text.match( regex ).slice( 1 );
