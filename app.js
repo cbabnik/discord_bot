@@ -20,6 +20,7 @@ dispatcher.registerComponent( require( './components/pictures' ).pictures );
 dispatcher.registerComponent( require( './components/lottery' ).lottery );
 dispatcher.registerComponent( require( './components/bank' ).bank );
 dispatcher.registerComponent( require( './components/admin' ).admin );
+dispatcher.registerComponent( require( './components/requests' ).requests );
 
 if ( fs.existsSync( './components/secret.js' ) ) {
     dispatcher.registerComponent( require( './components/secret' ).secret );

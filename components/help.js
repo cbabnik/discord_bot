@@ -27,13 +27,15 @@ class Help extends Component {
         this.addCommand( /^\?allowance/, this.allowanceHelp );
         this.addCommand( /^\?balance/, this.balanceHelp );
         this.addCommand( /^\?give/, this.giveHelp );
+        this.addCommand( /^-request$/, this.requestHelp );
+        this.addCommand( /^\?request/, this.requestHelp );
         this.addCommand( /^\?(.+)/, this.helpInfo );
     }
 
     help() {
         const COMMANDS = [
             'roll', 'random', 'math', 'coinflip', 'burger', 'slots', 'play', 'endAudio', 'secrets', 'balance',
-            'allowance', 'slotstats', 'give',
+            'allowance', 'slotstats', 'give', 'request',
         ].map( c => `-${c}`.padEnd( 25 ) );
         this.setAction( 'message', 'Here is a list of commands!\n' +
             'To learn more about any of them, try them with a ? upfront. example: `?roll`.\n' +
@@ -154,6 +156,20 @@ Gives your or someone else's various lottery statistics.`
         this.setAction( 'message',
             `\`-give [user] [amount]\`
 Give away your cash, you won't.`
+        );
+    }
+
+    requestHelp() {
+        this.setAction( 'message',
+            `valid uses:
+    \`-request [describe feature]\` - make a new request
+    \`-requests\` - check your requests
+    \`-requests all\` - read all your requests
+    \`-requests new\` - read your new requests
+    \`-requests N\` - read request number N
+    \`-requests delete N\` - delete request number N
+   
+    `
         );
     }
 }
