@@ -17,11 +17,13 @@ class Admin extends Component {
         this.setAction( 'message', msg );
     }
 
-    adminGive( id, val ) {
+    adminGive( id, val, metaInfo ) {
         this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
         this.setAction( 'channelId', BETA.MAIN_CHANNEL );
         this.setAction( 'message', `**user#${id}** has been granted ${val} credits!` );
-        bank.addAmount( id, val );
+        if ( PERMISSION_LEVELS.ADMIN.includes(metaInfo.authorId) ) {
+            bank.addAmount( id, val );
+        };
     }
 }
 
