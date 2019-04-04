@@ -50,7 +50,11 @@ class Bank extends Component {
         const balance = this.balance( id, type );
         if ( isNaN( balance - value ) ) {
             debug( 'bank: pay tried to set to NaN' );
-            return;
+            return false;
+        }
+        if ( value < 0 ) {
+            debug( 'bank: tried to pay negative' );
+            return false;
         }
         if ( value > balance ) {
             return false;
