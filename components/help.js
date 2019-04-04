@@ -16,6 +16,7 @@ class Help extends Component {
         this.addCommand( /^\?coinflip/, this.coinflipHelp );
         this.addCommand( /^\?burger/, this.burgerHelp );
         this.addCommand( /^\?add[bB]urger/, this.addBurgerHelp );
+        this.addCommand( /^\?slotstats/, this.slotStatsHelp );
         this.addCommand( /^\?slots/, this.slotsHelp );
         this.addCommand( /^-slots$/, this.slotsHelp );
         this.addCommand( /^\?!/, this.playHelp );
@@ -25,14 +26,14 @@ class Help extends Component {
         this.addCommand( /^\?secrets/, this.secretsHelp );
         this.addCommand( /^\?allowance/, this.allowanceHelp );
         this.addCommand( /^\?balance/, this.balanceHelp );
-        this.addCommand( /^\?slotstats/, this.slotStatsHelp );
+        this.addCommand( /^\?give/, this.giveHelp );
         this.addCommand( /^\?(.+)/, this.helpInfo );
     }
 
     help() {
         const COMMANDS = [
             'roll', 'random', 'math', 'coinflip', 'burger', 'slots', 'play', 'endAudio', 'secrets', 'balance',
-            'allowance', 'slotstats'
+            'allowance', 'slotstats', 'give',
         ].map( c => `-${c}`.padEnd( 25 ) );
         this.setAction( 'message', 'Here is a list of commands!\n' +
             'To learn more about any of them, try them with a ? upfront. example: `?roll`.\n' +
@@ -144,8 +145,15 @@ Check how long until you get allowance next.`
 
     slotStatsHelp() {
         this.setAction( 'message',
-            `\`-slotstats\`
-Gives your various lottery statistics.`
+            `\`-slotstats {user}\`
+Gives your or someone else's various lottery statistics.`
+        );
+    }
+
+    giveHelp() {
+        this.setAction( 'message',
+            `\`-give [user] [amount]\`
+Give away your cash, you won't.`
         );
     }
 }
