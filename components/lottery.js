@@ -28,7 +28,8 @@ class Lottery extends Component {
     constructor() {
         super( ID );
         this.addCommand( /\*\*(.*)\*\* rolled the slots(?:.*)and (\w+)/s, this.watchLottery );
-        this.addCommand( /^-slotstats$/, this.stats );
+        this.addCommand( /^-slotstats$/, (metaInfo) => this.stats(null, metaInfo) );
+        this.addCommand( /^-slotstats (.*)$/, this.stats );
         this.addCommand( /^-slots coin/, this.coinslots );
         this.addCommand( /^-slots grid/, this.gridslots );
         this.addCommand( /^-slots maze/, this.mazeSlots );
@@ -58,9 +59,18 @@ class Lottery extends Component {
         this.saveJSON();
     }
 
-    stats( metaInfo ) {
-        const id = metaInfo.authorId;
-        const user = metaInfo.author;
+    stats( user, metaInfo ) {
+        let id;
+        if (user === null) {
+            user = metaInfo.author;
+            id = metaInfo.authorId;
+        } else {
+            id = BUCKS[user.toUpperCase()];
+            if (!id) {
+                this.setAction('message', `Sorry, I could not find user **${user}**`);
+                return;
+            }
+        }
         if ( !this.json[id] && !this.json[user] ) {
             this.setAction( 'message', `No stats for \`${user}\`` );
             return;
