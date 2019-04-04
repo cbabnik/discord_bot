@@ -1,13 +1,13 @@
-const { Component } = require( '../component' );
-const { BUCKS, CONFIG_DEFAULTS } = require( '../constants' );
-const _ = require( 'lodash' );
-const { bank } = require( './bank' );
-const { pictures } = require( './pictures' );
 const gm = require( 'gm' );
 const tmp = require( 'tmp' );
+const _ = require( 'lodash' );
+const uuidv4 = require( 'uuidv4' );
+const { Component } = require( '../component' );
+const { BUCKS, CONFIG_DEFAULTS } = require( '../constants' );
+const { bank } = require( './bank' );
+const { pictures } = require( './pictures' );
 
 const ID = 'lottery';
-let uuid = 0;
 
 let waitUntil = new Date().getTime();
 
@@ -28,7 +28,7 @@ class Lottery extends Component {
     constructor() {
         super( ID );
         this.addCommand( /\*\*(.*)\*\* rolled the slots(?:.*)and (\w+)/s, this.watchLottery );
-        this.addCommand( /^-slotstats$/, (metaInfo) => this.stats(null, metaInfo) );
+        this.addCommand( /^-slotstats$/, ( metaInfo ) => this.stats( null, metaInfo ) );
         this.addCommand( /^-slotstats (.*)$/, this.stats );
         this.addCommand( /^-slots coin/, this.coinslots );
         this.addCommand( /^-slots grid/, this.gridslots );
@@ -61,13 +61,13 @@ class Lottery extends Component {
 
     stats( user, metaInfo ) {
         let id;
-        if (user === null) {
+        if ( user === null ) {
             user = metaInfo.author;
             id = metaInfo.authorId;
         } else {
             id = BUCKS[user.toUpperCase()];
-            if (!id) {
-                this.setAction('message', `Sorry, I could not find user **${user}**`);
+            if ( !id ) {
+                this.setAction( 'message', `Sorry, I could not find user **${user}**` );
                 return;
             }
         }
@@ -94,6 +94,7 @@ class Lottery extends Component {
     coinslots( metaInfo ) {
         const user = metaInfo.author;
         const id = metaInfo.authorId;
+        const uuid = uuidv4();
 
         if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
             this.setAction( 'message', 'Please make your slot rolls public.' );
@@ -111,7 +112,6 @@ class Lottery extends Component {
 
         let chain = 0;
         let winnings = 0;
-        uuid += 1;
         let totalDelay = 0;
 
         this.setAction( 'message', `**${user}** rolled the slots! (Costed 1 credit)\nCoin Slots - Keep flipping till you lose!\n\nReward: ${winnings}` );
@@ -173,7 +173,7 @@ class Lottery extends Component {
             let multiply = 1;
             SIGNS.forEach( ( e ) => {
                 if ( lines[e.emote] ) {
-                    if ( e.emote === ':poop:' && metaInfo.authorId !== BUCKS.GINGE) {
+                    if ( e.emote === ':poop:' && metaInfo.authorId !== BUCKS.GINGE ) {
                         winnings -= 10*lines[e.emote];
                     } else if ( e.multiply ) {
                         multiply *= e.multiply**lines[e.emote];
@@ -241,6 +241,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
     mazeSlots( metaInfo ) {
         const user = metaInfo.author;
         const id = metaInfo.authorId;
+        const uuid = uuidv4();
 
         if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
             this.setAction( 'message', 'Please make your slot rolls public.' );
@@ -266,7 +267,6 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
 
         const rewards = {};
         let streak = 1;
-        uuid += 1;
         let totalDelay = 0;
 
         // results is a helper method which explains which rewards a user has won thus far
@@ -295,7 +295,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
             if ( winnings === 0 && multiply !== 1 ) {
                 winnings = 1;
             }
-            if (multiply < 0 && metaInfo.authorId === BUCKS.GINGE ) {
+            if ( multiply < 0 && metaInfo.authorId === BUCKS.GINGE ) {
                 multiply *= -1;
             }
             winnings *= multiply;
