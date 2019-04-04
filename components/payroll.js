@@ -19,7 +19,7 @@ class Payroll extends Component {
     bootUp( actor ) {
         const nextPayout = this.nextPayout();
         const currentTime = new Date();
-        const lastPayout = this.json['lastPayout'];
+        const lastPayout = new Date( this.json['lastPayout'] );
         if ( lastPayout ) {
             const timePassed = currentTime.getTime() - lastPayout.getTime();
             if ( timePassed > PERIOD ) {
