@@ -9,17 +9,17 @@ describe( 'Utility', () => {
 
     describe( '-random', () => {
         it( 'check comma seperated values', () => {
-            utility.random( 'a,b,c' );
+            utility.random( 1, 'a,b,c' );
             const result = utility.commitAction();
             expect( ['a', 'b', 'c'] ).to.include( result.message );
         } );
         it( 'check space seperated values', () => {
-            utility.random( 'a b c' );
+            utility.random( 1, 'a b c' );
             const result = utility.commitAction();
             expect( ['a', 'b', 'c'] ).to.include( result.message );
         } );
         it( 'check that spaces take priority', () => {
-            utility.random( 'a,b c,d' );
+            utility.random( 1, 'a,b c,d' );
             const result = utility.commitAction();
             expect( ['a,b', 'c,d'] ).to.include( result.message );
         } );

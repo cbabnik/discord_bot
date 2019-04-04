@@ -13,13 +13,13 @@ class Admin extends Component {
 
     betaSay( msg ) {
         this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
-        this.setAction( 'channel', BETA.MAIN_CHANNEL );
+        this.setAction( 'channelId', BETA.MAIN_CHANNEL );
         this.setAction( 'message', msg );
     }
 
     adminGive( id, val ) {
         this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
-        this.setAction( 'channel', BETA.MAIN_CHANNEL );
+        this.setAction( 'channelId', BETA.MAIN_CHANNEL );
         this.setAction( 'message', `**user#${id}** has been granted ${val} credits!` );
         bank.addAmount( id, val );
     }

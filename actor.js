@@ -64,15 +64,20 @@ const Actor = ( client ) => {
             return;
         }
 
+
         // permission gating
         // _________________
         if ( ins.security && !ins.security.includes( msg.author.id ) ) {
             channel.send( `**${msg.author.name}**, You don't have the required security clearance to do that!` );
+            return;
         }
         if ( ins.location === 'public' && msg.channel.type === DMCHANNEL ) {
+            console.log(msg.channel.type);
             channel.send( 'Please do this in a public channel.' );
-        } else if ( ins.location && ins.location !== channel.name ) {
+            return;
+        } else if ( ins.location && ins.location !== 'public' && ins.location !== channel.name ) {
             channel.send( `Please do this in the \`${ins.location}\` channel.` );
+            return;
         }
 
         // timing
@@ -97,11 +102,14 @@ const Actor = ( client ) => {
                 nickname = ins.asUsername;
                 setTimeout( () => {
                     channel.send( ins.message ).then( () => {
-                        msg.guild.members.get( client.user.id ).setNickname( NAME );
-                        nickname = NAME;
+                        msg.guild.members.get( client.user.id ).setNickname( NAME ).then(() => {
+                            nickname = NAME;
+                            handle( {...ins, asUsername: undefined, message: undefined, messageId: undefined}, msg );
+                        });
                     } );
                 } );
             } );
+            return;
         }
         if ( nickname !== NAME ) {
             msg.guild.members.get( client.user.id ).setNickname( NAME ).then( () => {
@@ -125,10 +133,11 @@ const Actor = ( client ) => {
         } else if ( ins.imageLink ) {
             embeds.files = Array.isArray( ins.imageLink ) ? ins.imageLink : [ins.imageLink];
         }
+        const src = ins.editId ? messagesForEdit[ins.editId] : channel;
         const fn = ins.editId ? messagesForEdit[ins.editId].edit : channel.send;
         const params = ins.message ? [ins.message, embeds] : [embeds];
-        if ( ins.message || Object.keys( embeds ) > 0 ) {
-            fn( ...params ).then( newMsg => {
+        if ( ins.message || Object.keys( embeds ).length > 0 ) {
+            fn.call( src, ...params ).then( newMsg => {
                 if ( ins.messageId ) {
                     messagesForEdit[ins.messageId] = newMsg;
                     handle( {...ins, message: undefined, messageId: undefined}, msg );
@@ -148,26 +157,32 @@ const Actor = ( client ) => {
                 c.channel.leave();
             } );
         }
-        try {
-            const broadcast = client.createVoiceBroadcast();
-            if ( ins.audioFile ) {
-                if ( !ins.audioFile.includes( '.' ) ) {
-                    ins.audioFile += '.mp3';
-                }
-                const path = './audio/' + ins.audioFile;
-                if ( fs.existsSync( path ) ) {
-                    broadcast.playFile( path, {bitrate: 192000} );
-                } else {
-                    debug( `File ${ins.audioFile} not found` );
-                }
-            } else if ( ins.audioYoutube ) {
-                const stream = ytdl( ins.audioYoutube, { filter : 'audioonly' } );
-                broadcast.playStream( stream, {bitrate: 192000} );
-            } else if ( ins.audioLink ) {
-                broadcast.playArbitraryInput( ins.audioLink, {bitrate: 192000} );
+        if ( ins.audioFile || ins.audioYoutube || ins.audioLink ) {
+            try {
+                const vc = client.channels.get( ins.voiceChannel );
+                vc.join().then( connection => {
+                    const broadcast = client.createVoiceBroadcast();
+                    if ( ins.audioFile ) {
+                        if ( !ins.audioFile.includes( '.' ) ) {
+                            ins.audioFile += '.mp3';
+                        }
+                        const path = './audio/' + ins.audioFile;
+                        if ( fs.existsSync( path ) ) {
+                            broadcast.playFile( path, {bitrate: 192000} );
+                        } else {
+                            debug( `File ${ins.audioFile} not found` );
+                        }
+                    } else if ( ins.audioYoutube ) {
+                        const stream = ytdl( ins.audioYoutube, { filter : 'audioonly' } );
+                        broadcast.playStream( stream, {bitrate: 192000} );
+                    } else if ( ins.audioLink ) {
+                        broadcast.playArbitraryInput( ins.audioLink, {bitrate: 192000} );
+                    }
+                    connection.playBroadcast( broadcast );
+                } );
+            } catch ( err ) {
+                debug( 'Audio error: ' + err.message );
             }
-        } catch ( err ) {
-            debug( 'Audio error: ' + err.message );
         }
 
         // chaining instructions

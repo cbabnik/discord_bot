@@ -74,8 +74,10 @@ class Payroll extends Component {
                 this.setAction( 'message', `Allowance is due in ${seconds} seconds! Get Ready!` );
             }
         }
-        if ( nextPayout.getHOurs() === 22 ) {
+        if ( nextPayout.getHours() === 22 ) {
             this.setAction( 'audioFile', 'kevin1019' );
+        } else {
+            this.setAction( 'audioFile', 'coltsu1019' );
         }
     }
 
@@ -110,10 +112,10 @@ class Payroll extends Component {
         am1019.setMilliseconds( 0 );
         const currentTime = new Date();
         const nextPayout = new Date( am1019 );
-        if ( currentTime.getTime() > am1019 + PERIOD ) {
-            nextPayout.setHours( nextPayout.getHours()+HOURS_BETWEEN_PAYMENT );
-        } else if ( currentTime.getTime() > am1019 ) {
+        if ( currentTime.getTime() > am1019.getTime() + PERIOD ) {
             nextPayout.setHours( nextPayout.getHours()+2*HOURS_BETWEEN_PAYMENT );
+        } else if ( currentTime.getTime() > am1019.getTime() ) {
+            nextPayout.setHours( nextPayout.getHours()+HOURS_BETWEEN_PAYMENT );
         }
         return nextPayout;
     }
