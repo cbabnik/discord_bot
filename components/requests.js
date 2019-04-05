@@ -22,8 +22,8 @@ class Requests extends Component {
         this.addCommand( /^-requests delete (\d+)$/, this.deleteRequestN );
         this.addCommand( /^-requests accept (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, metaInfo ) );
         this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, metaInfo ) );
+        this.addCommand( /^-requests reply (\d+) (.+)$/, this.reply );
         this.addCommand( /^-requests/, this.checkRequests );
-        this.addCommand( /^-reply (\d+) (.+)$/, this.reply );
 
         if ( this.json['requests'] === undefined ) {
             this.json['requests'] = [];
@@ -36,8 +36,8 @@ class Requests extends Component {
 
     addRequest( request, metaInfo ) {
         requests.push( {uuid: uuidv4(), user: metaInfo.author, id: metaInfo.authorId, request, unread: true, unreadreply: false, reply: '', status: STATUS_UNREAD} );
-        this.setAction( 'Request made! You can check if the admins have read or replied to it with `-requests`' );
         this.saveJSON();
+        this.setAction( 'message', 'Request made! You can check if the admins have read or replied to it with `-requests`' );
     }
 
     changeStatus( n, status, metaInfo ) {
@@ -52,6 +52,7 @@ class Requests extends Component {
         }
         requests[n].status = status;
         this.saveJSON();
+        this.setAction( 'message', 'Status updated' );
     }
 
     listRequests( mode, metaInfo ) {
@@ -74,7 +75,12 @@ class Requests extends Component {
             filterB = r => r.idx === n;
         }
 
-        let msg = 'Requests:\n';
+        let msg;
+        if (admin) {
+            msg = 'Requests:\n';
+        } else {
+            msg = `**${metaInfo.author}**'s Requests:\n`
+        }
         const vr = requests.filter( filterA ).map( mapFn ).filter( filterB );
         for ( let i = 0; i < vr.length; i++ ) {
             let moreMsg = `\`[${vr[i].idx}] <${vr[i].status}>\` ${vr[i].request}\n`;
@@ -114,10 +120,11 @@ class Requests extends Component {
         const vr = requests.filter( filterA );
         const newr = vr.filter( r => r.unread );
         const newreply = vr.filter( r => r.unreadreply );
+        const needsreply = vr.filter( r => r.reply === '' );
         if ( PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
             this.setAction( 'message', `All requests:
 There are \`${vr.length} total requests\`.
-\`${newreply.length} unreplied to\` requests.
+\`${needsreply.length} unreplied to\` requests.
 \`${newr.length} unread\` requests` );
         } else {
             this.setAction( 'message', `**${metaInfo.user}**'s requests:
