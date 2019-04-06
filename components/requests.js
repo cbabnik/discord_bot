@@ -30,9 +30,6 @@ class Requests extends Component {
         if ( this.json['requests'] === undefined ) {
             this.json['requests'] = [];
         }
-        if ( this.json['uuid'] === undefined ) {
-            this.json['uuid'] = 0;
-        }
         requests = this.json['requests'];
     }
 
@@ -80,16 +77,16 @@ class Requests extends Component {
         }
 
         let msg;
-        if (admin) {
+        if ( admin ) {
             msg = 'Requests:\n';
         } else {
-            msg = `**${user}**'s Requests:\n`
+            msg = `**${user}**'s Requests:\n`;
         }
         const vr = requests.filter( filterA ).map( mapFn ).filter( filterB );
         for ( let i = 0; i < vr.length; i++ ) {
             let moreMsg;
-            if (admin) {
-                moreMsg = `\`[${vr[i].idx}] <${vr[i].status}> ${user}:\` ${vr[i].request}\n`;
+            if ( admin ) {
+                moreMsg = `\`[${vr[i].idx}] <${vr[i].status}> ${vr[i].user}:\` ${vr[i].request}\n`;
             } else {
                 moreMsg = `\`[${vr[i].idx}] <${vr[i].status}>\` ${vr[i].request}\n`;
             }
