@@ -36,7 +36,14 @@ const Actor = ( client ) => {
         // set
         // ___
         let channel;
-        if ( ins.channelId===ACTIONS.USE_SOURCE ) {
+        if ( ins[ACTIONS.MESSAGE_USER_ID] ) {
+            const user = client.users.get( ins[ACTIONS.MESSAGE_USER_ID] );
+            user.createDM().then( ( dmchannel ) => {
+                dmchannel.send( ins.message );
+                handle( {...ins, message: undefined, messageUserId: undefined}, msg );
+            } );
+            return;
+        } else if ( ins.channelId===ACTIONS.USE_SOURCE ) {
             channel = msg.channel;
             ins.channelId = channel.id;
         } else {

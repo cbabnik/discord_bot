@@ -27,6 +27,7 @@ exports.ACTIONS = {
     VOICE_CHANNEL: 'voiceChannel',
     MESSAGE: 'message',
     MESSAGE_ID: 'messageId',
+    MESSAGE_USER_ID: 'messageUserId',
     EDIT_ID: 'editId',
     AS_USERNAME: 'asUsername',
     SECURITY: 'security',

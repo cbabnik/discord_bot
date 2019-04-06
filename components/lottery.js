@@ -3,7 +3,7 @@ const tmp = require( 'tmp' );
 const _ = require( 'lodash' );
 const uuidv4 = require( 'uuidv4' );
 const { Component } = require( '../component' );
-const { BUCKS, CONFIG_DEFAULTS } = require( '../constants' );
+const { BUCKS, CONFIG_DEFAULTS, ACTIONS } = require( '../constants' );
 const { bank } = require( './bank' );
 const { pictures } = require( './pictures' );
 
@@ -27,7 +27,7 @@ const SIGNS = [
 class Lottery extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /\*\*(.*)\*\* rolled the slots(?:.*)and (\w+)/s, this.watchLottery );
+        this.addCommand( /(\*\*(.*)\*\* rolled the slots(?:.*)and (\w+))/s, this.watchLottery );
         this.addCommand( /^-slotstatistics$/, this.statsExtra );
         this.addCommand( /^-slotstats$/, ( metaInfo ) => this.stats( null, metaInfo ) );
         this.addCommand( /^-slotstats (.*)$/, this.stats );
@@ -39,7 +39,7 @@ class Lottery extends Component {
         this.addCommand( /^-mslots/, this.mazeSlots );
     }
 
-    watchLottery( user, result, metaInfo ) {
+    watchLottery( msg, user, result, metaInfo ) {
         if ( metaInfo.authorId !== BUCKS.KAWAIICASINO && metaInfo.authorId !== BUCKS.BUCKBOT ) {
             this.setAction( 'message', 'Are you trying to confuse me?' );
             return;
@@ -48,8 +48,11 @@ class Lottery extends Component {
             this.json[user] = {kawaii: {wins:0, losses:0, almost: 0}};
         }
         if ( result === 'won' ) {
-            this.setAction( 'message', 'I see this... but I havn\'t implemented dming colton quite yet. do it yourself' );
+            this.setAction( 'message', 'DMing Colton' );
             this.setAction( 'audioFile', 'sample.mp3' );
+            this.queueAction();
+            this.setAction( ACTIONS.MESSAGE_USER_ID, BUCKS.COLTSU );
+            this.setAction( 'message', `${user} got a KawaiiCasino Win.\n${msg}` );
             _.set( this.json, `${user}.kawaii.wins`, _.get( this.json, `${user}.kawaii.wins`, 0 ) + 1 );
         } else if ( result === 'lost' ) {
             _.set( this.json, `${user}.kawaii.losses`, _.get( this.json, `${user}.kawaii.losses`, 0 ) + 1 );
