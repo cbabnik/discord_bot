@@ -7,7 +7,7 @@
 // muted or given a different volume for awhile. The instructions specify "what" but this class has a lot of say on the
 // "how"
 
-const { CONFIG_DEFAULTS, DMCHANNEL } = require( './constants' );
+const { CONFIG_DEFAULTS, DMCHANNEL, ACTIONS } = require( './constants' );
 const debug = require( 'debug' )( 'actor' );
 const debugExtra = require( 'debug' )( 'extra' );
 const ytdl = require( 'ytdl-core' );
@@ -21,29 +21,12 @@ let nickname = NAME;
 const Actor = ( client ) => {
 
     const DEFAULT_INSTRUCTIONS = {
-        channelId: 'use_source',
-
-        security: undefined,
-        location: undefined,
-
-        message: undefined,
-        messageId: undefined,
-        editId: undefined,
-        asUsername: undefined,
-
-        image: undefined,
-        imageLink: undefined,
-
+        // for a list of instruction choices, try constants.js
+        channelId: ACTIONS.USE_SOURCE,
         voiceChannel: CONFIG_DEFAULTS.MAIN_VOICE_CHANNEL,
-        audioFile: undefined,
-        audioYoutube: undefined,
-        audioLink: undefined,
         endAudio: false,
-
         repeat: 1,
         delay: 0,
-        timing: undefined,
-        next: undefined,
     };
 
     const handle = ( instructionPkg, msg ) => {
@@ -53,7 +36,7 @@ const Actor = ( client ) => {
         // set
         // ___
         let channel;
-        if ( ins.channelId==='use_source' ) {
+        if ( ins.channelId===ACTIONS.USE_SOURCE ) {
             channel = msg.channel;
             ins.channelId = channel.id;
         } else {

@@ -18,6 +18,13 @@ class Audio extends Component {
     }
 
     playAudio( fileName ) {
+        if ( !fileName.includes( '.' ) ) {
+            fileName += '.mp3';
+        }
+        if ( ! fs.existsSync( `./audio/${fileName}` ) ) {
+            this.setAction( 'message', `I couldn't find that file: "${fileName}"` );
+            return;
+        }
         this.setAction( 'audioFile', fileName );
     }
 
