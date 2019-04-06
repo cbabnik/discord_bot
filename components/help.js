@@ -168,9 +168,7 @@ Give away your cash, you won't.`
     \`-requests all\` - read all your requests
     \`-requests new\` - read your new requests
     \`-requests N\` - read request number N
-    \`-requests delete N\` - delete request number N
-   
-    `
+    \`-requests delete N\` - delete request number N`
         );
     }
 }
