@@ -21,6 +21,31 @@ exports.BETA = {
     MAIN_VOICE_CHANNEL: '265430059500699648',
 };
 
+exports.ACTIONS = {
+    // OPTIONS
+    CHANNEL_ID: 'channelId',
+    VOICE_CHANNEL: 'voiceChannel',
+    MESSAGE: 'message',
+    MESSAGE_ID: 'messageId',
+    EDIT_ID: 'editId',
+    AS_USERNAME: 'asUsername',
+    SECURITY: 'security',
+    LOCATION: 'location',
+    IMAGE: 'image',
+    IMAGE_LINK: 'imageLink',
+    AUDIO_FILE: 'audioFile',
+    AUDIO_YOUTUBE: 'audioYoutube',
+    AUDIO_LINK: 'audioLink',
+    END_AUDIO: 'endAudio',
+    REPEAT: 'repeat',
+    DELAY: 'delay',
+    TIMING: 'timing',
+    NEXT: 'next',
+    // SENTINEL VALUES WITH SPECIAL MEANING
+    USE_SOURCE: 'use_source',
+    DMCHANNEL: 'dm',
+};
+
 const BUCKS = {
     BUGSLINGER: '106853033526247424',
     KAWAIICASINO: '195244363339530240',
