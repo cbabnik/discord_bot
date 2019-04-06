@@ -15,8 +15,9 @@ let requests;
 class Requests extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-request (.*)$/, this.addRequest );
+        this.addCommand( /^-request all$/, ( metaInfo ) => this.listRequests( 'all', metaInfo ) );
         this.addCommand( /^-requests all$/, ( metaInfo ) => this.listRequests( 'all', metaInfo ) );
+        this.addCommand( /^-request new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ) );
         this.addCommand( /^-requests new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ) );
         this.addCommand( /^-requests (\d+)$/, ( n, metaInfo ) => this.listRequests( n, metaInfo ) );
         this.addCommand( /^-requests delete (\d+)$/, this.deleteRequestN );
@@ -24,6 +25,7 @@ class Requests extends Component {
         this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, metaInfo ) );
         this.addCommand( /^-requests reply (\d+) (.+)$/, this.reply );
         this.addCommand( /^-requests/, this.checkRequests );
+        this.addCommand( /^-request (.*)$/, this.addRequest );
 
         if ( this.json['requests'] === undefined ) {
             this.json['requests'] = [];
@@ -56,13 +58,15 @@ class Requests extends Component {
     }
 
     listRequests( mode, metaInfo ) {
-        const admin = PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId );
+        const id = metaInfo.authorId;
+        const user = metaInfo.author;
+        const admin = PERMISSION_LEVELS.ADMIN.includes( id );
         let filterA, filterB;
         const mapFn = ( r, i ) => ( {...r, idx: i+1} );
         if ( admin ) {
             filterA = () => true;
         } else {
-            filterA = r => r.id === metaInfo.authorId;
+            filterA = r => r.id === id;
         }
         if ( mode === 'all' ) {
             filterB = () => true;
@@ -79,11 +83,16 @@ class Requests extends Component {
         if (admin) {
             msg = 'Requests:\n';
         } else {
-            msg = `**${metaInfo.author}**'s Requests:\n`
+            msg = `**${user}**'s Requests:\n`
         }
         const vr = requests.filter( filterA ).map( mapFn ).filter( filterB );
         for ( let i = 0; i < vr.length; i++ ) {
-            let moreMsg = `\`[${vr[i].idx}] <${vr[i].status}>\` ${vr[i].request}\n`;
+            let moreMsg;
+            if (admin) {
+                moreMsg = `\`[${vr[i].idx}] <${vr[i].status}> ${user}:\` ${vr[i].request}\n`;
+            } else {
+                moreMsg = `\`[${vr[i].idx}] <${vr[i].status}>\` ${vr[i].request}\n`;
+            }
             if ( vr[i].reply ) {
                 moreMsg += `**Reply:** ${vr[i].reply}\n`;
             }
@@ -145,7 +154,7 @@ You can check your requests with \`-requests N\`, \`-requests new\`, or \`-reque
         const vr = requests.filter( filterA );
         n = Number( n ) - 1;
         if ( vr.length <= n ) {
-            this.setAction( 'message', `You don't have #${n+1} requests` );
+            this.setAction( 'message', `You don't have ${n+1} requests` );
             return;
         }
         const uuidToDelete = vr[n].uuid;

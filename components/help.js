@@ -29,6 +29,7 @@ class Help extends Component {
         this.addCommand( /^\?give/, this.giveHelp );
         this.addCommand( /^-request$/, this.requestHelp );
         this.addCommand( /^\?request/, this.requestHelp );
+        this.addCommand( /^\?requests/, this.requestHelp );
         this.addCommand( /^\?(.+)/, this.helpInfo );
     }
 
