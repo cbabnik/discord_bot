@@ -17,6 +17,7 @@ class Help extends Component {
         this.addCommand( /^\?burger/, this.burgerHelp );
         this.addCommand( /^\?add[bB]urger/, this.addBurgerHelp );
         this.addCommand( /^\?slotstats/, this.slotStatsHelp );
+        this.addCommand( /^\?slotstatistics/, this.slotStatisticsHelp );
         this.addCommand( /^\?slots/, this.slotsHelp );
         this.addCommand( /^-slots$/, this.slotsHelp );
         this.addCommand( /^\?!/, this.playHelp );
@@ -36,7 +37,7 @@ class Help extends Component {
     help() {
         const COMMANDS = [
             'roll', 'random', 'math', 'coinflip', 'burger', 'slots', 'play', 'endAudio', 'secrets', 'balance',
-            'allowance', 'slotstats', 'give', 'request',
+            'allowance', 'slotstats', 'give', 'request', 'slotstatistics'
         ].map( c => `-${c}`.padEnd( 25 ) );
         this.setAction( 'message', 'Here is a list of commands!\n' +
             'To learn more about any of them, try them with a ? upfront. example: `?roll`.\n' +
@@ -169,6 +170,13 @@ Give away your cash, you won't.`
     \`-requests new\` - read your new requests
     \`-requests N\` - read request number N
     \`-requests delete N\` - delete request number N`
+        );
+    }
+
+    slotStatisticsHelp() {
+        this.setAction( 'message',
+            `\`-slotstatistics\`
+Gives some brief overall statistics.`
         );
     }
 }

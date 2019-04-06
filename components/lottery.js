@@ -28,6 +28,7 @@ class Lottery extends Component {
     constructor() {
         super( ID );
         this.addCommand( /\*\*(.*)\*\* rolled the slots(?:.*)and (\w+)/s, this.watchLottery );
+        this.addCommand( /^-slotstatistics$/, this.statsExtra );
         this.addCommand( /^-slotstats$/, ( metaInfo ) => this.stats( null, metaInfo ) );
         this.addCommand( /^-slotstats (.*)$/, this.stats );
         this.addCommand( /^-slots coin/, this.coinslots );
@@ -83,12 +84,54 @@ class Lottery extends Component {
         const m = {...{attempts: 0, best: 0, longest_streak: 0, winnings:0 }, ...p.maze};
         const g = {...{attempts: 0, best: 0, winnings:0 }, ...p.grid};
 
-        this.setAction( 'message', `Slots Stats for ${user}:
+        const total = this.getTotal( id );
+
+        this.setAction( 'message', `Slots Stats for **${user}**:
 **Kawaii Casino**: \`${k.wins} wins\` and \`${k.losses+k.almost} losses\`. ${k.almost} of those losses were almost wins. Win ratio is **${( k.wins/( k.wins+k.losses+k.almost )*100 ).toFixed( 2 )}%**
-**Coin Slots**: ${c.attempts} attempts. Best streak is ${c.longest_streak} which won $${c.best}. Total winnings are $${c.winnings}. Average winnings are $${( c.winnings/c.attempts ).toFixed( 2 )}
-**Grid Slots**: ${g.attempts} attempts. Best roll gave $${g.best}. Total winnings are $${g.winnings} Average winnings are $${( g.winnings/g.attempts ).toFixed( 2 )}
-**Maze Slots**: ${m.attempts} attempts. Best roll gave $${m.best}. Longest streak is ${m.longest_streak}. Total winnings are $${m.winnings}. Average winnings are $${( m.winnings/m.attempts ).toFixed( 2 )}
-**Buck Slots**: ${b.attempts} attempts. ${b.bucks} of ${b.wins} wins were ultimate wins. Total winnings are $${b.winnings}` );
+**Coin Slots**: \`${c.attempts} attempts\`. Best streak is ${c.longest_streak} which won $${c.best}. Total winnings are $${c.winnings}. Average winnings are $${( c.winnings/c.attempts ).toFixed( 2 )}
+**Grid Slots**: \`${g.attempts} attempts\`. Best roll gave $${g.best}. Total winnings are $${g.winnings} Average winnings are $${( g.winnings/g.attempts ).toFixed( 2 )}
+**Maze Slots**: \`${m.attempts} attempts\`. Best roll gave $${m.best}. Longest streak is ${m.longest_streak}. Total winnings are $${m.winnings}. Average winnings are $${( m.winnings/m.attempts ).toFixed( 2 )}
+**Buck Slots**: \`${b.attempts} attempts\`. ${b.bucks} of ${b.wins} wins were ultimate wins. Total winnings are $${b.winnings}
+In total **${user}** has ${total < 0?`lost ${-total}`:`gained ${total}`} credits from slots` );
+    }
+
+    statsExtra() {
+        const k = Object.keys( BUCKS );
+        const total = {total: 0, spent: 0, coin: 0, grid: 0, maze: 0};
+        const most = {val:-Infinity, user: ''};
+        const least = {val:+Infinity, user: ''};
+        const spent = {val:-Infinity, user: ''};
+        k.forEach( k => {
+            const t = this.getTotal( BUCKS[k] );
+            const s = this.getSpent( BUCKS[k] );
+            total.total += t;
+            if ( t > most.val ) {
+                most.val = t;
+                most.user = k;
+            }
+            if ( t < least.val ) {
+                least.val = t;
+                least.user = k;
+            }
+            total.spent += s;
+            if ( s > spent.val ) {
+                spent.val = s;
+                spent.user = k;
+            }
+            total.coin -= _.get( this.json, `${BUCKS[k]}.coin.attempts`, 0 );
+            total.coin += _.get( this.json, `${BUCKS[k]}.coin.winnings`, 0 );
+            total.grid -= 5*_.get( this.json, `${BUCKS[k]}.grid.attempts`, 0 );
+            total.grid += _.get( this.json, `${BUCKS[k]}.grid.winnings`, 0 );
+            total.maze -= 20*_.get( this.json, `${BUCKS[k]}.maze.attempts`, 0 );
+            total.maze += _.get( this.json, `${BUCKS[k]}.maze.winnings`, 0 );
+        } );
+        this.setAction( 'message', `Slot records:
+**${spent.user}** has spent the most on slots. A whopping \`${spent.val} credits\`.
+**${most.user}** has won \`${most.val} credits\` in profit, while **${least.user}** has lost \`${-least.val} credits\`.
+Maze slots has ${total.maze<0?`claimed \`${-total.maze}\` hard earned credits`:`given back \`${total.maze}\` credits`}
+Grid slots has ${total.grid<0?`claimed \`${-total.grid}\` hard earned credits`:`given back \`${total.grid}\` credits`}
+Coin slots has ${total.coin<0?`claimed \`${-total.coin}\` hard earned credits`:`given back \`${total.coin}\` credits`}
+` );
     }
 
     coinslots( metaInfo ) {
@@ -497,6 +540,28 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         _.set( this.json, `${id}.buck.winnings`, _.get( this.json, `${id}.buck.winnings`, 0 ) + winnings );
         _.set( this.json, `${id}.buck.attempts`, _.get( this.json, `${id}.buck.attempts`, 0 ) + 1 );
         this.saveJSON();
+    }
+
+    // HELPERS
+
+    getTotal( id ) {
+        let total = 0;
+        total -= _.get( this.json, `${id}.coin.attempts`, 0 );
+        total -= 5*_.get( this.json, `${id}.grid.attempts`, 0 );
+        total -= 20*_.get( this.json, `${id}.maze.attempts`, 0 );
+        total += _.get( this.json, `${id}.coin.winnings`, 0 );
+        total += _.get( this.json, `${id}.grid.winnings`, 0 );
+        total += _.get( this.json, `${id}.maze.winnings`, 0 );
+        total += _.get( this.json, `${id}.buck.winnings`, 0 );
+        return total;
+    }
+
+    getSpent( id ) {
+        let spent = 0;
+        spent += _.get( this.json, `${id}.coin.attempts`, 0 );
+        spent += 5*_.get( this.json, `${id}.grid.attempts`, 0 );
+        spent += 20*_.get( this.json, `${id}.maze.attempts`, 0 );
+        return spent;
     }
 }
 
