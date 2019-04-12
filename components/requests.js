@@ -133,7 +133,7 @@ There are \`${vr.length} total requests\`.
 \`${needsreply.length} unreplied to\` requests.
 \`${newr.length} unread\` requests` );
         } else {
-            this.setAction( 'message', `**${metaInfo.user}**'s requests:
+            this.setAction( 'message', `**${metaInfo.author}**'s requests:
 You have \`${vr.length} requests\`.
 \`${newreply.length} unread replies\` to requests you own.
 \`${newr.length} unread\` by admins.
