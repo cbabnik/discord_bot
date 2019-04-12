@@ -1,28 +1,41 @@
 const gm = require( 'gm' );
 const tmp = require( 'tmp' );
-const _ = require( 'lodash' );
+let _ = require( 'lodash' );
 const uuidv4 = require( 'uuidv4' );
 const { Component } = require( '../component' );
-const { BUCKS, CONFIG_DEFAULTS, ACTIONS } = require( '../constants' );
+const { BUCKS, CONFIG_DEFAULTS, ACTIONS, PERMISSION_LEVELS } = require( '../constants' );
 const { bank } = require( './bank' );
 const { pictures } = require( './pictures' );
 
 const ID = 'lottery';
 
-let waitUntil = new Date().getTime();
-
 const SIGNS = [
-    {grid_amount: 7, maze_count: 4,  emote: ':cherries:',  value: 100},
-    {grid_amount: 9, maze_count: 4,  emote: ':tangerine:', value: 50},
+    {grid_amount: 5, maze_count: 3,  emote: ':kiwi:',     value: 200},
+    {grid_amount: 6, maze_count: 3,  emote: ':cherries:',  value: 100},
+    {grid_amount: 8, maze_count: 3,  emote: ':tangerine:', value: 50},
     {grid_amount: 11, maze_count: 4,  emote: ':lemon:',     value: 25},
-    {grid_amount: 15, maze_count: 4,  emote: ':melon:',     value: 10},
-    {grid_amount: 8, maze_count: 4,  emote: ':deer:', special: 'Bonus Buck Roll'},
-    {grid_amount: 7, maze_count: 3,  emote: ':poop:',  multiply: -1},
+    {grid_amount: 11, maze_count: 3,  emote: ':melon:',     value: 10},
+    {grid_amount: 11, maze_count: 4,  emote: ':strawberry:',value: 5},
+    {grid_amount: 9, maze_count: 7,  emote: ':deer:', special: 'Bonus Buck Roll'},
+    {grid_amount: 10, maze_count: 3,  emote: ':poop:',  multiply: -1},
     {grid_amount: 0, maze_count: 4, emote: ':two:',   multiply: 2},
     {grid_amount: 0, maze_count: 3, emote: ':three:',   multiply: 3},
-    {grid_amount: 5, maze_count: 4,  emote: ':five:', multiply: 5},
-    {grid_amount: 5, maze_count: 4,  emote: ':seven:', multiply: 7},
+    {grid_amount: 0, maze_count: 3,  emote: ':five:', multiply: 5},
+    {grid_amount: 0, maze_count: 3,  emote: ':seven:', multiply: 7},
 ];
+
+const GRID_SLOTS_VALID_LINES = [
+    [{x:0,y:0},{x:0,y:1},{x:0,y:2}],
+    [{x:1,y:0},{x:1,y:1},{x:1,y:2}],
+    [{x:2,y:0},{x:2,y:1},{x:2,y:2}],
+    [{x:0,y:0},{x:1,y:1},{x:2,y:2}],
+    [{x:2,y:0},{x:1,y:1},{x:0,y:2}],
+    [{x:0,y:0},{x:1,y:0},{x:2,y:0}],
+    [{x:0,y:1},{x:1,y:1},{x:2,y:1}],
+    [{x:0,y:2},{x:1,y:2},{x:2,y:2}]
+];
+
+// buck value is $23.31
 
 class Lottery extends Component {
     constructor() {
@@ -31,12 +44,114 @@ class Lottery extends Component {
         this.addCommand( /^-slotstatistics$/, this.statsExtra );
         this.addCommand( /^-slotstats$/, ( metaInfo ) => this.stats( null, metaInfo ) );
         this.addCommand( /^-slotstats (.*)$/, this.stats );
-        this.addCommand( /^-slots coin/, this.coinslots );
-        this.addCommand( /^-slots grid/, this.gridslots );
-        this.addCommand( /^-slots maze/, this.mazeSlots );
-        this.addCommand( /^-cslots/, this.coinslots );
-        this.addCommand( /^-gslots/, this.gridslots );
-        this.addCommand( /^-mslots/, this.mazeSlots );
+        this.addCommand( /^-slots coin odds/, this.coinOdds );
+        this.addCommand( /^-cslots odds/, this.coinOdds );
+        this.addCommand( /^-slots grid odds/, this.gridOdds );
+        this.addCommand( /^-gslots odds/, this.gridOdds );
+        this.addCommand( /^-slots maze odds/, this.mazeOdds );
+        this.addCommand( /^-mslots odds/, this.mazeOdds );
+        this.addCommand( /^-slots coin$/, this.coinslots );
+        this.addCommand( /^-slots grid$/, this.gridslots );
+        this.addCommand( /^-slots maze$/, this.mazeSlots );
+        this.addCommand( /^-cslots$/, this.coinslots );
+        this.addCommand( /^-gslots$/, this.gridslots );
+        this.addCommand( /^-mslots$/, this.mazeSlots );
+        this.addCommand( /^-slots buck$/, this.bslots );
+        this.addCommand( /^-bslots$/, this.bslots );
+        this.addCommand( /^#freeroll (\d+) (.*)$/, this.giveRolls );
+        this.addCommand( /^#freeroll (.*)$/, (type, metaInfo) => this.giveRolls(1, type, metaInfo) );
+        this.addCommand( /^-freerolls$/ , this.countRolls );
+
+        this.waitUntil = new Date().getTime();
+    }
+
+    bslots(metaInfo) {
+        const id = metaInfo.authorId;
+        const user = metaInfo.author;
+        if ( _.get(this.json, `${id}.buck.freeRolls`, 0) > 0) {
+            this.json[id]['buck'].freeRolls -= 1;
+            this.setAction( 'message', `**${user}** used their free roll.` );
+            this.queueAction();
+            this.buckSlots(user, id);
+        } else {
+            this.setAction( 'message', `You don't have any free buck rolls and you can't buy them.` );
+        }
+    }
+
+    countRolls(metaInfo) {
+        const user = metaInfo.author;
+        const id = metaInfo.authorId;
+        const coins = _.get(this.json, `${id}.coin.freeRolls`, 0);
+        const grids = _.get(this.json, `${id}.grid.freeRolls`, 0);
+        const mazes = _.get(this.json, `${id}.maze.freeRolls`, 0);
+        const bucks = _.get(this.json, `${id}.buck.freeRolls`, 0);
+        this.setAction(ACTIONS.MESSAGE, `**${user}**
+${coins} free coin roll${coins===1?'':'s'}
+${grids} free grid roll${grids===1?'':'s'}
+${mazes} free maze roll${mazes===1?'':'s'}
+${bucks} free buck roll${bucks===1?'':'s'}`)
+    }
+
+    giveRolls(count, type, metaInfo) {
+        if (PERMISSION_LEVELS.ADMIN.includes(metaInfo.authorId)) {
+            Object.values(BUCKS).forEach(id => {
+                _.set(this.json, `${id}.${type}.freeRolls`, _.get(this.json, `${id}.${type}.freeRolls`, 0) + Number(count));
+            });
+            this.saveJSON();
+            this.setAction(ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL);
+            if (count > 1) {
+                this.setAction(ACTIONS.MESSAGE, `Everyone gets ${count} free ${type} rolls`);
+            }
+        } else {
+            this.setAction(ACTIONS.MESSAGE, `You can't do that`);
+        }
+    }
+
+    mazeOdds() {
+        let msg = 'Explore the maze until you hit a dead end! Get 3 of the same icons for a reward!\nThe value of one roll is **18.80**';
+        SIGNS.forEach((s) => {
+            if (s.value) {
+                msg += `\n${s.emote.repeat(3)}: **$${s.value}** (${s.maze_count} icons are ${s.emote})`
+            }
+        });
+        SIGNS.forEach((s) => {
+            if (s.multiply) {
+                msg += `\n${s.emote.repeat(3)}: **${s.multiply}x** Rewards (${s.maze_count} icons are ${s.emote})`
+            }
+        });
+        this.setAction(ACTIONS.MESSAGE, msg);
+        this.setAction(ACTIONS.IMAGE, 'charts/maze.png');
+        this.queueAction();
+        this.setAction(ACTIONS.DELAY, 0.5);
+        this.setAction(ACTIONS.IMAGE, 'charts/mazezoom.png');
+        this.queueAction();
+        this.setAction(ACTIONS.IMAGE, 'charts/mazebar.png');
+    }
+
+    gridOdds() {
+        let msg = 'Roll a 3x3 grid. Any row (horizontal, vertical, diagonal) can be a winner.\nThe value of one roll is **4.72**';
+        let bagTotal = _.sumBy(SIGNS, s => s.grid_amount);
+        SIGNS.forEach((s) => {
+            if (s.value) {
+                msg += `\n${s.emote.repeat(3)}: **$${s.value}** (${s.grid_amount}/${bagTotal} odds of a ${s.emote})`
+            }
+        });
+        msg += `\n${':poop:'.repeat(3)}: **$-10** (7/${bagTotal} odds of a :poop:)`
+        this.setAction(ACTIONS.MESSAGE, msg);
+        this.setAction(ACTIONS.IMAGE, 'charts/grid.png');
+        this.queueAction();
+        this.setAction(ACTIONS.DELAY, 0.5);
+        this.setAction(ACTIONS.IMAGE, 'charts/gridzoom.png');
+        this.queueAction();
+        this.setAction(ACTIONS.IMAGE, 'charts/gridbar.png');
+    }
+
+    coinOdds() {
+        this.setAction(ACTIONS.MESSAGE, 'Each :moneybag: gives one coin. The coinflip is weighted 0.495% chance to fail.\nThe value of one roll is **$0.96**');
+        this.setAction(ACTIONS.IMAGE, 'charts/coin.png');
+        this.queueAction();
+        this.setAction(ACTIONS.DELAY, 0.5);
+        this.setAction(ACTIONS.IMAGE, 'charts/coinbar.png');
     }
 
     watchLottery( msg, user, result, metaInfo ) {
@@ -75,10 +190,6 @@ class Lottery extends Component {
                 return;
             }
         }
-        if ( !this.json[id] && !this.json[user] ) {
-            this.setAction( 'message', `No stats for \`${user}\`` );
-            return;
-        }
 
         const p = _.get( this.json, id, {} );
         const k = {...{wins: 0, almost: 0, losses:0 }, ..._.get( this.json,`${user}.kawaii`,undefined )};
@@ -86,7 +197,6 @@ class Lottery extends Component {
         const c = {...{attempts: 0, best: 0, longest_streak: 0, winnings:0 }, ...p.coin};
         const m = {...{attempts: 0, best: 0, longest_streak: 0, winnings:0 }, ...p.maze};
         const g = {...{attempts: 0, best: 0, winnings:0 }, ...p.grid};
-
         const total = this.getTotal( id );
 
         this.setAction( 'message', `Slots Stats for **${user}**:
@@ -101,25 +211,22 @@ In total **${user}** has ${total < 0?`lost ${-total}`:`gained ${total}`} credits
     statsExtra() {
         const k = Object.keys( BUCKS );
         const total = {total: 0, spent: 0, coin: 0, grid: 0, maze: 0};
-        const most = {val:-Infinity, user: ''};
-        const least = {val:+Infinity, user: ''};
-        const spent = {val:-Infinity, user: ''};
+        let most = {val:-Infinity, user: ''};
+        let least = {val:+Infinity, user: ''};
+        let spent = {val:-Infinity, user: ''};
         k.forEach( k => {
             const t = this.getTotal( BUCKS[k] );
             const s = this.getSpent( BUCKS[k] );
             total.total += t;
+            total.spent += s;
             if ( t > most.val ) {
-                most.val = t;
-                most.user = k;
+                most = {val: t, user: k}; 
             }
             if ( t < least.val ) {
-                least.val = t;
-                least.user = k;
+                least = {val: t, user: k}; 
             }
-            total.spent += s;
             if ( s > spent.val ) {
-                spent.val = s;
-                spent.user = k;
+                spent = {val: s, user: k}; 
             }
             total.coin -= _.get( this.json, `${BUCKS[k]}.coin.attempts`, 0 );
             total.coin += _.get( this.json, `${BUCKS[k]}.coin.winnings`, 0 );
@@ -138,220 +245,122 @@ Coin slots has ${total.coin<0?`claimed \`${-total.coin}\` hard earned credits`:`
     }
 
     coinslots( metaInfo ) {
+        // setup
         const user = metaInfo.author;
         const id = metaInfo.authorId;
         const uuid = uuidv4();
-
-        if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
-            this.setAction( 'message', 'Please make your slot rolls public.' );
+        if ( !this.canEnter( metaInfo, 'coin', 1 ) ) {
             return;
         }
-        if ( ( new Date() ).getTime() < waitUntil ) {
-            this.setAction( 'message', `**${user}**, Please wait your turn.` );
-            return;
-        }
-
-        if ( !bank.payAmount( id, 1 ) ) {
-            this.setAction( 'message', `Sorry **${user}**, but Coin Slots costs **1** credit. You don't have enough.` );
-            return;
-        }
-
-        let chain = 0;
-        let winnings = 0;
-        let totalDelay = 0;
-
-        this.setAction( 'message', `**${user}** rolled the slots! (Costed 1 credit)\nCoin Slots - Keep flipping till you lose!\n\nReward: ${winnings}` );
-        this.setAction( 'messageId', `lottery-${uuid}` );
-        this.queueAction();
-        while ( Math.random() < 0.5 ) {
-            chain += 1;
-            winnings = chain;
-            this.setAction( 'delay', ( chain+3 )*.2 );
-            totalDelay += ( chain+3 )*.2;
-            this.setAction( 'message', `**${user}** rolled the slots! (Costed 1 credit)\nCoin Slots - Keep flipping till you lose!\n${':moneybag:'.repeat( chain )}\nReward: ${winnings}` );
-            this.setAction( 'editId', `lottery-${uuid}` );
+        if ( this.hasHolyMantle( id ) && Math.random() > 0.99 ) {
+            this.setAction( 'message', `Holy Mantle triggered. **${user}** doesn't have to pay this time.` );
             this.queueAction();
+            bank.addAmount( id, 1 );
         }
-        totalDelay += ( chain+3 )*.2;
-        waitUntil = ( new Date() ).getTime() + totalDelay*1000;
-
-        this.setAction( 'delay', ( chain+3 )*.2 );
-        this.setAction( 'message', `**${user}** rolled the slots! (Costed 1 credit)\nCoin Slots - Keep flipping till you lose!\n${':moneybag:'.repeat( chain )+':x:'}\nReward: ${winnings}` );
-        this.setAction( 'editId', `lottery-${uuid}` );
+        let chain = 0;
+        let totalDelay = 0;
+        // slots
+        this.setAction( 'messageId', `lottery-${uuid}` );
+        this.setAction( 'message', `**${user}** rolled the slots! (Costed 1 credit)\nCoin Slots - Keep flipping till you lose!\n\nReward: ${chain}` );
+        for ( let chainStr = ''; !chainStr.includes( ':x:' ); ) {
+            this.queueAction();
+            this.setAction( 'delay', ( chain+2 )*.2 );
+            totalDelay += ( chain+2 )*.2 ;
+            this.setAction( 'editId', `lottery-${uuid}` );
+            if ( Math.random() < 0.5 ) {
+                chainStr += ':x:';
+            } else {
+                chain += 1;
+                chainStr += ':moneybag:';
+            }
+            this.setAction( 'message', `**${user}** rolled the slots! (Costed 1 credit)\nCoin Slots - Keep flipping till you lose!\n${chainStr}\nReward: ${chain}` );
+        }
+        // make people wait their turn
+        this.offLimitsFor( totalDelay );
+        // keep stats
         _.set( this.json, `${id}.coin.longest_streak`, Math.max( _.get( this.json, `${id}.coin.longest_streak`, 0 ), chain ) );
-        _.set( this.json, `${id}.coin.best`, Math.max( _.get( this.json, `${id}.coin.best`, 0 ), winnings ) );
-        _.set( this.json, `${id}.coin.winnings`, _.get( this.json, `${id}.coin.winnings`, 0 ) + winnings );
+        _.set( this.json, `${id}.coin.best`, Math.max( _.get( this.json, `${id}.coin.best`, 0 ), chain ) );
+        _.set( this.json, `${id}.coin.winnings`, _.get( this.json, `${id}.coin.winnings`, 0 ) + chain );
         _.set( this.json, `${id}.coin.attempts`, _.get( this.json, `${id}.coin.attempts`, 0 ) + 1 );
         this.saveJSON();
-
-        bank.addAmount( id, winnings );
+        // reward winnings
+        bank.addAmount( id, chain );
     }
 
     gridslots( metaInfo ) {
+        // setup
         const user = metaInfo.author;
         const id = metaInfo.authorId;
-
-        if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
-            this.setAction( 'message', 'Please make your slot rolls public.' );
+        if ( !this.canEnter( metaInfo, 'grid', 5 ) ) {
             return;
         }
-        if ( ( new Date() ).getTime() < waitUntil ) {
-            this.setAction( 'message', `**${user}**, Please wait your turn.` );
-            return;
+        if ( this.hasHolyMantle( id ) && Math.random() > 0.99 ) {
+            this.setAction( 'message', `Holy Mantle triggered. **${user}** doesn't have to pay this time.` );
+            this.queueAction();
+            bank.addAmount( id, 5 );
         }
-
-        if ( !bank.payAmount( id, 5 ) ) {
-            this.setAction( 'message', `Sorry **${user}**, but Grid Slots costs **5** credits. You don't have enough.` );
-            return;
-        }
-
-        if ( id === BUCKS.GINGE ) {
-            if ( Math.random() > 0.99 ) {
-                this.setAction( 'message', `Holy Mantle triggered. **${user}** doesn't have to pay this time.` );
-                bank.addAmount( id, 5 );
-            }
-        }
-
-        const lines = {};
-        // results is a helper method which explains which rewards a user has won thus far
-        const results = () => {
-            let winnings = 0;
-            let multiply = 1;
-            SIGNS.forEach( ( e ) => {
-                if ( lines[e.emote] ) {
-                    if ( e.emote === ':poop:' && metaInfo.authorId !== BUCKS.GINGE ) {
-                        winnings -= 10*lines[e.emote];
-                    } else if ( e.multiply ) {
-                        multiply *= e.multiply**lines[e.emote];
-                    } else if ( e.value ) {
-                        winnings += e.value*lines[e.emote];
-                    }
-                }
-            } );
-            if ( winnings === 0 && multiply !== 1 ) {
-                winnings = 1;
-            }
-            winnings *= multiply;
-            return {winnings};
-        };
-
-        let grid = [[0,0,0],[0,0,0],[0,0,0]];
+        // create the grid by grabbing items from a bag
         const bag = [];
         SIGNS.forEach( ( sign ) => {
             bag.push( ...Array( sign.grid_amount ).fill( sign.emote ) );
         } );
+        let grid = [[0,0,0],[0,0,0],[0,0,0]];
         grid = grid.map( ( row ) => row.map( () => _.sample( bag ) ) );
-
-        const valid_lines = [
-            [{x:0,y:0},{x:0,y:1},{x:0,y:2}],
-            [{x:1,y:0},{x:1,y:1},{x:1,y:2}],
-            [{x:2,y:0},{x:2,y:1},{x:2,y:2}],
-            [{x:0,y:0},{x:1,y:1},{x:2,y:2}],
-            [{x:2,y:0},{x:1,y:1},{x:0,y:2}],
-            [{x:0,y:0},{x:1,y:0},{x:2,y:0}],
-            [{x:0,y:1},{x:1,y:1},{x:2,y:1}],
-            [{x:0,y:2},{x:1,y:2},{x:2,y:2}]
-        ];
-        valid_lines.forEach( ( i ) => {
-            if ( grid[i[0].x][i[0].y] === grid[i[1].x][i[1].y] && grid[i[0].x][i[0].y] === grid[i[2].x][i[2].y] ) {
-                lines[grid[i[0].x][i[0].y]] = _.get( lines, grid[i[0].x][i[0].y], 0 ) + 1;
+        // check how many wins
+        const wins = {};
+        GRID_SLOTS_VALID_LINES.forEach( ( line ) => {
+            const a = grid[line[0].x][line[0].y];
+            const b = grid[line[1].x][line[1].y];
+            const c = grid[line[2].x][line[2].y];
+            if ( a === b && b === c ) {
+                wins[a] = _.get( wins, a, 0 ) + 1;
             }
         } );
-        const winnings = results().winnings;
-
-        const deerWins = lines[':deer:'];
-
+        const r = this.results( wins, [{emote: ':poop:', multiply: undefined, value: -10}] );
+        const winnings = r.winnings;
+        const deerWins = r.deerWins;
+        // declare
         this.setAction( 'message', `**${user}** rolled the slots! (Costed 5 credits)\nGrid Slots - 8 possible rows!
 **[** ${grid[0][0]}${grid[1][0]}${grid[2][0]} **]**
 **[** ${grid[0][1]}${grid[1][1]}${grid[2][1]} **]**
 **[** ${grid[0][2]}${grid[1][2]}${grid[2][2]} **]**
 Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck Slots! They will happen in 3 seconds.`:''}` );
-
+        // track stats
         _.set( this.json, `${id}.grid.best`, Math.max( _.get( this.json, `${id}.grid.best`, 0 ), winnings ) );
         _.set( this.json, `${id}.grid.winnings`, _.get( this.json, `${id}.grid.winnings`, 0 ) + winnings );
         _.set( this.json, `${id}.grid.attempts`, _.get( this.json, `${id}.grid.attempts`, 0 ) + 1 );
         this.saveJSON();
-
+        // add winnings
         bank.addAmount( id, winnings );
-
+        // buck slots
         if ( deerWins ) {
             this.queueAction();
             this.setAction( 'delay', 3 );
             for ( let i = 0; i < deerWins; i+=1 ) {
                 this.buckSlots( user, id );
             }
-            waitUntil = ( new Date() ).getTime() + ( 3+deerWins )*1000;
+            this.offLimitsFor( 3+deerWins );
         }
     }
 
     mazeSlots( metaInfo ) {
+        // setup
         const user = metaInfo.author;
         const id = metaInfo.authorId;
         const uuid = uuidv4();
-
-        if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
-            this.setAction( 'message', 'Please make your slot rolls public.' );
+        if ( !this.canEnter( metaInfo, 'maze', 20 ) ) {
             return;
         }
-
-        if ( ( new Date() ).getTime() < waitUntil ) {
-            this.setAction( 'message', `**${user}**, Please wait your turn.` );
-            return;
+        if ( this.hasHolyMantle( id ) && Math.random() > 0.99 ) {
+            this.setAction( 'message', `Holy Mantle triggered. **${user}** doesn't have to pay this time.` );
+            this.queueAction();
+            bank.addAmount( id, 20 );
         }
-
-        if ( !bank.payAmount( id, 20 ) ) {
-            this.setAction( 'message', `Sorry **${user}**, but Maze Slots costs **20** credits. You don't have enough.` );
-            return;
-        }
-
-        if ( id === BUCKS.GINGE ) {
-            if ( Math.random() > 0.99 ) {
-                this.setAction( 'message', `Holy Mantle triggered. **${user}** doesn't have to pay this time.` );
-                bank.addAmount( id, 20 );
-            }
-        }
-
         const rewards = {};
+        const wins = {};
         let streak = 1;
         let totalDelay = 0;
-
-        // results is a helper method which explains which rewards a user has won thus far
-        const results = () => {
-            let s = 'Sets:';
-            let winnings = 0;
-            let multiply = 1;
-            let deerWins = 0;
-            SIGNS.forEach( ( e ) => {
-                const sets = Math.floor( rewards[e.emote]/3 );
-                if ( sets ) {
-                    if ( e.special ) {
-                        s += `\n${_.repeat( `${e.emote}`, 3 * sets )}  Reward: ${e.special}`;
-                        if ( e.emote === ':deer:' ) {
-                            deerWins = sets;
-                        }
-                    } else if ( e.multiply ) {
-                        s += `\n${_.repeat( `${e.emote}`, 3 * sets )}  Reward: x${e.multiply**sets} rewards`;
-                        multiply *= e.multiply**sets;
-                    } else {
-                        s += `\n${_.repeat( `${e.emote}`, 3 * sets )}  Reward: $${e.value*sets}`;
-                        winnings += e.value*sets;
-                    }
-                }
-            } );
-            if ( winnings === 0 && multiply !== 1 ) {
-                winnings = 1;
-            }
-            if ( multiply < 0 && metaInfo.authorId === BUCKS.GINGE ) {
-                multiply *= -1;
-            }
-            winnings *= multiply;
-            deerWins *= multiply;
-            s += `\nTotal: $${winnings}`;
-            s = s.length<20?'':s;
-            return {s, winnings, deerWins};
-        };
-
-        // setup the board
+        // put together the board
         const bag = [];
         SIGNS.forEach( ( e ) => {
             bag.push( ...Array( e.maze_count ).fill( e.emote ) );
@@ -359,28 +368,20 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         bag.push( ...Array( 77-bag.length ).fill( ':white_square_button:' ) );
         const grid = _.chunk( _.shuffle( bag ), 11 );
         const visible_grid = _.chunk( Array( 77 ).fill( ':black_large_square:' ), 11 );
-
-        // setup the starting position
-        let pos = {x:-1,y:-1};
-        if ( grid[3][5] !== ':white_square_button:' ) {
-            pos = {x:5, y:3};
+        // choose a starting position
+        let pos = {x:5,y:3};
+        while ( grid[pos.y][pos.x] === ':white_square_button:' ) {
+            pos = { x: Math.floor( Math.random()*11 ), y: Math.floor( Math.random()*7 )};
         }
-        while ( pos.x === -1 ) {
-            const [x, y] = [Math.floor( Math.random()*11 ), Math.floor( Math.random()*7 )];
-            if ( grid[y][x] !== ':white_square_button:' ) {
-                pos = {x, y};
-            }
-        }
+        // slot logic!
         visible_grid[pos.y][pos.x] = grid[pos.y][pos.x];
         rewards[grid[pos.y][pos.x]] = 1;
-        this.setAction( 'message', `${user} rolled the slots! (Costed 20 credits)\nMaze Slots - Let the Journey Begin!\n${visible_grid.map( row => row.join( '' ) ).join( '\n' )}\n${results().s}` );
+        this.setAction( 'message', `${user} rolled the slots! (Costed 20 credits)\nMaze Slots - Let the Journey Begin!\n${visible_grid.map( row => row.join( '' ) ).join( '\n' )}\n${this.results( wins ).setsString}` );
         this.setAction( 'messageId', `lottery-${uuid}` );
-
-        // look around and collect fruit till you hit a deadend
         loop:
-        while ( true ) {
+        while ( true ) { // look around and collect fruit till you hit a deadend
             const dirs = _.shuffle( [{dx: 0, dy: 1}, {dx: 0, dy: -1}, {dx: 1, dy: 0}, {dx: -1, dy: 0}] );
-            while ( true ) {
+            while ( true ) { // try each of four directions
                 const chosen = dirs.pop();
                 const [x, y] = [( chosen.dx + pos.x + 11 )%11, ( chosen.dy + pos.y + 7 )%7];
                 if ( grid[y][x] !== visible_grid[y][x] ) {
@@ -389,8 +390,12 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
                         break;
                     }
                     pos = {x, y};
-                    visible_grid[y][x] = grid[y][x];
-                    rewards[grid[y][x]] = _.get( rewards, grid[y][x], 0 ) + 1;
+                    const sign = grid[y][x];
+                    visible_grid[y][x] = sign;
+                    rewards[sign] = _.get( rewards, sign, 0 ) + 1;
+                    if ( rewards[sign] %3 === 0 ) {
+                        wins[sign] = _.get( wins, sign, 0 ) + 1;
+                    }
                     streak += 1;
                     break;
                 }
@@ -401,25 +406,35 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
             this.queueAction();
             this.setAction( 'delay', grid[pos.y][pos.x] === ':white_square_button:'?1:2 );
             totalDelay += grid[pos.y][pos.x] === ':white_square_button:'?1:2;
-            this.setAction( 'message', `${user} rolled the slots! (Costed 20 credits)\nMaze Slots - Let the Journey Begin!\n${visible_grid.map( row => row.join( '' ) ).join( '\n' )}\n${results().s}` );
+            this.setAction( 'message', `${user} rolled the slots! (Costed 20 credits)\nMaze Slots - Let the Journey Begin!\n${visible_grid.map( row => row.join( '' ) ).join( '\n' )}\n${this.results( wins ).setsString}` );
             this.setAction( 'editId', `lottery-${uuid}` );
         }
-        const r = results();
-        const winnings = r.winnings;
-        const deerWins = r.deerWins;
+        let { winnings, deerWins, setsString } = this.results( wins );
+        if ( winnings < 0 && this.hasHolyMantle(id)) {
+            this.queueAction();
+            this.setAction(ACTIONS.MESSAGE, `${user}'s Holy mantle might trigger, but maze poop is extra strong. its a 50-50 chance!!!`);
+            if (Math.random() > 0.5) {
+                deerWins *= -1;
+                winnings *= -1;
+                this.queueAction();
+                this.setAction(ACTIONS.MESSAGE, `${user}'s Holy mantle triggered! ${user} is immune to poop!`);
+            } else {
+                this.queueAction();
+                this.setAction(ACTIONS.MESSAGE, `No Dice! ${user} is not immune to poop today :(`);
+            }
+        }
         this.queueAction();
-        this.setAction( 'message', `${user} rolled the slots! (Costed 20 credits)\nMaze Slots - Let the Journey Begin!\n${visible_grid.map( row => row.join( '' ) ).join( '\n' )}\nYou hit a dead end! **Game Over**.\n${results().s}` );
+        this.setAction( 'message', `${user} rolled the slots! (Costed 20 credits)\nMaze Slots - Let the Journey Begin!\n${visible_grid.map( row => row.join( '' ) ).join( '\n' )}\nYou hit a dead end! **Game Over**.\n${setsString}\nTotal winnings are: **${winnings}**` );
         this.setAction( 'editId', `lottery-${uuid}` );
-
-        // record stats
+        // track stats
         _.set( this.json, `${id}.maze.longest_streak`, Math.max( _.get( this.json, `${id}.maze.longest_streak`, 0 ), streak ) );
         _.set( this.json, `${id}.maze.best`, Math.max( _.get( this.json, `${id}.maze.best`, 0 ), winnings ) );
         _.set( this.json, `${id}.maze.winnings`, _.get( this.json, `${id}.maze.winnings`, 0 ) + winnings );
         _.set( this.json, `${id}.maze.attempts`, _.get( this.json, `${id}.maze.attempts`, 0 ) + 1 );
         this.saveJSON();
-
+        // add winnings
         bank.addAmount( id, winnings );
-
+        // buck rolls
         if ( deerWins ) {
             this.queueAction();
             this.setAction( 'delay', 3 );
@@ -428,15 +443,19 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
             }
             totalDelay += 3 + deerWins;
         }
-        waitUntil = ( new Date() ).getTime() + totalDelay*1000;
+        // make people wait their turn
+        this.offLimitsFor( totalDelay );
     }
+
+    // HELPERS
 
     buckSlots( user, id ) {
         const bag = ['eight', 'seven', 'one', 'buck', 'bee', 'scary', 'girl', 'kiwi'];
         const roll = [_.sample( bag ), _.sample( bag ), _.sample( bag )];
 
         let winnings = 0;
-        let cuties = false;
+        let cuties = false; // assume false but set true
+        let won = true; // assume true but set false
 
         let strNum = '';
         let resultStr = '';
@@ -445,12 +464,12 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         case 'eight,seven,one':
             _.set( this.json, `${id}.buck.wins`, _.get( this.json, `${id}.buck.wins`, 0 ) + 1 );
             winnings = 871;
-            resultStr = 'Nice win! You won 871 credits!';
+            resultStr = 'Huge lotto win! You won a great 871 credits!';
             break;
         case 'seven,seven,seven':
             _.set( this.json, `${id}.buck.wins`, _.get( this.json, `${id}.buck.wins`, 0 ) + 1 );
-            winnings = 7777;
-            resultStr = 'Big lotto win! You won a whopping 7777 credits!';
+            winnings = 777;
+            resultStr = 'Big lotto win! You won a nice 777 credits!';
             break;
         case 'seven,buck,seven':
             _.set( this.json, `${id}.buck.wins`, _.get( this.json, `${id}.buck.wins`, 0 ) + 1 );
@@ -474,7 +493,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
             bank.addAmount( id, 3, 'buckbucks' );
             resultStr = 'Bad win! TOMmi gets 100 of your bucks or bankrupts you. You do get 3 buck bucks however.';
             giveVal = Math.min( 100, Math.max( 0, bank.balance( id ) ) );
-            bank.payAmount( id, giveVal );
+            winnings = -giveVal;
             bank.addAmount( BUCKS.TOMMI, giveVal );
             break;
         case 'girl,girl,girl':
@@ -486,10 +505,12 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         case 'kiwi,kiwi,kiwi':
             _.set( this.json, `${id}.buck.wins`, _.get( this.json, `${id}.buck.wins`, 0 ) + 1 );
             bank.addAmount( id, 3, 'buckbucks' );
-            resultStr = 'Nice win! 3 buck bucks awarded. This is supposed to play and unlock the Kewe soundclip';
+            resultStr = 'Nice win! 3 buck bucks awarded.';
             this.setAction( 'audioFile', 'isitkewe' );
             break;
         default:
+            won = false;
+            // consolation prizes
             roll.forEach( ( elem ) => {
                 switch ( elem ) {
                 case 'eight':
@@ -514,19 +535,14 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
                 resultStr = 'Sorry, you lost.';
             }
         }
-        const image = gm( 'images/leftbrace.jpg' );
-        roll.forEach( ( elem ) => {
-            image.append( `images/${elem}.jpg`, true );
-        } );
-        image.append( 'images/rightbrace.jpg', true );
-        const fileName = tmp.tmpNameSync() + '.jpg';
-        image.write( fileName, () => {} );
+        const fileName = this.createImage(roll);
 
         this.queueAction();
         this.setAction( 'image', fileName );
         this.setAction( 'delay', 1 );
-        this.setAction( 'message', `**${user}**'s roll: ` + resultStr );
+        this.setAction( 'message', `**${user}**'s roll: ${resultStr}` );
 
+        // cutie rampage
         if ( cuties ) {
             this.queueAction();
             this.setAction( 'delay', 3 );
@@ -539,13 +555,31 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
             this.setAction( 'imageLink', ['https://cdn.weeb.sh/images/H1wxtLXwb.gif','https://cdn.weeb.sh/images/r1WpdUmDZ.gif','https://cdn.weeb.sh/images/ryvHO8Qwb.gif'] );
         }
 
-        bank.addAmount( id, winnings );
+        if ( won ) {
+            this.queueAction();
+            this.setAction( ACTIONS.MESSAGE_USER_ID, BUCKS.COLTSU );
+            this.setAction( ACTIONS.MESSAGE, `**${user}**'s roll: ${resultStr}` );
+        }
+
         _.set( this.json, `${id}.buck.winnings`, _.get( this.json, `${id}.buck.winnings`, 0 ) + winnings );
         _.set( this.json, `${id}.buck.attempts`, _.get( this.json, `${id}.buck.attempts`, 0 ) + 1 );
         this.saveJSON();
+        bank.addAmount( id, winnings );
     }
 
     // HELPERS
+
+    createImage(roll) {
+        const image = gm( 'images/leftbrace.jpg' );
+        roll.forEach( ( elem ) => {
+            image.append( `images/${elem}.jpg`, true );
+        } );
+        image.append( 'images/rightbrace.jpg', true );
+        const fileName = tmp.tmpNameSync() + '.jpg';
+        image.write( fileName, () => {} );
+
+        return fileName;
+    }
 
     getTotal( id ) {
         let total = 0;
@@ -565,6 +599,88 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         spent += 5*_.get( this.json, `${id}.grid.attempts`, 0 );
         spent += 20*_.get( this.json, `${id}.maze.attempts`, 0 );
         return spent;
+    }
+
+    canEnter( metaInfo, type, cost ) {
+        const user = metaInfo.author;
+        const id = metaInfo.authorId;
+        if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
+            this.setAction( 'message', 'Please make your slot rolls public.' );
+            return false;
+        }
+        if ( this.isOffLimits() ) {
+            this.setAction( 'message', `**${user}**, Please wait your turn.` );
+            return false;
+        }
+        if ( _.get(this.json, `${id}.${type}.freeRolls`, 0) > 0) {
+            this.json[id][type].freeRolls -= 1;
+            this.setAction( 'message', `**${user}** used their free roll.` );
+            this.queueAction();
+            return true;
+        }
+        if ( !bank.payAmount( id, cost ) ) {
+            this.setAction( 'message', `Sorry **${user}**, but this costs **${cost}** credit(s). You don't have enough.` );
+            return false;
+        }
+        return true;
+    }
+
+    hasHolyMantle( id ) {
+        return id === BUCKS.GINGE;
+    }
+
+    results( wins, overrules ) {
+        if ( !overrules ) {
+            overrules = [];
+        }
+        let setsString = 'Sets:';
+        let winnings = 0;
+        let deerWins = 0;
+        let multiply = 1;
+        const rules = SIGNS;
+        overrules.forEach(newRule => {
+            const idx = rules.findIndex(rule => rule.emote === newRule.emote);
+            rules[idx] = newRule;
+        });
+        rules.forEach( ( r ) => {
+            if ( wins[r.emote] ) {
+                const w = wins[r.emote];
+                if ( r.special ) {
+                    if ( r.emote === ':deer:' ) {
+                        deerWins += 1;
+                    }
+                    setsString += `\n${_.repeat( `${r.emote}`, 3 * w )}  Reward: ${r.special}`;
+                }
+                if ( typeof r.multiply !== 'undefined' ) {
+                    multiply *= r.multiply**w;
+                    setsString += `\n${_.repeat( `${r.emote}`, 3 * w )}  Reward: ${r.multiply}x rewards`;
+                }
+                if ( r.value ) {
+                    winnings += r.value*w;
+                    setsString += `\n${_.repeat( `${r.emote}`, 3 * w )}  Reward: ${r.value}`;
+                }
+            }
+        } );
+        if ( winnings === 0 && multiply !== 1 ) {
+            winnings = 11;
+        }
+        winnings *= multiply;
+        deerWins *= multiply;
+        setsString = setsString.length<10?'':setsString;
+        return {winnings, deerWins, setsString};
+    }
+
+    offLimitsFor( seconds ) {
+        this.waitUntil = new Date().getTime() + 1000*seconds;
+    }
+
+    isOffLimits() {
+        return new Date().getTime() < this.waitUntil;
+    }
+
+    useLodashInContext() {
+        // should ONLY be run in test environments!
+        _ = _.runInContext();
     }
 }
 
