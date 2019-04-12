@@ -5,6 +5,7 @@
 # Database files
 # ______________
 *.json
+*.zip
 
 # Secret keys
 # ___________

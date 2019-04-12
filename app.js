@@ -1,4 +1,5 @@
 const fs = require( 'fs' );
+const { backupOnRepeat } = require( './util' )
 
 const { Client } = require( './client' );
 const { DispatcherGenerator } = require( './dispatch' );
@@ -32,4 +33,6 @@ dispatcher.registerComponent( payroll );
 // client needs some time to setup, so we'll just give it a second.
 setTimeout( () => {
     payroll.bootUp( actor );
+
+    backupOnRepeat();
 }, 3000 );
