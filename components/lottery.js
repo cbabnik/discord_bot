@@ -316,7 +316,13 @@ Coin slots has ${total.coin<0?`claimed \`${-total.coin}\` hard earned credits`:`
                 wins[a] = _.get( wins, a, 0 ) + 1;
             }
         } );
-        const r = this.results( wins, [{emote: ':poop:', multiply: undefined, value: -10}] );
+        let overrules;
+        if ( this.hasHolyMantle( id ) ) {
+            overrules = [{emote: ':poop:', multiply: undefined, value: undefined}];
+        } else {
+            overrules = [];
+        }
+        const r = this.results( wins, overrules );
         const winnings = r.winnings;
         const deerWins = r.deerWins;
         // declare
