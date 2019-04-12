@@ -42,7 +42,8 @@ module.exports = {
             { "exceptions": ["empty"] }
         ],
         "prefer-const": [
-            "error"
+            "error",
+            { "destructuring": "all" }
         ]
     }
 };

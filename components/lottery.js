@@ -59,99 +59,99 @@ class Lottery extends Component {
         this.addCommand( /^-slots buck$/, this.bslots );
         this.addCommand( /^-bslots$/, this.bslots );
         this.addCommand( /^#freeroll (\d+) (.*)$/, this.giveRolls );
-        this.addCommand( /^#freeroll (.*)$/, (type, metaInfo) => this.giveRolls(1, type, metaInfo) );
+        this.addCommand( /^#freeroll (.*)$/, ( type, metaInfo ) => this.giveRolls( 1, type, metaInfo ) );
         this.addCommand( /^-freerolls$/ , this.countRolls );
 
         this.waitUntil = new Date().getTime();
     }
 
-    bslots(metaInfo) {
+    bslots( metaInfo ) {
         const id = metaInfo.authorId;
         const user = metaInfo.author;
-        if ( _.get(this.json, `${id}.buck.freeRolls`, 0) > 0) {
+        if ( _.get( this.json, `${id}.buck.freeRolls`, 0 ) > 0 ) {
             this.json[id]['buck'].freeRolls -= 1;
             this.setAction( 'message', `**${user}** used their free roll.` );
             this.queueAction();
-            this.buckSlots(user, id);
+            this.buckSlots( user, id );
         } else {
-            this.setAction( 'message', `You don't have any free buck rolls and you can't buy them.` );
+            this.setAction( 'message', 'You don\'t have any free buck rolls and you can\'t buy them.' );
         }
     }
 
-    countRolls(metaInfo) {
+    countRolls( metaInfo ) {
         const user = metaInfo.author;
         const id = metaInfo.authorId;
-        const coins = _.get(this.json, `${id}.coin.freeRolls`, 0);
-        const grids = _.get(this.json, `${id}.grid.freeRolls`, 0);
-        const mazes = _.get(this.json, `${id}.maze.freeRolls`, 0);
-        const bucks = _.get(this.json, `${id}.buck.freeRolls`, 0);
-        this.setAction(ACTIONS.MESSAGE, `**${user}**
+        const coins = _.get( this.json, `${id}.coin.freeRolls`, 0 );
+        const grids = _.get( this.json, `${id}.grid.freeRolls`, 0 );
+        const mazes = _.get( this.json, `${id}.maze.freeRolls`, 0 );
+        const bucks = _.get( this.json, `${id}.buck.freeRolls`, 0 );
+        this.setAction( ACTIONS.MESSAGE, `**${user}**
 ${coins} free coin roll${coins===1?'':'s'}
 ${grids} free grid roll${grids===1?'':'s'}
 ${mazes} free maze roll${mazes===1?'':'s'}
-${bucks} free buck roll${bucks===1?'':'s'}`)
+${bucks} free buck roll${bucks===1?'':'s'}` );
     }
 
-    giveRolls(count, type, metaInfo) {
-        if (PERMISSION_LEVELS.ADMIN.includes(metaInfo.authorId)) {
-            Object.values(BUCKS).forEach(id => {
-                _.set(this.json, `${id}.${type}.freeRolls`, _.get(this.json, `${id}.${type}.freeRolls`, 0) + Number(count));
-            });
+    giveRolls( count, type, metaInfo ) {
+        if ( PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            Object.values( BUCKS ).forEach( id => {
+                _.set( this.json, `${id}.${type}.freeRolls`, _.get( this.json, `${id}.${type}.freeRolls`, 0 ) + Number( count ) );
+            } );
             this.saveJSON();
-            this.setAction(ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL);
-            if (count > 1) {
-                this.setAction(ACTIONS.MESSAGE, `Everyone gets ${count} free ${type} rolls`);
+            this.setAction( ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL );
+            if ( count > 1 ) {
+                this.setAction( ACTIONS.MESSAGE, `Everyone gets ${count} free ${type} rolls` );
             }
         } else {
-            this.setAction(ACTIONS.MESSAGE, `You can't do that`);
+            this.setAction( ACTIONS.MESSAGE, 'You can\'t do that' );
         }
     }
 
     mazeOdds() {
         let msg = 'Explore the maze until you hit a dead end! Get 3 of the same icons for a reward!\nThe value of one roll is **18.80**';
-        SIGNS.forEach((s) => {
-            if (s.value) {
-                msg += `\n${s.emote.repeat(3)}: **$${s.value}** (${s.maze_count} icons are ${s.emote})`
+        SIGNS.forEach( ( s ) => {
+            if ( s.value ) {
+                msg += `\n${s.emote.repeat( 3 )}: **$${s.value}** (${s.maze_count} icons are ${s.emote})`;
             }
-        });
-        SIGNS.forEach((s) => {
-            if (s.multiply) {
-                msg += `\n${s.emote.repeat(3)}: **${s.multiply}x** Rewards (${s.maze_count} icons are ${s.emote})`
+        } );
+        SIGNS.forEach( ( s ) => {
+            if ( s.multiply ) {
+                msg += `\n${s.emote.repeat( 3 )}: **${s.multiply}x** Rewards (${s.maze_count} icons are ${s.emote})`;
             }
-        });
-        this.setAction(ACTIONS.MESSAGE, msg);
-        this.setAction(ACTIONS.IMAGE, 'charts/maze.png');
+        } );
+        this.setAction( ACTIONS.MESSAGE, msg );
+        this.setAction( ACTIONS.IMAGE, 'charts/maze.png' );
         this.queueAction();
-        this.setAction(ACTIONS.DELAY, 0.5);
-        this.setAction(ACTIONS.IMAGE, 'charts/mazezoom.png');
+        this.setAction( ACTIONS.DELAY, 0.5 );
+        this.setAction( ACTIONS.IMAGE, 'charts/mazezoom.png' );
         this.queueAction();
-        this.setAction(ACTIONS.IMAGE, 'charts/mazebar.png');
+        this.setAction( ACTIONS.IMAGE, 'charts/mazebar.png' );
     }
 
     gridOdds() {
         let msg = 'Roll a 3x3 grid. Any row (horizontal, vertical, diagonal) can be a winner.\nThe value of one roll is **4.72**';
-        let bagTotal = _.sumBy(SIGNS, s => s.grid_amount);
-        SIGNS.forEach((s) => {
-            if (s.value) {
-                msg += `\n${s.emote.repeat(3)}: **$${s.value}** (${s.grid_amount}/${bagTotal} odds of a ${s.emote})`
+        const bagTotal = _.sumBy( SIGNS, s => s.grid_amount );
+        SIGNS.forEach( ( s ) => {
+            if ( s.value ) {
+                msg += `\n${s.emote.repeat( 3 )}: **$${s.value}** (${s.grid_amount}/${bagTotal} odds of a ${s.emote})`;
             }
-        });
-        msg += `\n${':poop:'.repeat(3)}: **$-10** (7/${bagTotal} odds of a :poop:)`
-        this.setAction(ACTIONS.MESSAGE, msg);
-        this.setAction(ACTIONS.IMAGE, 'charts/grid.png');
+        } );
+        msg += `\n${':poop:'.repeat( 3 )}: **$-10** (7/${bagTotal} odds of a :poop:)`;
+        this.setAction( ACTIONS.MESSAGE, msg );
+        this.setAction( ACTIONS.IMAGE, 'charts/grid.png' );
         this.queueAction();
-        this.setAction(ACTIONS.DELAY, 0.5);
-        this.setAction(ACTIONS.IMAGE, 'charts/gridzoom.png');
+        this.setAction( ACTIONS.DELAY, 0.5 );
+        this.setAction( ACTIONS.IMAGE, 'charts/gridzoom.png' );
         this.queueAction();
-        this.setAction(ACTIONS.IMAGE, 'charts/gridbar.png');
+        this.setAction( ACTIONS.IMAGE, 'charts/gridbar.png' );
     }
 
     coinOdds() {
-        this.setAction(ACTIONS.MESSAGE, 'Each :moneybag: gives one coin. The coinflip is weighted 0.495% chance to fail.\nThe value of one roll is **$0.96**');
-        this.setAction(ACTIONS.IMAGE, 'charts/coin.png');
+        this.setAction( ACTIONS.MESSAGE, 'Each :moneybag: gives one coin. The coinflip is weighted 0.495% chance to fail.\nThe value of one roll is **$0.96**' );
+        this.setAction( ACTIONS.IMAGE, 'charts/coin.png' );
         this.queueAction();
-        this.setAction(ACTIONS.DELAY, 0.5);
-        this.setAction(ACTIONS.IMAGE, 'charts/coinbar.png');
+        this.setAction( ACTIONS.DELAY, 0.5 );
+        this.setAction( ACTIONS.IMAGE, 'charts/coinbar.png' );
     }
 
     watchLottery( msg, user, result, metaInfo ) {
@@ -416,17 +416,17 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
             this.setAction( 'editId', `lottery-${uuid}` );
         }
         let { winnings, deerWins, setsString } = this.results( wins );
-        if ( winnings < 0 && this.hasHolyMantle(id)) {
+        if ( winnings < 0 && this.hasHolyMantle( id ) ) {
             this.queueAction();
-            this.setAction(ACTIONS.MESSAGE, `${user}'s Holy mantle might trigger, but maze poop is extra strong. its a 50-50 chance!!!`);
-            if (Math.random() > 0.5) {
+            this.setAction( ACTIONS.MESSAGE, `${user}'s Holy mantle might trigger, but maze poop is extra strong. its a 50-50 chance!!!` );
+            if ( Math.random() > 0.5 ) {
                 deerWins *= -1;
                 winnings *= -1;
                 this.queueAction();
-                this.setAction(ACTIONS.MESSAGE, `${user}'s Holy mantle triggered! ${user} is immune to poop!`);
+                this.setAction( ACTIONS.MESSAGE, `${user}'s Holy mantle triggered! ${user} is immune to poop!` );
             } else {
                 this.queueAction();
-                this.setAction(ACTIONS.MESSAGE, `No Dice! ${user} is not immune to poop today :(`);
+                this.setAction( ACTIONS.MESSAGE, `No Dice! ${user} is not immune to poop today :(` );
             }
         }
         this.queueAction();
@@ -541,7 +541,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
                 resultStr = 'Sorry, you lost.';
             }
         }
-        const fileName = this.createImage(roll);
+        const fileName = this.createImage( roll );
 
         this.queueAction();
         this.setAction( 'image', fileName );
@@ -575,7 +575,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
 
     // HELPERS
 
-    createImage(roll) {
+    createImage( roll ) {
         const image = gm( 'images/leftbrace.jpg' );
         roll.forEach( ( elem ) => {
             image.append( `images/${elem}.jpg`, true );
@@ -618,7 +618,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
             this.setAction( 'message', `**${user}**, Please wait your turn.` );
             return false;
         }
-        if ( _.get(this.json, `${id}.${type}.freeRolls`, 0) > 0) {
+        if ( _.get( this.json, `${id}.${type}.freeRolls`, 0 ) > 0 ) {
             this.json[id][type].freeRolls -= 1;
             this.setAction( 'message', `**${user}** used their free roll.` );
             this.queueAction();
@@ -644,10 +644,10 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         let deerWins = 0;
         let multiply = 1;
         const rules = SIGNS;
-        overrules.forEach(newRule => {
-            const idx = rules.findIndex(rule => rule.emote === newRule.emote);
+        overrules.forEach( newRule => {
+            const idx = rules.findIndex( rule => rule.emote === newRule.emote );
             rules[idx] = newRule;
-        });
+        } );
         rules.forEach( ( r ) => {
             if ( wins[r.emote] ) {
                 const w = wins[r.emote];

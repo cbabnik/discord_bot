@@ -24,16 +24,16 @@ const BETA = {
     VERSION: 'beta',
     NAME: 'BuckBotAlpha',
 };
-if (process.argv.length > 2 ) {
-    let defaults = {}
-    if (process.argv[2] === '--alpha') {
+if ( process.argv.length > 2 ) {
+    let defaults = {};
+    if ( process.argv[2] === '--alpha' ) {
         defaults = ALPHA;
-    } else if (process.argv[2] === '--beta') {
+    } else if ( process.argv[2] === '--beta' ) {
         defaults = BETA;
     }
-    Object.keys(defaults).forEach(k => {
+    Object.keys( defaults ).forEach( k => {
         CONFIG_DEFAULTS[k] = defaults[k];
-    })
+    } );
 }
 exports.CONFIG_DEFAULTS = CONFIG_DEFAULTS;
 exports.BETA = BETA;

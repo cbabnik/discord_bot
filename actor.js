@@ -7,8 +7,8 @@
 // muted or given a different volume for awhile. The instructions specify "what" but this class has a lot of say on the
 // "how"
 
-const { CONFIG_DEFAULTS, DMCHANNEL, ACTIONS } = require( './constants' );
-const { getVoiceChannel } = require('./util');
+const { DMCHANNEL, ACTIONS } = require( './constants' );
+const { getVoiceChannel } = require( './util' );
 const debug = require( 'debug' )( 'actor' );
 const debugExtra = require( 'debug' )( 'extra' );
 const ytdl = require( 'ytdl-core' );
@@ -33,8 +33,8 @@ const Actor = ( client ) => {
     const handle = ( instructionPkg, msg ) => {
         logForDebug( instructionPkg );
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
-        let sourceVoice = getVoiceChannel(msg.author.id);
-        if (sourceVoice) {
+        const sourceVoice = getVoiceChannel( msg.author.id );
+        if ( sourceVoice ) {
             ins.voiceChannel = sourceVoice;
         } else {
             ins.voiceChannel = undefined;
@@ -153,7 +153,7 @@ const Actor = ( client ) => {
                 c.channel.leave();
             } );
         }
-        if ( ins[ACTIONS.VOICE_CHANNEL] && (ins.audioFile || ins.audioYoutube || ins.audioLink) ) {
+        if ( ins[ACTIONS.VOICE_CHANNEL] && ( ins.audioFile || ins.audioYoutube || ins.audioLink ) ) {
             try {
                 const vc = client.channels.get( ins.voiceChannel );
                 vc.join().then( connection => {

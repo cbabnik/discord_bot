@@ -31,14 +31,14 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     const message = async ( msg ) => {
         if ( BUCKS.BUCKBOT === msg.author.id ) {
             return;
-        };
-        if (CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
-            if (msg.channel.id !== ALPHA.MAIN_CHANNEL) {
+        }
+        if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
+            if ( msg.channel.id !== ALPHA.MAIN_CHANNEL ) {
                 return;
             }
-        } else if (CONFIG_DEFAULTS.VERSION !== BETA.VERSION ){
+        } else if ( CONFIG_DEFAULTS.VERSION !== BETA.VERSION ){
             return;
-        } else if (msg.channel.id === ALPHA.MAIN_CHANNEL) {
+        } else if ( msg.channel.id === ALPHA.MAIN_CHANNEL ) {
             return;
         }
         const command = scanner.scan( msg.content );

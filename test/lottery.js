@@ -2,7 +2,7 @@ const { lottery } = require( '../components/lottery' );
 const { bank } = require( '../components/bank' );
 const { pictures } = require( '../components/pictures' );
 const { CONFIG_DEFAULTS } = require( '../constants' );
-const _ = require('lodash');
+const _ = require( 'lodash' );
 
 const sinon = require( 'sinon' );
 const expect = require( 'chai' ).expect;
@@ -22,17 +22,17 @@ describe( 'Lottery', () => {
         sinon.restore();
         sinon.stub( lottery, 'saveJSON' );
         sinon.stub( lottery, 'offLimitsFor' );
-        sinon.stub( lottery, 'isOffLimits').callsFake(() => false);
-        sinon.stub( lottery, 'createImage').callsFake(() => '');
+        sinon.stub( lottery, 'isOffLimits' ).callsFake( () => false );
+        sinon.stub( lottery, 'createImage' ).callsFake( () => '' );
         sinon.stub( bank, 'saveJSON' );
         sinon.stub( pictures, 'saveJSON' );
 
-        hasMantle = sinon.stub( lottery, 'hasHolyMantle' ).callsFake(() => false);
-    });
+        hasMantle = sinon.stub( lottery, 'hasHolyMantle' ).callsFake( () => false );
+    } );
 
     after( () => {
         sinon.restore();
-    });
+    } );
 
     beforeEach( () => {
         seed( 'test', {global: true} );
@@ -85,60 +85,60 @@ describe( 'Lottery', () => {
     describe( '-cslots', () => {
         it( 'Passes all tests', () => {
             for ( let i = 0; i < 100; i++ ) {
-                lottery.coinslots(metaInfo);
+                lottery.coinslots( metaInfo );
             }
             // wins an appropriate amount
             const totalWinnings = lottery.json['0']['coin']['winnings'];
-            expect(totalWinnings).to.equal(98);
+            expect( totalWinnings ).to.equal( 98 );
             // bank is modified correctly
-            expect(bank.json['0']['credits']).to.equal(START_AMOUNT + totalWinnings - 100);
+            expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 100 );
             // holy mantle not called
-            expect(hasMantle.called).to.equal(true);
+            expect( hasMantle.called ).to.equal( true );
         } );
     } );
 
     describe( '-gslots', () => {
         it( 'Passes all tests', () => {
-            for (let i = 0; i < 100; i++) {
-                lottery.gridslots(metaInfo);
+            for ( let i = 0; i < 100; i++ ) {
+                lottery.gridslots( metaInfo );
             }
             // wins an appropriate amount
-            const totalWinnings = lottery.json['0']['grid']['winnings'] + _.get(lottery.json['0'], 'buck.winnings', 0);
-            expect(totalWinnings).to.equal(695);
+            const totalWinnings = lottery.json['0']['grid']['winnings'] + _.get( lottery.json['0'], 'buck.winnings', 0 );
+            expect( totalWinnings ).to.equal( 695 );
             // bank is modified correctly
-            expect(bank.json['0']['credits']).to.equal(START_AMOUNT + totalWinnings - 500);
+            expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 500 );
             // holy mantle called
-            expect(hasMantle.called).to.equal(true);
+            expect( hasMantle.called ).to.equal( true );
         } );
     } );
 
     describe( '-mslots', () => {
         it( 'Passes all tests', () => {
-            for (let i = 0; i < 100; i++) {
-                lottery.mazeSlots(metaInfo);
+            for ( let i = 0; i < 100; i++ ) {
+                lottery.mazeSlots( metaInfo );
             }
             // wins an appropriate amount
-            const totalWinnings = lottery.json['0']['maze']['winnings'] + _.get(lottery.json['0'], 'buck.winnings', 0);
-            expect(totalWinnings).to.equal(1230);
+            const totalWinnings = lottery.json['0']['maze']['winnings'] + _.get( lottery.json['0'], 'buck.winnings', 0 );
+            expect( totalWinnings ).to.equal( 1230 );
             // bank is modified correctly
-            expect(bank.json['0']['credits']).to.equal(START_AMOUNT + totalWinnings - 2000);
+            expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 2000 );
             // holy mantle called
-            expect(hasMantle.called).to.equal(true);
+            expect( hasMantle.called ).to.equal( true );
         } );
     } );
 
     describe( '-bslots', () => {
         it( 'Passes all tests', () => {
-            for (let i = 0; i < 100; i++) {
-                lottery.buckSlots('test','0');
+            for ( let i = 0; i < 100; i++ ) {
+                lottery.buckSlots( 'test','0' );
             }
             // wins an appropriate amount
             const totalWinnings = lottery.json['0']['buck']['winnings'];
-            expect(totalWinnings).to.equal(3377);
+            expect( totalWinnings ).to.equal( 3377 );
             // bank is modified correctly
-            expect(bank.json['0']['credits']).to.equal(START_AMOUNT + totalWinnings);
+            expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings );
             // holy mantle not called
-            expect(hasMantle.called).to.equal(false);
+            expect( hasMantle.called ).to.equal( false );
         } );
     } );
 } );

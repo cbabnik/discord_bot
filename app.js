@@ -1,10 +1,9 @@
-if (process.argv.length === 2 || !['--alpha','--beta'].includes(process.argv[2])) {
-    console.error('Expected --alpha or --beta');
-    process.exit(1);
+if ( process.argv.length === 2 || !['--alpha','--beta'].includes( process.argv[2] ) ) {
+    process.exit( 1 );
 }
 
 const fs = require( 'fs' );
-const util = require( './util' )
+const util = require( './util' );
 
 const { Client } = require( './client' );
 const { DispatcherGenerator } = require( './dispatch' );
@@ -18,7 +17,7 @@ const client = Client( MAX_MESSAGES, LOGIN_TOKEN );
 const actor = Actor( client );
 const dispatcher = DispatcherGenerator( Scanner )( actor );
 Monitor( client, dispatcher );
-util.setClient(client);
+util.setClient( client );
 
 dispatcher.registerComponent( require( './components/utility' ).utility );
 dispatcher.registerComponent( require( './components/help' ).help );
@@ -40,7 +39,7 @@ dispatcher.registerComponent( payroll );
 setTimeout( () => {
     payroll.bootUp( actor );
 
-    if ( CONFIG_DEFAULTS.VERSION !== ALPHA.VERSION) {
+    if ( CONFIG_DEFAULTS.VERSION !== ALPHA.VERSION ) {
         util.backupOnRepeat();
     }
 }, 3000 );
