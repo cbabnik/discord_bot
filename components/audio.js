@@ -14,7 +14,10 @@ class Audio extends Component {
         this.addCommand( /^!end$/, this.endAudio );
         this.addCommand( /^-play ([^/\\]+)$/, this.playAudio );
         this.addCommand( /^!([^/\\]+)$/, this.playAudio );
-        this.addCommand( /^-play (.+)$/, this.playYoutube );
+        this.addCommand( /^-live (.+)$/, this.playYoutubeLive );
+        this.addCommand( /^-play from([\d.]+) (.+)$/, this.playYoutube );
+        this.addCommand( /^-play (.+)$/, (url) => this.playYoutube(0, url) );
+        this.addCommand( /^! from([\d.]+) (.+)$/, this.playYoutube );
         this.addCommand( /^!(.+)$/, this.playYoutube );
         this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (10|15|20) (.*)$/, this.queueItUp );
         this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (.*)$/, (url, metaInfo) => this.queueItUp(20, url, metaInfo) );
@@ -58,9 +61,22 @@ class Audio extends Component {
         this.setAction( 'audioFile', fileName );
     }
 
-    playYoutube( url ) {
+    playYoutubeLive( url ) {
+        if ( url.includes( 'youtube' ) || url.includes( 'youtu.be' ) ) {
+            this.setAction( 'audioYoutubeLive', url ) ;
+        } else {
+            this.setAction( 'message', 'Try a file name or a youtube url' );
+        }
+    }
+
+    playYoutube( seek, url ) {
+        if ( seek > 30 ) {
+            this.setAction( 'message', '30 seconds max on seek time. Cuz its freaking dumb. And expect a delay :/' );
+            return;
+        }
         if ( url.includes( 'youtube' ) || url.includes( 'youtu.be' ) ) {
             this.setAction( 'audioYoutube', url ) ;
+            this.setAction( 'audioSeek', seek);
         } else if ( url.includes( 'http' ) ) {
             this.setAction( 'audioLink', url ) ;
         } else {

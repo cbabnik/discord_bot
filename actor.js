@@ -26,6 +26,7 @@ const Actor = ( client ) => {
         // for a list of instruction choices, try constants.js
         channelId: ACTIONS.USE_SOURCE,
         voiceChannel: ACTIONS.USE_SOURCE,
+        audioSeek: 0,
         endAudio: false,
         repeat: 1,
         delay: 0,
@@ -159,7 +160,7 @@ const Actor = ( client ) => {
         if ( ins[ACTIONS.PRIME_AUDIO] ) {
             const stream = ytdl( ins[ACTIONS.PRIME_AUDIO], { filter : 'audioonly' } );
             const broadcast = client.createVoiceBroadcast();
-            broadcast.playStream( stream, {bitrate: 192000} );
+            broadcast.playStream( stream, {bitrate: 256} );
             primedAudio = broadcast;
         }
         if ( ins[ACTIONS.PLAY_PRIMED === ACTIONS.YES] ) {
@@ -169,7 +170,7 @@ const Actor = ( client ) => {
                 connection.playBroadcast( primedAudio );
             });
         }
-        if ( ins[ACTIONS.VOICE_CHANNEL] && ( ins.audioFile || ins.audioYoutube || ins.audioLink ) ) {
+        if ( ins[ACTIONS.VOICE_CHANNEL] && ( ins.audioFile || ins.audioYoutube || ins.audioLink || ins.audioYoutubeLive ) ) {
             try {
                 const vc = client.channels.get( ins.voiceChannel );
                 vc.join().then( connection => {
@@ -180,15 +181,18 @@ const Actor = ( client ) => {
                         }
                         const path = './audio/' + ins.audioFile;
                         if ( fs.existsSync( path ) ) {
-                            broadcast.playFile( path, {bitrate: 192000} );
+                            broadcast.playFile( path, {bitrate: 256} );
                         } else {
                             debug( `File ${ins.audioFile} not found` );
                         }
                     } else if ( ins.audioYoutube ) {
-                        const stream = ytdl( ins.audioYoutube, { filter : 'audioonly' } );
-                        broadcast.playStream( stream, {bitrate: 192000} );
+                        const stream = ytdl( ins.audioYoutube, { filter: 'audioonly' } );
+                        broadcast.playStream( stream, {seek: ins.audioSeek, bitrate: 256} );
+                    } else if ( ins.audioYoutubeLive ) {
+                        const stream = ytdl( ins.audioYoutubeLive );
+                        broadcast.playStream( stream, {seek: ins.audioSeek, quality: '95'} );
                     } else if ( ins.audioLink ) {
-                        broadcast.playArbitraryInput( ins.audioLink, {bitrate: 192000} );
+                        broadcast.playArbitraryInput( ins.audioLink, {bitrate: 256} );
                     }
                     connection.playBroadcast( broadcast );
                 } );
