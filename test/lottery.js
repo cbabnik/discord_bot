@@ -93,7 +93,7 @@ describe( 'Lottery', () => {
             // bank is modified correctly
             expect(bank.json['0']['credits']).to.equal(START_AMOUNT + totalWinnings - 100);
             // holy mantle not called
-            expect(hasMantle.called).to.equal(false);
+            expect(hasMantle.called).to.equal(true);
         } );
     } );
 
@@ -104,7 +104,7 @@ describe( 'Lottery', () => {
             }
             // wins an appropriate amount
             const totalWinnings = lottery.json['0']['grid']['winnings'] + _.get(lottery.json['0'], 'buck.winnings', 0);
-            expect(totalWinnings).to.equal(542);
+            expect(totalWinnings).to.equal(695);
             // bank is modified correctly
             expect(bank.json['0']['credits']).to.equal(START_AMOUNT + totalWinnings - 500);
             // holy mantle called
@@ -119,7 +119,7 @@ describe( 'Lottery', () => {
             }
             // wins an appropriate amount
             const totalWinnings = lottery.json['0']['maze']['winnings'] + _.get(lottery.json['0'], 'buck.winnings', 0);
-            expect(totalWinnings).to.equal(1714);
+            expect(totalWinnings).to.equal(1230);
             // bank is modified correctly
             expect(bank.json['0']['credits']).to.equal(START_AMOUNT + totalWinnings - 2000);
             // holy mantle called

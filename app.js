@@ -1,3 +1,8 @@
+if (process.argv.length === 2 || !['--alpha','--beta'].includes(process.argv[2])) {
+    console.error('Expected --alpha or --beta');
+    process.exit(1);
+}
+
 const fs = require( 'fs' );
 const util = require( './util' )
 
@@ -7,7 +12,7 @@ const { Monitor } = require( './monitor' );
 const { Scanner } = require( './scan' );
 const { Actor } = require( './actor' );
 const { LOGIN_TOKEN } = require( './auth' );
-const { MAX_MESSAGES } = require( './constants' );
+const { MAX_MESSAGES, CONFIG_DEFAULTS, ALPHA } = require( './constants' );
 
 const client = Client( MAX_MESSAGES, LOGIN_TOKEN );
 const actor = Actor( client );
@@ -35,5 +40,7 @@ dispatcher.registerComponent( payroll );
 setTimeout( () => {
     payroll.bootUp( actor );
 
-    util.backupOnRepeat();
+    if ( CONFIG_DEFAULTS.VERSION !== ALPHA.VERSION) {
+        util.backupOnRepeat();
+    }
 }, 3000 );

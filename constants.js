@@ -4,23 +4,40 @@ exports.BOT_PERMISSIONS = 1329069136;  // find this via the developer portal -> 
 exports.CLIENT_CONNECTED = 0;
 exports.DMCHANNEL = 'dm';
 
-exports.CONFIG_DEFAULTS = {
+const CONFIG_DEFAULTS = {
     LOG_DIRECTORY: './logs',
-    GUILD: '265430059010097162',
-    MAIN_CHANNEL: '265430059010097162',
-    MAIN_VOICE_CHANNEL: '265430059500699648',
-    NAME: 'BuckBotAlpha',
+    STORAGE_DIRECTORY: './storage',
 };
-
-exports.ALPHA = {
+const ALPHA = {
+    STORAGE_DIRECTORY: './storage/alpha/',
     MAIN_CHANNEL: '533736402085478410',
     MAIN_VOICE_CHANNEL: '533736402085478412',
+    GUILD: '533736401225908224',
+    VERSION: 'alpha',
+    NAME: 'BuckBotAlpha',
 };
-
-exports.BETA = {
+const BETA = {
+    STORAGE_DIRECTORY: './storage/beta/',
     MAIN_CHANNEL: '265430059010097162',
     MAIN_VOICE_CHANNEL: '265430059500699648',
+    GUILD: '265430059010097162',
+    VERSION: 'beta',
+    NAME: 'BuckBotAlpha',
 };
+if (process.argv.length > 2 ) {
+    let defaults = {}
+    if (process.argv[2] === '--alpha') {
+        defaults = ALPHA;
+    } else if (process.argv[2] === '--beta') {
+        defaults = BETA;
+    }
+    Object.keys(defaults).forEach(k => {
+        CONFIG_DEFAULTS[k] = defaults[k];
+    })
+}
+exports.CONFIG_DEFAULTS = CONFIG_DEFAULTS;
+exports.BETA = BETA;
+exports.ALPHA = ALPHA;
 
 exports.ACTIONS = {
     // OPTIONS

@@ -5,6 +5,7 @@
 // Dispatcher is a glorified map of commands basically.
 
 const debug = require( 'debug' )( 'dispatcher' );
+const { BUCKS, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
 
 const DispatcherGenerator = ( Scanner ) => ( actor ) => {
 
@@ -28,7 +29,16 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     };
 
     const message = async ( msg ) => {
-        if ( ['BuckBotAlpha','BuckBotBeta','BuckBot'].includes( msg.author.username ) ) {
+        if ( BUCKS.BUCKBOT === msg.author.id ) {
+            return;
+        };
+        if (CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
+            if (msg.channel.id !== ALPHA.MAIN_CHANNEL) {
+                return;
+            }
+        } else if (CONFIG_DEFAULTS.VERSION !== BETA.VERSION ){
+            return;
+        } else if (msg.channel.id === ALPHA.MAIN_CHANNEL) {
             return;
         }
         const command = scanner.scan( msg.content );

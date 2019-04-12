@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app",
-    "debug": "cross-env DEBUG=actor,dispatcher,basic node app",
+    "alpha": "node app --alpha",
+    "beta": "mocha && cross-env DEBUG=actor,dispatcher,basic node app --beta",
+    "debug": "cross-env DEBUG=actor,dispatcher,basic node app --alpha",
     "tests": "mocha",
     "lint": "eslint ./",
     "lintfix": "eslint --fix ./"

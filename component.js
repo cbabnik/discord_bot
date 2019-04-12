@@ -13,13 +13,14 @@
 // components themselves
 
 const fs = require( 'fs' );
+const { CONFIG_DEFAULTS } = require( './constants' );
 
 class Component {
     constructor( id ) {
         this.id = id;
-        this.jsonFile = './storage/'+id+'.json';
+        this.jsonFile = CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
         if ( !fs.existsSync( this.jsonFile ) ) {
-            fs.mkdir( './storage/', {}, () => {} );
+            fs.mkdir( CONFIG_DEFAULTS.STORAGE_DIRECTORY, {}, () => {} );
             fs.writeFileSync( this.jsonFile, '{}' );
         }
         this.json = require( this.jsonFile );
