@@ -15,6 +15,7 @@ const ytdl = require( 'ytdl-core' );
 const fs = require( 'fs' );
 
 const messagesForEdit = {};
+let primedAudio;
 
 const NAME = 'BuckBotAlpha';
 let nickname = NAME;
@@ -33,11 +34,13 @@ const Actor = ( client ) => {
     const handle = ( instructionPkg, msg ) => {
         logForDebug( instructionPkg );
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
-        const sourceVoice = getVoiceChannel( msg.author.id );
-        if ( sourceVoice ) {
-            ins.voiceChannel = sourceVoice;
-        } else {
-            ins.voiceChannel = undefined;
+        if ( msg ) {
+            const sourceVoice = getVoiceChannel( msg.author.id );
+            if (sourceVoice ) {
+                ins.voiceChannel = sourceVoice;
+            } else {
+                ins.voiceChannel = undefined;
+            }
         }
 
         // set
@@ -152,6 +155,19 @@ const Actor = ( client ) => {
             client.voiceConnections.array().forEach( ( c ) => {
                 c.channel.leave();
             } );
+        }
+        if ( ins[ACTIONS.PRIME_AUDIO] ) {
+            const stream = ytdl( ins[ACTIONS.PRIME_AUDIO], { filter : 'audioonly' } );
+            const broadcast = client.createVoiceBroadcast();
+            broadcast.playStream( stream, {bitrate: 192000} );
+            primedAudio = broadcast;
+        }
+        if ( ins[ACTIONS.PLAY_PRIMED === ACTIONS.YES] ) {
+            console.log('here');
+            const vc = client.channels.get( ins[ACTIONS.VOICE_CHANNEL] );
+            vc.join().then( connection => {
+                connection.playBroadcast( primedAudio );
+            });
         }
         if ( ins[ACTIONS.VOICE_CHANNEL] && ( ins.audioFile || ins.audioYoutube || ins.audioLink ) ) {
             try {

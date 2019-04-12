@@ -6,7 +6,11 @@ exports.DMCHANNEL = 'dm';
 
 const CONFIG_DEFAULTS = {
     LOG_DIRECTORY: './logs',
-    STORAGE_DIRECTORY: './storage',
+    STORAGE_DIRECTORY: './storage/',
+};
+const TEST = {
+    STORAGE_DIRECTORY: './storage/test/',
+    VERSION: 'test',
 };
 const ALPHA = {
     STORAGE_DIRECTORY: './storage/alpha/',
@@ -30,6 +34,8 @@ if ( process.argv.length > 2 ) {
         defaults = ALPHA;
     } else if ( process.argv[2] === '--beta' ) {
         defaults = BETA;
+    } else if ( process.argv[2] === '--test' ) {
+        defaults = TEST;
     }
     Object.keys( defaults ).forEach( k => {
         CONFIG_DEFAULTS[k] = defaults[k];
@@ -60,9 +66,12 @@ exports.ACTIONS = {
     DELAY: 'delay',
     TIMING: 'timing',
     NEXT: 'next',
+    PRIME_AUDIO: 'primeAudio',
+    PLAY_PRIMED: 'playPrimedAudio',
     // SENTINEL VALUES WITH SPECIAL MEANING
     USE_SOURCE: 'use_source',
     DMCHANNEL: 'dm',
+    YES: 'yes',
 };
 
 const BUCKS = {
