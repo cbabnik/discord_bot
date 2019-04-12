@@ -8,6 +8,7 @@
 // "how"
 
 const { CONFIG_DEFAULTS, DMCHANNEL, ACTIONS } = require( './constants' );
+const { getVoiceChannel } = require('./util');
 const debug = require( 'debug' )( 'actor' );
 const debugExtra = require( 'debug' )( 'extra' );
 const ytdl = require( 'ytdl-core' );
@@ -23,7 +24,7 @@ const Actor = ( client ) => {
     const DEFAULT_INSTRUCTIONS = {
         // for a list of instruction choices, try constants.js
         channelId: ACTIONS.USE_SOURCE,
-        voiceChannel: CONFIG_DEFAULTS.MAIN_VOICE_CHANNEL,
+        voiceChannel: ACTIONS.USE_SOURCE,
         endAudio: false,
         repeat: 1,
         delay: 0,
@@ -32,6 +33,12 @@ const Actor = ( client ) => {
     const handle = ( instructionPkg, msg ) => {
         logForDebug( instructionPkg );
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
+        let sourceVoice = getVoiceChannel(msg.author.id);
+        if (sourceVoice) {
+            ins.voiceChannel = sourceVoice;
+        } else {
+            ins.voiceChannel = undefined;
+        }
 
         // set
         // ___
@@ -146,7 +153,7 @@ const Actor = ( client ) => {
                 c.channel.leave();
             } );
         }
-        if ( ins.audioFile || ins.audioYoutube || ins.audioLink ) {
+        if ( ins[ACTIONS.VOICE_CHANNEL] && (ins.audioFile || ins.audioYoutube || ins.audioLink) ) {
             try {
                 const vc = client.channels.get( ins.voiceChannel );
                 vc.join().then( connection => {

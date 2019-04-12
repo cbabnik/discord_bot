@@ -1,5 +1,5 @@
 const fs = require( 'fs' );
-const { backupOnRepeat } = require( './util' )
+const util = require( './util' )
 
 const { Client } = require( './client' );
 const { DispatcherGenerator } = require( './dispatch' );
@@ -13,6 +13,7 @@ const client = Client( MAX_MESSAGES, LOGIN_TOKEN );
 const actor = Actor( client );
 const dispatcher = DispatcherGenerator( Scanner )( actor );
 Monitor( client, dispatcher );
+util.setClient(client);
 
 dispatcher.registerComponent( require( './components/utility' ).utility );
 dispatcher.registerComponent( require( './components/help' ).help );
@@ -34,5 +35,5 @@ dispatcher.registerComponent( payroll );
 setTimeout( () => {
     payroll.bootUp( actor );
 
-    backupOnRepeat();
+    util.backupOnRepeat();
 }, 3000 );
