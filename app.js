@@ -32,4 +32,4 @@ dispatcher.registerComponent( payroll );
 // client needs some time to setup, so we'll just give it a second.
 setTimeout( () => {
     payroll.bootUp( actor );
-}, 1000 );
+}, 3000 );
