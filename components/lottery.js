@@ -70,7 +70,7 @@ class Lottery extends Component {
         const user = metaInfo.author;
         if ( _.get( this.json, `${id}.buck.freeRolls`, 0 ) > 0 ) {
             this.json[id]['buck'].freeRolls -= 1;
-            this.setAction( 'message', `**${user}** used their free roll.` );
+            this.setAction( 'message', `**${user}** used their free roll. (${this.json[id]['buck'].freeRolls} left)` );
             this.queueAction();
             this.buckSlots( user, id );
         } else {
@@ -620,7 +620,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         }
         if ( _.get( this.json, `${id}.${type}.freeRolls`, 0 ) > 0 ) {
             this.json[id][type].freeRolls -= 1;
-            this.setAction( 'message', `**${user}** used their free roll.` );
+            this.setAction( 'message', `**${user}** used their free roll. (${this.json[id][type].freeRolls} left)` );
             this.queueAction();
             return true;
         }
