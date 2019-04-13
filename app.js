@@ -11,7 +11,7 @@ const { Monitor } = require( './monitor' );
 const { Scanner } = require( './scan' );
 const { Actor } = require( './actor' );
 const { LOGIN_TOKEN } = require( './auth' );
-const { MAX_MESSAGES, CONFIG_DEFAULTS, ALPHA } = require( './constants' );
+const { MAX_MESSAGES, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
 
 const client = Client( MAX_MESSAGES, LOGIN_TOKEN );
 const actor = Actor( client );
@@ -24,7 +24,6 @@ dispatcher.registerComponent( require( './components/help' ).help );
 dispatcher.registerComponent( require( './components/audio' ).audio );
 dispatcher.registerComponent( require( './components/pictures' ).pictures );
 dispatcher.registerComponent( require( './components/lottery' ).lottery );
-dispatcher.registerComponent( require( './components/bank' ).bank );
 dispatcher.registerComponent( require( './components/admin' ).admin );
 dispatcher.registerComponent( require( './components/requests' ).requests );
 
@@ -32,14 +31,26 @@ if ( fs.existsSync( './components/secret.js' ) ) {
     dispatcher.registerComponent( require( './components/secret' ).secret );
 }
 
+if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
+    // register any components which are still under initial test here.
+}
+
 const { payroll } = require( './components/payroll' );
 dispatcher.registerComponent( payroll );
+const { calendar } = require( './components/calendar' );
+dispatcher.registerComponent( calendar );
+const { bank } = require('./components/bank' );
+dispatcher.registerComponent( bank );
 
 // client needs some time to setup, so we'll just give it a second.
 setTimeout( () => {
     payroll.bootUp( actor );
+    calendar.bootUp( actor );
+    bank.bootUp( actor );
+}, 3000 );
 
-    if ( CONFIG_DEFAULTS.VERSION !== ALPHA.VERSION ) {
+setTimeout( () => {
+    if ( CONFIG_DEFAULTS.VERSION === BETA.VERSION ) {
         util.backupOnRepeat();
     }
-}, 3000 );
+}, 3500 );

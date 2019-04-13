@@ -66,8 +66,6 @@ exports.ACTIONS = {
     DELAY: 'delay',
     TIMING: 'timing',
     NEXT: 'next',
-    PRIME_AUDIO: 'primeAudio',
-    PLAY_PRIMED: 'playPrimedAudio',
     // SENTINEL VALUES WITH SPECIAL MEANING
     USE_SOURCE: 'use_source',
     DMCHANNEL: 'dm',

@@ -157,19 +157,6 @@ const Actor = ( client ) => {
                 c.channel.leave();
             } );
         }
-        if ( ins[ACTIONS.PRIME_AUDIO] ) {
-            const stream = ytdl( ins[ACTIONS.PRIME_AUDIO], { filter : 'audioonly' } );
-            const broadcast = client.createVoiceBroadcast();
-            broadcast.playStream( stream, {bitrate: 256} );
-            primedAudio = broadcast;
-        }
-        if ( ins[ACTIONS.PLAY_PRIMED === ACTIONS.YES] ) {
-            console.log('here');
-            const vc = client.channels.get( ins[ACTIONS.VOICE_CHANNEL] );
-            vc.join().then( connection => {
-                connection.playBroadcast( primedAudio );
-            });
-        }
         if ( ins[ACTIONS.VOICE_CHANNEL] && ( ins.audioFile || ins.audioYoutube || ins.audioLink || ins.audioYoutubeLive ) ) {
             try {
                 const vc = client.channels.get( ins.voiceChannel );
@@ -181,18 +168,18 @@ const Actor = ( client ) => {
                         }
                         const path = './audio/' + ins.audioFile;
                         if ( fs.existsSync( path ) ) {
-                            broadcast.playFile( path, {bitrate: 256} );
+                            broadcast.playFile( path, {bitrate: 192000} );
                         } else {
                             debug( `File ${ins.audioFile} not found` );
                         }
                     } else if ( ins.audioYoutube ) {
                         const stream = ytdl( ins.audioYoutube, { filter: 'audioonly' } );
-                        broadcast.playStream( stream, {seek: ins.audioSeek, bitrate: 256} );
+                        broadcast.playStream( stream, {seek: ins.audioSeek, bitrate: 192000} );
                     } else if ( ins.audioYoutubeLive ) {
                         const stream = ytdl( ins.audioYoutubeLive );
                         broadcast.playStream( stream, {seek: ins.audioSeek, quality: '95'} );
                     } else if ( ins.audioLink ) {
-                        broadcast.playArbitraryInput( ins.audioLink, {bitrate: 256} );
+                        broadcast.playArbitraryInput( ins.audioLink, {bitrate: 192000} );
                     }
                     connection.playBroadcast( broadcast );
                 } );

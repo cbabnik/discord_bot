@@ -320,7 +320,7 @@ Coin slots has ${total.coin<0?`claimed \`${-total.coin}\` hard earned credits`:`
         if ( this.hasHolyMantle( id ) ) {
             overrules = [{emote: ':poop:', multiply: undefined, value: undefined}];
         } else {
-            overrules = [];
+            overrules = [{emote: ':poop:', multiply: undefined, value: -10}];
         }
         const r = this.results( wins, overrules );
         const winnings = r.winnings;
