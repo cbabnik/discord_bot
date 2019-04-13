@@ -28,8 +28,8 @@ const BIRTHDAYS = {
 
 const HOLIDAYS = {
     BIGBUCKBIRTHDAY: {v:100,m:1,d:2,s:'Big Buck Birthday :deer:'},
-    LONELYBUCKSDAY: {v:69,m:3,d:14,s:'Lonely Bucks Day :blue_heart:'},
-    BRYSONLEFT: {v:13,m:2,d:14,s:'Bryson Left :wave:'},
+    LONELYBUCKSDAY: {v:69,m:2,d:14,s:'Lonely Bucks Day :blue_heart:'},
+    BRYSONLEFT: {v:13,m:3,d:14,s:'Bryson Left :wave:'},
     BUCKBOTANNIVERSARY: {v:200,m:4,d:1,s:'Buck Bot Anniversary :tada::tada::cake:'},
     INITIALDDAY: {v:50,m:6,d:6,s:'Initial D Day :regional_indicator_d:'},
     HUSBANDODAY: {v:69,m:8,d:28,s:'Husbando Day :man_dancing:'},
