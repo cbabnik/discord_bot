@@ -31,13 +31,23 @@ class Help extends Component {
         this.addCommand( /^-request$/, this.requestHelp );
         this.addCommand( /^\?request/, this.requestHelp );
         this.addCommand( /^\?requests/, this.requestHelp );
+        this.addCommand( /^\?calendar/, this.calendarHelp );
+        this.addCommand( /^\?(?:next)[hH]oliday/, this.eventsHelp );
+        this.addCommand( /^\?(?:all)[hH]olidays/, this.eventsHelp );
+        this.addCommand( /^\?(?:next)[bB]irthdays/, this.eventsHelp );
+        this.addCommand( /^\?(?:all)[bB]irthdays/, this.eventsHelp );
+        this.addCommand( /^\?queue[iI]t[uU]p/, this.queueItUpHelp );
+        this.addCommand( /^-patchnotes/, this.patchnotes );
+        this.addCommand( /^\?patchnotes/, this.patchnotes );
+        this.addCommand( /^\?live/, this.liveHelp );
         this.addCommand( /^\?(.+)/, this.helpInfo );
     }
 
     help() {
         const COMMANDS = [
             'roll', 'random', 'math', 'coinflip', 'burger', 'slots', 'play', 'endAudio', 'secrets', 'balance',
-            'allowance', 'slotstats', 'give', 'request', 'slotstatistics'
+            'allowance', 'slotstats', 'give', 'request', 'slotstatistics', 'allBirthdays', 'nextBirthday',
+            'nextHoliday', 'allHolidays', 'calendar', 'queueItUp', 'bankruptcy', 'patchnotes', 'live'
         ].map( c => `-${c}`.padEnd( 25 ) );
         this.setAction( 'message', 'Here is a list of commands!\n' +
             'To learn more about any of them, try them with a ? upfront. example: `?roll`.\n' +
@@ -45,8 +55,53 @@ class Help extends Component {
         );
     }
 
+    patchnotes() {
+        this.setAction( 'message', `Recent Changes:
+Version... 0.0.2 lets say
+        
+Slots are fun now!
+Coin Slots now uses a weighted coin.
+New Commands: \`-calendar -allBirthdays -nextBirthday -nextHoliday -allHolidays -queueItUp -bankruptcy -patchnotes -live\`
+New Audio: \`prooh readygo\`
+
+Sound effects now only happen if the user is in a voice channel, and it happens in the same voice channel they are in.
+Live music can be played with \`-live url\`
+` );
+    }
+
+    liveHelp() {
+        this.setAction( 'message',
+            `\`-live [url]\` This is like -play but it works with live youtube videos. Please only use it for live videos.`
+        );
+    }
+
     helpInfo( val ) {
         this.setAction( 'message', `There is no help file for \`${val}\`. Try \`-help\` to see most commands.` );
+    }
+
+    eventsHelp() {
+        this.setAction( 'message', `event commands:
+\`-nextBirthday\` - See whos birthday is coming up
+\`-allBirthdays\` - See everyone's birthdays
+\`-birthday [user]\` - See user's birthday
+\`-nextHoliday\` - See which specific buck holiday is coming up
+\`-allHolidays\` - See all holidays`);
+    }
+
+    queueItUpHelp() {
+        this.setAction( 'message',
+            `\`-queueItUp [url]\` countsdown a video and plays the audio in voice channel`
+        );
+    }
+
+    calendarHelp() {
+        this.setAction( 'message',
+            `-calendar
+See a visual of the events planned for the month.
+valid uses:
+    \`-calendar\` - See current month
+    \`-calendar [month]\` - See a specific month.`
+        );
     }
 
     rollHelp() {
@@ -101,7 +156,9 @@ Unleashes a sweet picture.`
 Try your luck at the slots!
     \`-slots coin\` - ($1) For the slow rollers
     \`-slots grid\` - ($5) For the high rollers
-    \`-slots maze\` - ($20) For the foolish who want to win it all`
+    \`-slots maze\` - ($20) For the foolish who want to win it all
+Put \` odds\` at the end of a command to see the odds! Ex. \`-slots coin odds\`
+Use \`-freeRolls\` to see if you have any free rolls saved up`
         );
     }
 

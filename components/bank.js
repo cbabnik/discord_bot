@@ -13,6 +13,7 @@ class Bank extends Component {
         this.addCommand( /^-give (.+) (\d+)$/, this.give );
         this.addCommand( /^-give (.+) (-\d+)$/, this.stealWarning );
         this.addCommand( /^-bankruptcy$/, this.bankruptcyInfo );
+        this.addCommand( /^\?bankruptcy$/, this.bankruptcyInfo );
         this.addCommand( /^-declare bankruptcy\. I am sure\.$/, this.declareBankruptcy );
     }
 
