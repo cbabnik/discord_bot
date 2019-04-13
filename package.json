@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "alpha": "node app --alpha",
+    "alpha": "cross-env DEBUG=actor,dispatcher,basic node app --alpha",
     "beta": "mocha && cross-env DEBUG=actor,dispatcher,basic node app --beta",
     "debug": "cross-env DEBUG=actor,dispatcher,basic node app --alpha",
     "tests": "mocha",

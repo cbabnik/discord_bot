@@ -1,7 +1,7 @@
 const { Component } = require( '../component' );
 const _ = require( 'lodash' );
 const fs = require( 'fs' );
-const { CONFIG_DEFAULTS, ACTIONS } = require( '../constants' );
+const { CONFIG_DEFAULTS, ACTIONS, PERMISSION_LEVELS } = require( '../constants' );
 
 const ID = 'audio';
 
@@ -18,35 +18,65 @@ class Audio extends Component {
         this.addCommand( /^-play from([\d.]+) (.+)$/, this.playYoutube );
         this.addCommand( /^-play (.+)$/, (url) => this.playYoutube(0, url) );
         this.addCommand( /^! from([\d.]+) (.+)$/, this.playYoutube );
-        this.addCommand( /^!(.+)$/, this.playYoutube );
+        this.addCommand( /^!(.+)$/, (url) => this.playYoutube(0, url) );
+        this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p$/, (metaInfo) => this.queueItUp(20, undefined, metaInfo) );
         this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (10|15|20) (.*)$/, this.queueItUp );
         this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (.*)$/, (url, metaInfo) => this.queueItUp(20, url, metaInfo) );
+        this.addCommand( /^#prepare queue (.*)$/, this.prepareQueue );
+    }
+
+    prepareQueue(url, metaInfo) {
+        if (PERMISSION_LEVELS.SUPERUSER.includes(metaInfo.authorId)) {
+            const stack = _.get(this.json, `qitup`, []);
+            stack.push(url);
+            this.json.qitup = stack;
+            this.saveJSON();
+        }
+        this.setAction(ACTIONS.SECURITY, PERMISSION_LEVELS.SUPERUSER);
+        this.setAction(ACTIONS.MESSAGE, 'Ok, Its ready for when its needed');
     }
 
     queueItUp( delay, url, metaInfo ) {
-        if (metaInfo.channelId === CONFIG_DEFAULTS.MAIN_CHANNEL ) {
-            this.setAction(ACTIONS.MESSAGE, 'Queue-It-Up Boys!');
-        } else {
-            this.setAction(ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL );
-            this.setAction(ACTIONS.MESSAGE, `Queue-It-Up Boys! ${url}`);
+        if (!url) {
+            if (this.json.qitup) {
+                url = this.json.qitup.pop();
+                this.saveJSON();
+                this.setAction(ACTIONS.MESSAGE, "Queue what up? Hold on I've got you.");
+                this.queueAction();
+                this.setAction(ACTIONS.DELAY,2);
+                this.setAction(ACTIONS.MESSAGE, `Queue-It-Up Boys! ${url}`);
+            }
+            if (!url) {
+                this.setAction(ACTIONS.MESSAGE, "Queue what up?");
+                return;
+            }
+        }
+        else {
+            if (metaInfo.channelId === CONFIG_DEFAULTS.MAIN_CHANNEL ) {
+                this.setAction(ACTIONS.MESSAGE, 'Queue-It-Up Boys!');
+            } else {
+                this.setAction(ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.setAction(ACTIONS.MESSAGE, `Queue-It-Up Boys! ${url}`);
+            }
         }
         this.queueAction();
         this.setAction(ACTIONS.MESSAGE, `${delay} seconds. Get it ready and muted!`);
         this.setAction(ACTIONS.MESSAGE_ID, 'queueItUp');
-        this.setAction(ACTIONS.PRIME_AUDIO, url);
         this.setAction(ACTIONS.DELAY, 1);
         this.queueAction();
         this.setAction(ACTIONS.EDIT_ID, 'queueItUp');
         this.setAction(ACTIONS.MESSAGE, `${delay} seconds. Get it ready and muted! 3...2...1...`);
         this.setAction(ACTIONS.DELAY, delay-3);
         this.queueAction();
-        this.setAction(ACTIONS.AUDIO_YOUTUBE, url);
-        this.setAction(ACTIONS.PLAY_PRIMED, ACTIONS.YES);
-        this.setAction(ACTIONS.DELAY, 2);
+        this.setAction(ACTIONS.AUDIO_FILE, 'readygo');
+        this.setAction(ACTIONS.DELAY, 0.90);
         this.queueAction();
         this.setAction(ACTIONS.EDIT_ID, 'queueItUp');
         this.setAction(ACTIONS.MESSAGE, `${delay} seconds. Get it ready and muted! 3...2...1... Go!`);
-        this.setAction(ACTIONS.DELAY, 1.3);
+        this.setAction(ACTIONS.AUDIO_YOUTUBE, url);
+        this.setAction('audioSeek', 1.4);
+        this.setAction(ACTIONS.END_AUDIO, true);
+        this.setAction(ACTIONS.DELAY, 2.25);
     }
 
     playAudio( fileName ) {
@@ -62,7 +92,7 @@ class Audio extends Component {
     }
 
     playYoutubeLive( url ) {
-        if ( url.includes( 'youtube' ) || url.includes( 'youtu.be' ) ) {
+        if ( url && url.includes( 'youtube' ) || url.includes( 'youtu.be' ) ) {
             this.setAction( 'audioYoutubeLive', url ) ;
         } else {
             this.setAction( 'message', 'Try a file name or a youtube url' );
