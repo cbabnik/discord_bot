@@ -40,6 +40,9 @@ class Help extends Component {
         this.addCommand( /^-patchnotes/, this.patchnotes );
         this.addCommand( /^\?patchnotes/, this.patchnotes );
         this.addCommand( /^\?live/, this.liveHelp );
+        this.addCommand( /^\?newquote/, this.quoteHelp );
+        this.addCommand( /^\?quote/, this.quoteHelp );
+        this.addCommand( /^-newquote$/, this.quoteHelp );
         this.addCommand( /^\?(.+)/, this.helpInfo );
     }
 
@@ -61,12 +64,24 @@ Version... 0.0.2 lets say
         
 Slots are fun now!
 Coin Slots now uses a weighted coin.
-New Commands: \`-calendar -allBirthdays -nextBirthday -nextHoliday -allHolidays -queueItUp -bankruptcy -patchnotes -live\`
+New Commands: \`-calendar -allBirthdays -nextBirthday -nextHoliday -allHolidays -queueItUp -bankruptcy -patchnotes -live -quote -newquote\`
 New Audio: \`prooh readygo\`
 
 Sound effects now only happen if the user is in a voice channel, and it happens in the same voice channel they are in.
 Live music can be played with \`-live url\`
 ` );
+    }
+
+    quoteHelp() {
+        this.setAction( 'message',
+`Quotes:
+    \`-newquote [username] [quote]\` - Writes a new quote for a specific user, dated now
+    \`-newquote [username] [Date] "[quote]"\` - Writes a new quote for a specific user, with a given date (note the quotation marks)
+    \`-quote [username]\` - Get a random quote
+    \`-quote [username]\` - Get a random quote belonging to a specific person
+    \`-quote [username] [index]\` - Get a specific quote for a person
+Be warned. If you misquote someone your permissions to add quotes will be revoked.`
+        );
     }
 
     liveHelp() {

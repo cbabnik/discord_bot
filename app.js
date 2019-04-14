@@ -26,10 +26,7 @@ dispatcher.registerComponent( require( './components/pictures' ).pictures );
 dispatcher.registerComponent( require( './components/lottery' ).lottery );
 dispatcher.registerComponent( require( './components/admin' ).admin );
 dispatcher.registerComponent( require( './components/requests' ).requests );
-
-if ( fs.existsSync( './components/secret.js' ) ) {
-    dispatcher.registerComponent( require( './components/secret' ).secret );
-}
+dispatcher.registerComponent( require( './components/quotes' ).quotes );
 
 if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
     // register any components which are still under initial test here.
@@ -41,6 +38,10 @@ const { calendar } = require( './components/calendar' );
 dispatcher.registerComponent( calendar );
 const { bank } = require('./components/bank' );
 dispatcher.registerComponent( bank );
+
+if ( fs.existsSync( './components/secret.js' ) ) {
+    dispatcher.registerComponent( require( './components/secret' ).secret );
+}
 
 // client needs some time to setup, so we'll just give it a second.
 setTimeout( () => {
