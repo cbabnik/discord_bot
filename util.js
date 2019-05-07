@@ -1,4 +1,4 @@
-const { BUCKS, CONFIG_DEFAULTS } = require( './constants' );
+const { BUCKS, ALIASES, CONFIG_DEFAULTS } = require( './constants' );
 const archiver = require( 'archiver' );
 const fs = require( 'fs' );
 const debug = require( 'debug' )( 'basic' );
@@ -19,8 +19,28 @@ exports.getId = ( username ) => {
     if ( Object.keys( BUCKS ).includes( upperUser ) ) {
         return BUCKS[upperUser];
     }
-    const user = client.users.find( u => u.username.toUpperCase() === upperUser );
+    if ( Object.keys( ALIASES ).includes( upperUser ) ) {
+        return ALIASES[upperUser];
+    }
+    let user = client.users.find( u => u.username.toUpperCase() === upperUser );
+    if (user) {
+        return user.id;
+    }
+    user = client.users.find( u => u.nickname?u.nickname.toUpperCase() === upperUser:false );
+    if (!user) {
+        return undefined
+    }
     return user.id;
+};
+
+exports.getUser = ( id ) => {
+    const user = client.users.find( u => u.id === id );
+    if ( user ) {
+        if (user.nickname)
+            return user.nickname;
+        return user.username;
+    }
+    return `user#${id}`
 };
 
 exports.getVoiceChannel = ( id ) => {
