@@ -29,12 +29,12 @@ describe( 'Utility', () => {
         it( 'check negative values', () => {
             utility.roll( '-5', '-5' );
             const result = utility.commitAction();
-            expect( result.message ).to.equal( '-5' );
+            expect( result.message ).to.include( '-5' );
         } );
         it( 'check big values', () => {
             utility.roll( '10000000000000000000000', '10000000000000000000000' );
             const result = utility.commitAction();
-            expect( result.message ).to.equal( '10000000000000000000000' );
+            expect( result.message ).to.include( '10000000000000000000000' );
         } );
     } );
 

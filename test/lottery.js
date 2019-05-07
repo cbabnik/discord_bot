@@ -73,12 +73,12 @@ describe( 'Lottery', () => {
         it( 'multiply interaction is correct', () => {
             const r = lottery.results( wins );
             expect( r.winnings ).to.equal( -773955000 );
-            expect( r.deerWins ).to.equal( -992250 );
+            expect( r.deerWins ).to.equal( -992250*3 );
         } );
         it( 'overrules work', () => {
             const r = lottery.results( wins, overrules );
             expect( r.winnings ).to.equal( 764032500 );
-            expect( r.deerWins ).to.equal( 992250 );
+            expect( r.deerWins ).to.equal( 992250*3 );
         } );
     } );
 
@@ -89,7 +89,7 @@ describe( 'Lottery', () => {
             }
             // wins an appropriate amount
             const totalWinnings = lottery.json['0']['coin']['winnings'];
-            expect( totalWinnings ).to.equal( 98 );
+            expect( totalWinnings ).to.equal( 92 );
             // bank is modified correctly
             expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 100 );
             // holy mantle not called
@@ -119,7 +119,7 @@ describe( 'Lottery', () => {
             }
             // wins an appropriate amount
             const totalWinnings = lottery.json['0']['maze']['winnings'] + _.get( lottery.json['0'], 'buck.winnings', 0 );
-            expect( totalWinnings ).to.equal( 1230 );
+            expect( totalWinnings ).to.equal( 2172 );
             // bank is modified correctly
             expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 2000 );
             // holy mantle called
