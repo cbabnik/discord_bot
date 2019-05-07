@@ -1,9 +1,17 @@
 const { bank } = require( '../components/bank' );
+const util = require( '../util' );
 
 const expect = require( 'chai' ).expect;
 const sinon = require( 'sinon' );
 
 sinon.stub( bank, 'saveJSON' );
+sinon.stub( util, 'getId' ).callsFake( (user) => {
+    switch(user)
+    {
+        case 'One': return '1';
+        case 'Two': return '2';
+    }
+} );
 
 const metaInfo = {
     authorId: '2',
@@ -21,7 +29,7 @@ describe( 'Bank', () => {
 
     describe( '-balance', () => {
         it( 'returns value', () => {
-            bank.getAmount( metaInfo );
+            bank.getAmount( false, metaInfo );
             const result = bank.commitAction();
             expect( result.message ).to.include( '10' );
         } );
@@ -29,16 +37,24 @@ describe( 'Bank', () => {
 
     describe( '-give', () => {
         it( 'gives correctly', () => {
-
+            bank.give('One', 5, metaInfo);
+            expect(bank.balance( metaInfo.authorId ) ).to.equal( 5 );
+            expect(bank.balance( '1' ) ).to.equal( 15 );
         } );
         it( 'doesnt give to nonexistant player', () => {
-
+            bank.give('Three', 15, metaInfo);
+            expect(bank.balance( metaInfo.authorId ) ).to.equal( 10 );
+            expect(bank.balance( '1' ) ).to.equal( 10 );
         } );
         it( 'cant over give', () => {
-
+            bank.give('One', 15, metaInfo);
+            expect(bank.balance( metaInfo.authorId ) ).to.equal( 10 );
+            expect(bank.balance( '1' ) ).to.equal( 10 );
         } );
         it( 'cant give negative', () => {
-
+            bank.give('One', -5, metaInfo);
+            expect(bank.balance( metaInfo.authorId ) ).to.equal( 10 );
+            expect(bank.balance( '1' ) ).to.equal( 10 );
         } );
     } );
     describe( 'balance API', () => {
