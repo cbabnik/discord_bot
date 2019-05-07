@@ -9,6 +9,8 @@ class Help extends Component {
         super( ID );
         this.addCommand( /^-help/, this.help );
         this.addCommand( /^\?help/, this.help );
+        this.addCommand( /^-list/, this.playHelp );
+        this.addCommand( /^!list/, this.playHelp );
         this.addCommand( /^\?roll/, this.rollHelp );
         this.addCommand( /^\?random/, this.randomHelp );
         this.addCommand( /^\?math/, this.mathHelp );
@@ -40,9 +42,11 @@ class Help extends Component {
         this.addCommand( /^-patchnotes/, this.patchnotes );
         this.addCommand( /^\?patchnotes/, this.patchnotes );
         this.addCommand( /^\?live/, this.liveHelp );
-        this.addCommand( /^\?newquote/, this.quoteHelp );
+        this.addCommand( /^\?new ?[qQ]uote/, this.quoteHelp );
         this.addCommand( /^\?quote/, this.quoteHelp );
-        this.addCommand( /^-newquote$/, this.quoteHelp );
+        this.addCommand( /^-new ?[qQ]uote$/, this.quoteHelp );
+        this.addCommand( /^-loan$/, this.loanHelp );
+        this.addCommand( /^\?loan$/, this.loanHelp );
         this.addCommand( /^\?(.+)/, this.helpInfo );
     }
 
@@ -50,7 +54,8 @@ class Help extends Component {
         const COMMANDS = [
             'roll', 'random', 'math', 'coinflip', 'burger', 'slots', 'play', 'endAudio', 'secrets', 'balance',
             'allowance', 'slotstats', 'give', 'request', 'slotstatistics', 'allBirthdays', 'nextBirthday',
-            'nextHoliday', 'allHolidays', 'calendar', 'queueItUp', 'bankruptcy', 'patchnotes', 'live'
+            'nextHoliday', 'allHolidays', 'calendar', 'queueItUp', 'bankruptcy', 'patchnotes', 'live', 'brag',
+            'quote', 'newquote', 'iou', 'loan'
         ].map( c => `-${c}`.padEnd( 25 ) );
         this.setAction( 'message', 'Here is a list of commands!\n' +
             'To learn more about any of them, try them with a ? upfront. example: `?roll`.\n' +
@@ -64,7 +69,7 @@ Version... 0.0.2 lets say
         
 Slots are fun now!
 Coin Slots now uses a weighted coin.
-New Commands: \`-calendar -allBirthdays -nextBirthday -nextHoliday -allHolidays -queueItUp -bankruptcy -patchnotes -live -quote -newquote\`
+New Commands: \`-calendar -allBirthdays -nextBirthday -nextHoliday -allHolidays -queueItUp -bankruptcy -patchnotes -live -quote -newquote -brag\`
 New Audio: \`prooh readygo\`
 
 Sound effects now only happen if the user is in a voice channel, and it happens in the same voice channel they are in.
@@ -236,7 +241,7 @@ Give away your cash, you won't.`
     requestHelp() {
         this.setAction( 'message',
             `valid uses:
-    \`-request [describe feature]\` - make a new request
+    \`-new request [describe feature]\` - make a new request
     \`-requests\` - check your requests
     \`-requests all\` - read all your requests
     \`-requests new\` - read your new requests
@@ -249,6 +254,19 @@ Give away your cash, you won't.`
         this.setAction( 'message',
             `\`-slotstatistics\`
 Gives some brief overall statistics.`
+        );
+    }
+
+    loanHelp() {
+        this.setAction( 'message',
+            `valid uses:
+    \`-loans\` - check available loans
+    \`-loan debts\` - check loans you are involved with
+    \`-loan offer <args>\` - offer a new loan
+    \`-loan adjust <args>\` - change your loan offerring
+    \`-loan relinquish\` - destroy your offering, turning all debt to IOU
+    \`-loan takeout <amount> <player>\` - take out a loan
+\`<args>\` can include \`max=<amount>, type=compound, interest=<percent per day>, rate=<charge per day> flat=<charge to take out a loan>\``
         );
     }
 }
