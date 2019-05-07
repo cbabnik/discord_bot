@@ -267,7 +267,7 @@ Coin slots has ${total.coin<0?`claimed \`${-total.coin}\` hard earned credits`:`
             this.setAction( 'delay', ( chain+2 )*.2 );
             totalDelay += ( chain+2 )*.2 ;
             this.setAction( 'editId', `lottery-${uuid}` );
-            if ( Math.random() < 0.5 ) {
+            if ( Math.random() < 0.505 ) {
                 chainStr += ':x:';
             } else {
                 chain += 1;
@@ -653,7 +653,7 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
                 const w = wins[r.emote];
                 if ( r.special ) {
                     if ( r.emote === ':deer:' ) {
-                        deerWins += 1;
+                        deerWins += w;
                     }
                     setsString += `\n${_.repeat( `${r.emote}`, 3 * w )}  Reward: ${r.special}`;
                 }
