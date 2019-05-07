@@ -8,9 +8,8 @@ const ID = 'utility';
 class Utility extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-roll (\d+)$/, ( max ) => this.roll( 1,max ) );
-        this.addCommand( /^-roll (-?\d+) (-?\d+)$/, this.roll );
-        this.addCommand( /^-roll/, this.rollInfo );
+        // first one in the list is not working for some reason
+        this.addCommand( /^-notwork$/, this.rollInfo );
         this.addCommand( /^-random pick(\d+) (\S+(?: \S+)+)$/, this.random );
         this.addCommand( /^-random pick(\d+) (\S+(?:,[^\s,]+)+)$/, this.random );
         this.addCommand( /^-random pick (\d+) (\S+(?: \S+)+)$/, this.random );
@@ -23,6 +22,9 @@ class Utility extends Component {
         this.addCommand( /^-coinflip$/, () => this.coinflip( '', '' ) );
         this.addCommand( /^-coinflip (\S+) (\S+)$/, this.coinflip );
         this.addCommand( /^-coinflip/, this.coinflipInfo );
+        this.addCommand( /^-roll (\d+)$/, ( max ) => this.roll( 1,max ) );
+        this.addCommand( /^-roll (-?\d+) (-?\d+)$/, this.roll );
+        this.addCommand( /^-roll/, this.rollInfo );
     }
 
     rollInfo() {
@@ -31,7 +33,7 @@ class Utility extends Component {
 
     roll( min, max ) {
         const result = bigInt.randBetween( min,max );
-        this.setAction( 'message', result.toString() );
+        this.setAction( 'message', `You rolled: **${result.toString()}**` );
     }
 
     randomInfo() {
