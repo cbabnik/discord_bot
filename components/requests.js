@@ -25,12 +25,17 @@ class Requests extends Component {
         this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, metaInfo ) );
         this.addCommand( /^-requests reply (\d+) (.+)$/, this.reply );
         this.addCommand( /^-requests/, this.checkRequests );
-        this.addCommand( /^-request (.*)$/, this.addRequest );
+        this.addCommand( /^-new ?[rR]equest (.*)$/s, this.addRequest );
+        this.addCommand( /^-request (.*)$/, this.requestInfo );
 
         if ( this.json['requests'] === undefined ) {
             this.json['requests'] = [];
         }
         requests = this.json['requests'];
+    }
+
+    requestInfo() {
+        this.setAction('message', 'Did you mean `-new request [request]`? or maybe `-requests`?')
     }
 
     addRequest( request, metaInfo ) {
