@@ -108,7 +108,7 @@ class Payroll extends Component {
         const am1019 = new Date();
         am1019.setHours( 10 );
         am1019.setMinutes( 19 );
-        am1019.setSeconds( 0 );
+        am1019.setSeconds( 15 );
         am1019.setMilliseconds( 0 );
         const currentTime = new Date();
         const nextPayout = new Date( am1019 );

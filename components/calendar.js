@@ -203,7 +203,7 @@ class Calendar extends Component {
         const am = new Date();
         am.setHours( 24 );
         am.setMinutes( 0 );
-        am.setSeconds( 1 );
+        am.setSeconds( 15 );
         am.setMilliseconds( 0 );
         return am;
     }
@@ -212,7 +212,7 @@ class Calendar extends Component {
         const am = new Date();
         am.setHours( 0 );
         am.setMinutes( 0 );
-        am.setSeconds( 1 );
+        am.setSeconds( 15 );
         am.setMilliseconds( 0 );
         return am;
     }
