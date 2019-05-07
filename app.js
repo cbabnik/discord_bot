@@ -27,6 +27,7 @@ dispatcher.registerComponent( require( './components/lottery' ).lottery );
 dispatcher.registerComponent( require( './components/admin' ).admin );
 dispatcher.registerComponent( require( './components/requests' ).requests );
 dispatcher.registerComponent( require( './components/quotes' ).quotes );
+dispatcher.registerComponent( require( './components/fun' ).fun );
 
 if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
     // register any components which are still under initial test here.
