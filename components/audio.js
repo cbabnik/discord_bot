@@ -88,7 +88,6 @@ class Audio extends Component {
             return;
         }
         this.setAction( 'audioFile', fileName );
-        this.setAction( 'audioFile', fileName );
     }
 
     playYoutubeLive( url ) {
@@ -100,7 +99,7 @@ class Audio extends Component {
     }
 
     playYoutube( seek, url ) {
-        if ( seek > 30 ) {
+        if ( seek > 45 ) {
             this.setAction( 'message', '30 seconds max on seek time. Cuz its freaking dumb. And expect a delay :/' );
             return;
         }
