@@ -7,7 +7,7 @@
 // muted or given a different volume for awhile. The instructions specify "what" but this class has a lot of say on the
 // "how"
 
-const { DMCHANNEL, ACTIONS } = require( './constants' );
+const { BUCKS, DMCHANNEL, ACTIONS } = require( './constants' );
 const { getVoiceChannel } = require( './util' );
 const debug = require( 'debug' )( 'actor' );
 const debugExtra = require( 'debug' )( 'extra' );
@@ -15,7 +15,6 @@ const ytdl = require( 'ytdl-core' );
 const fs = require( 'fs' );
 
 const messagesForEdit = {};
-let primedAudio;
 
 const NAME = 'BuckBotAlpha';
 let nickname = NAME;
@@ -97,6 +96,12 @@ const Actor = ( client ) => {
 
         // messages
         // ________
+        if ( ins.message && ins.message.includes('user#')) {
+            Object.keys(BUCKS).forEach(k => {
+                const name = k.charAt(0) + k.slice(1).toLowerCase();
+                ins.message = ins.message.replace(`user#${BUCKS[k]}`, name);
+            });
+        }
         if ( ins.asUsername ) {
             msg.guild.members.get( client.user.id ).setNickname( ins.asUsername ).then( () => {
                 nickname = ins.asUsername;
