@@ -19,10 +19,6 @@ class Component {
     constructor( id ) {
         this.id = id;
         this.jsonFile = CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
-        if ( !fs.existsSync( this.jsonFile ) ) {
-            fs.mkdir( CONFIG_DEFAULTS.STORAGE_DIRECTORY, {}, () => {} );
-            fs.writeFileSync( this.jsonFile, '{}' );
-        }
         this.json = require( this.jsonFile );
         this.action = {};
         this.actionPart = this.action;
@@ -54,6 +50,10 @@ class Component {
     }
 
     saveJSON() {
+        // make this async, it should only be called on exit and once per hour
+        if ( !fs.existsSync( this.jsonFile ) ) {
+            fs.mkdir( CONFIG_DEFAULTS.STORAGE_DIRECTORY, {}, () => {} );
+        }
         fs.writeFile( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {} );
     }
 }
