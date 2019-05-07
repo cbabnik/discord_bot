@@ -36,7 +36,7 @@ const Actor = ( client ) => {
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
         if ( msg ) {
             const sourceVoice = getVoiceChannel( msg.author.id );
-            if (sourceVoice ) {
+            if ( sourceVoice ) {
                 ins.voiceChannel = sourceVoice;
             } else {
                 ins.voiceChannel = undefined;
@@ -96,11 +96,11 @@ const Actor = ( client ) => {
 
         // messages
         // ________
-        if ( ins.message && ins.message.includes('user#')) {
-            Object.keys(BUCKS).forEach(k => {
-                const name = k.charAt(0) + k.slice(1).toLowerCase();
-                ins.message = ins.message.replace(`user#${BUCKS[k]}`, name);
-            });
+        if ( ins.message && ins.message.includes( 'user#' ) ) {
+            Object.keys( BUCKS ).forEach( k => {
+                const name = k.charAt( 0 ) + k.slice( 1 ).toLowerCase();
+                ins.message = ins.message.replace( `user#${BUCKS[k]}`, name );
+            } );
         }
         if ( ins.asUsername ) {
             msg.guild.members.get( client.user.id ).setNickname( ins.asUsername ).then( () => {

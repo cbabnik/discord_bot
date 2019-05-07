@@ -79,7 +79,7 @@ Live music can be played with \`-live url\`
 
     quoteHelp() {
         this.setAction( 'message',
-`Quotes:
+            `Quotes:
     \`-newquote [username] [quote]\` - Writes a new quote for a specific user, dated now
     \`-newquote [username] [Date] "[quote]"\` - Writes a new quote for a specific user, with a given date (note the quotation marks)
     \`-quote [username]\` - Get a random quote
@@ -91,7 +91,7 @@ Be warned. If you misquote someone your permissions to add quotes will be revoke
 
     liveHelp() {
         this.setAction( 'message',
-            `\`-live [url]\` This is like -play but it works with live youtube videos. Please only use it for live videos.`
+            '`-live [url]` This is like -play but it works with live youtube videos. Please only use it for live videos.'
         );
     }
 
@@ -105,12 +105,12 @@ Be warned. If you misquote someone your permissions to add quotes will be revoke
 \`-allBirthdays\` - See everyone's birthdays
 \`-birthday [user]\` - See user's birthday
 \`-nextHoliday\` - See which specific buck holiday is coming up
-\`-allHolidays\` - See all holidays`);
+\`-allHolidays\` - See all holidays` );
     }
 
     queueItUpHelp() {
         this.setAction( 'message',
-            `\`-queueItUp [url]\` countsdown a video and plays the audio in voice channel`
+            '`-queueItUp [url]` countsdown a video and plays the audio in voice channel'
         );
     }
 

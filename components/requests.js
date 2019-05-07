@@ -35,7 +35,7 @@ class Requests extends Component {
     }
 
     requestInfo() {
-        this.setAction('message', 'Did you mean `-new request [request]`? or maybe `-requests`?')
+        this.setAction( 'message', 'Did you mean `-new request [request]`? or maybe `-requests`?' );
     }
 
     addRequest( request, metaInfo ) {

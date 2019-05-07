@@ -37,7 +37,7 @@ const { payroll } = require( './components/payroll' );
 dispatcher.registerComponent( payroll );
 const { calendar } = require( './components/calendar' );
 dispatcher.registerComponent( calendar );
-const { bank } = require('./components/bank' );
+const { bank } = require( './components/bank' );
 dispatcher.registerComponent( bank );
 
 if ( fs.existsSync( './components/secret.js' ) ) {

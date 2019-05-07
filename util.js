@@ -23,12 +23,12 @@ exports.getId = ( username ) => {
         return ALIASES[upperUser];
     }
     let user = client.users.find( u => u.username.toUpperCase() === upperUser );
-    if (user) {
+    if ( user ) {
         return user.id;
     }
     user = client.users.find( u => u.nickname?u.nickname.toUpperCase() === upperUser:false );
-    if (!user) {
-        return undefined
+    if ( !user ) {
+        return undefined;
     }
     return user.id;
 };
@@ -36,11 +36,12 @@ exports.getId = ( username ) => {
 exports.getUser = ( id ) => {
     const user = client.users.find( u => u.id === id );
     if ( user ) {
-        if (user.nickname)
+        if ( user.nickname ) {
             return user.nickname;
+        }
         return user.username;
     }
-    return `user#${id}`
+    return `user#${id}`;
 };
 
 exports.getVoiceChannel = ( id ) => {
