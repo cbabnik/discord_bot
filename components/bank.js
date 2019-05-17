@@ -5,7 +5,6 @@ const debug = require( 'debug' )( 'basic' );
 const { ACTIONS, CONFIG_DEFAULTS } = require( '../constants' );
 
 const ID = 'bank';
-const DAYMS = 1000*24*60*60; // can be moved to constants
 
 class Bank extends Component {
     constructor() {
@@ -32,44 +31,11 @@ class Bank extends Component {
         this.addCommand( /^-loan take ?[oO]ut (.+) (\d*\.\d+)$/, ( p, a, mi ) => this.takeOut( a,p,mi ) );
     }
 
-    bootUp( actor ) {
-        this.actor = actor;
-        const nextDay = new Date();
-        nextDay.setHours( 24 );
-        nextDay.setMinutes( 0 );
-        nextDay.setSeconds( 1 );
-        nextDay.setMilliseconds( 0 );
-        const currentTime = new Date();
-        if ( this.json['lastDay'] ) {
-            const lastDay = new Date( this.json['lastDay'] );
-            const timePassed = currentTime.getTime() - lastDay.getTime();
-            if ( timePassed > DAYMS ) {
-                this.newDay();
-            }
-        } else {
-            this.newDay();
-        }
-        setTimeout( () => {
-            this.newDay();
-            setInterval( () => {
-                this.newDay();
-            }, DAYMS );
-        }, nextDay.getTime() - currentTime.getTime() );
+    bootUp() {
+        this.addScheduledEvent();
     }
 
-    newDay() {
-        const lastDayTime = _.get( this.json, 'lastDay', 0 );
-        const currentTime = new Date();
-        if ( currentTime.getTime() - lastDayTime < DAYMS ) {
-            return;
-        }
-        const today = new Date();
-        today.setHours( 0 );
-        today.setMinutes( 0 );
-        today.setSeconds( 1 );
-        today.setMilliseconds( 0 );
-        this.json['lastDay'] = today.getTime();
-
+    scheduledEvent() {
         Object.keys( this.json ).forEach( from => {
             Object.keys( _.get( this.json, `${from}.debt`, {} ) ).forEach( to => {
                 const debt = _.get( this.json, `${from}.debt.${to}.loanSize`, 0 ) + _.get( this.json, `${from}.debt.${to}.interest`, 0 );

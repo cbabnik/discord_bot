@@ -24,14 +24,14 @@ class Component {
     constructor( id ) {
         this.id = id;
         this.jsonFile = CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
-        this.json = require( this.jsonFile );
+        this.json = fs.existsSync( this.jsonFile )?require( this.jsonFile ):{};
         this.action = {};
         this.actionPart = this.action;
         this.commands = [];
 
-        setTimeout(() => {
+        setTimeout( () => {
             this.bootUp();
-        }, 3000);
+        }, 3000 );
     }
 
     addCommand( regex, cb ) {
@@ -59,23 +59,21 @@ class Component {
     }
 
     saveJSON() {
-        // make this async, it should only be called on exit and once per hour
-        if ( !fs.existsSync( this.jsonFile ) ) {
-            fs.mkdir( CONFIG_DEFAULTS.STORAGE_DIRECTORY, {}, () => {} );
+        if (fs.existsSync( this.jsonFile ) || this.json !== {}) {
+            fs.writeFileSync( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {} );
         }
-        fs.writeFile( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {} );
     }
 
-    get(field, default_val=0) {
-        _.set(this.json, field, default_val);
+    get( field, default_val=0 ) {
+        _.set( this.json, field, default_val );
     }
 
-    set(field, value) {
-        _.set(this.json, field, value);
+    set( field, value ) {
+        _.set( this.json, field, value );
     }
 
-    update(field, operator, default_val=0, f = _.sum) {
-        _.set(this.json, field, f( _.get(this.json, field, default_val) , operator) );
+    update( field, operator, default_val=0, f = _.sum ) {
+        _.set( this.json, field, f( _.get( this.json, field, default_val ) , operator ) );
     }
 
     bootUp() {
@@ -83,53 +81,52 @@ class Component {
         // This triggers 3 seconds after constructor to allow several things to set up before actions are made
     }
 
-    addScheduledEvent(time=util.time.today(), field='timestamps.default', delay=DAYMS) {
+    addScheduledEvent( time=util.time.today(), field='timestamps.default', delay=DAYMS ) {
         // TODO: add repeat = false option to scheduled events, or some manner of unscheduling
-        if (typeof time !== 'number') {
-            time = time.getTime()
+        if ( typeof time !== 'number' ) {
+            time = time.getTime();
         }
         const currentTime = new Date().getTime();
         let lastTime;
-        if (currentTime <= time) { // if passed time
-            lastTime = time + Math.floor((currentTime-time)/delay)*delay;
-        }
-        else {
-            lastTime = time - Math.ceil((time-currentTime)/delay)*delay;
+        if ( currentTime <= time ) { // if passed time
+            lastTime = time + Math.floor( ( currentTime-time )/delay )*delay;
+        } else {
+            lastTime = time - Math.ceil( ( time-currentTime )/delay )*delay;
         }
         const nextTime = lastTime+delay;
-        const timestamp = this.get(field, undefined);
+        const timestamp = this.get( field, undefined );
         if ( typeof timestamp === 'undefined' ) {
-            this.scheduledEvent(0, field);
-            this.set(field, lastTime);
+            this.scheduledEvent( 0, field );
+            this.set( field, lastTime );
         }
-        const misses =  Math.floor((currentTime - timestamp)/delay);
-        if (misses > 0) {
-            this.set(field, lastTime);
-            this.scheduledEvent(misses, field);
+        const misses =  Math.floor( ( currentTime - timestamp )/delay );
+        if ( misses > 0 ) {
+            this.set( field, lastTime );
+            this.scheduledEvent( misses, field );
         }
         setTimeout( () => {
-            this.scheduledEvent(0, field);
+            this.scheduledEvent( 0, field );
             setInterval( () => {
-                this.set(field, lastTime);
-            }, delay)
-        }, nextTime)
+                this.set( field, lastTime );
+            }, delay );
+        }, nextTime - currentTime );
     }
 
-    scheduledEvent(misses, field) {
-        // to override if needed. Should trigger at 12:00:30
+    scheduledEvent() {
+        // to override if needed. Should trigger at 12:00:30. params are [misses, field]
     }
 
-    setActor(actor) {
+    setActor( actor ) {
         // some components need to proactively fire off actions
         this.actor = actor;
     }
 
     bypassDispatcher() {
-        if (typeof this.actor === 'undefined') {
-            debug('You can\'t bypass the dispatcher without setting the actor');
+        if ( typeof this.actor === 'undefined' ) {
+            debug( 'You can\'t bypass the dispatcher without setting the actor' );
         }
         const instructions = this.commitAction();
-        this.actor.handle(instructions, null)
+        this.actor.handle( instructions, null );
     }
 }
 

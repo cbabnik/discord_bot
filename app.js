@@ -4,6 +4,10 @@ if ( process.argv.length === 2 || !['--alpha','--beta'].includes( process.argv[2
 
 const fs = require( 'fs' );
 const util = require( './util' );
+const rl = require( 'readline' ).createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 const { Client } = require( './client' );
 const { DispatcherGenerator } = require( './dispatch' );
@@ -19,40 +23,48 @@ const dispatcher = DispatcherGenerator( Scanner )( actor );
 Monitor( client, dispatcher );
 util.setClient( client );
 
-dispatcher.registerComponent( require( './components/utility' ).utility );
-dispatcher.registerComponent( require( './components/help' ).help );
-dispatcher.registerComponent( require( './components/audio' ).audio );
-dispatcher.registerComponent( require( './components/pictures' ).pictures );
-dispatcher.registerComponent( require( './components/lottery' ).lottery );
-dispatcher.registerComponent( require( './components/admin' ).admin );
-dispatcher.registerComponent( require( './components/requests' ).requests );
-dispatcher.registerComponent( require( './components/quotes' ).quotes );
-dispatcher.registerComponent( require( './components/fun' ).fun );
+const componentsNames = ['utility', 'help', 'audio', 'pictures', 'lottery', 'admin', 'requests',
+    'quotes', 'fun', 'payroll', 'bank', 'calendar'];
+const components = [];
+componentsNames.forEach(c => {
+    const comp = require( `./components/${c}` )[c];
+    dispatcher.registerComponent(comp);
+    components.push(comp);
+});
+
+if ( !fs.existsSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY ) ) {
+    fs.mkdirSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY, {}, () => {} );
+}
 
 if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
     // register any components which are still under initial test here.
 }
 
-const { payroll } = require( './components/payroll' );
-dispatcher.registerComponent( payroll );
-const { calendar } = require( './components/calendar' );
-dispatcher.registerComponent( calendar );
-const { bank } = require( './components/bank' );
-dispatcher.registerComponent( bank );
-
 if ( fs.existsSync( './components/secret.js' ) ) {
     dispatcher.registerComponent( require( './components/secret' ).secret );
 }
 
-// client needs some time to setup, so we'll just give it a second.
-setTimeout( () => {
-    payroll.bootUp( actor );
-    calendar.bootUp( actor );
-    bank.bootUp( actor );
-}, 3000 );
-
 setTimeout( () => {
     if ( CONFIG_DEFAULTS.VERSION === BETA.VERSION ) {
-        util.backupOnRepeat();
+        setInterval(() => {
+            components.forEach(c => {c.saveJSON()});
+            util.backup();
+        },1000*60*60);
     }
-}, 3500 );
+
+    rl.on('SIGINT', () => {
+        process.emit('SIGINT');
+    });
+    process.on('SIGINT', () => {
+        process.exit(0);
+    });
+
+    process.on('exit', () => {
+        console.log('Doing exit cleanup...');
+        components.forEach(c => {c.saveJSON()});
+        if ( CONFIG_DEFAULTS.VERSION === BETA.VERSION ) {
+            util.backup();
+        }
+        console.log('Done.');
+    });
+}, 5000 );

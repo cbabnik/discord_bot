@@ -4,7 +4,6 @@ const { lottery } = require( './lottery' );
 const _ = require( 'lodash' );
 
 const ID = 'calendar';
-const DAYMS = 1000*60*60*24;
 
 const MONTH_NAMES = ['undefined','January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -50,26 +49,45 @@ class Calendar extends Component {
         this.addCommand( /^-calendar (.*)$/, this.calendarMonth );
     }
 
-    bootUp( actor ) {
-        this.actor = actor;
-        const nextDay = this.tomorrow();
-        const currentTime = new Date();
-        if ( this.json['lastDay'] ) {
-            const lastDay = new Date( this.json['lastDay'] );
-            const timePassed = currentTime.getTime() - lastDay.getTime();
-            if ( timePassed > DAYMS ) {
-                this.newDay();
-            }
-        } else {
-            this.newDay();
-        }
-        setTimeout( () => {
-            this.newDay();
-            setInterval( () => {
-                this.newDay();
-            }, DAYMS );
-        }, nextDay.getTime() - currentTime.getTime() );
+    bootUp() {
+        this.addScheduledEvent();
     }
+
+    scheduledEvent() {
+        const today = new Date();
+
+        // slots saturday
+        if ( today.getDay() === 6 ) {
+            this.setAction( 'message', 'Slots Saturday! Everyone with 0 maze slots free rolls gets one!' );
+            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.actor.handle( this.commitAction(), null );
+
+            Object.values( BUCKS ).forEach( id => {
+                const fr = _.get( lottery.json, `${id}.maze.freeRolls`, 0 );
+                if ( fr === 0 ) {
+                    _.set( lottery.json, `${id}.maze.freeRolls`, 1 );
+                    lottery.saveJSON();
+                }
+            } );
+        }
+        // slots sunday
+        if ( today.getDay() === 0 ) {
+            this.setAction( 'message', 'Slots Sunday! Everyone with 0 grid slots free rolls gets one of each!' );
+            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.actor.handle( this.commitAction(), null );
+
+            Object.values( BUCKS ).forEach( id => {
+                const fr = _.get( lottery.json, `${id}.grid.freeRolls`, 0 );
+                if ( fr === 0 ) {
+                    _.set( lottery.json, `${id}.grid.freeRolls`, 1 );
+                    lottery.saveJSON();
+                }
+            } );
+        }
+    }
+
+    // COMMANDS
+
 
     calendar() {
         const idx = new Date().getMonth()+1;
@@ -125,7 +143,8 @@ class Calendar extends Component {
         const k = _.minBy( Object.keys( HOLIDAYS ), k => this.daysUntil( HOLIDAYS[k].m,HOLIDAYS[k].d ) );
         const daysUntil = this.daysUntil( HOLIDAYS[k].m,HOLIDAYS[k].d );
         const {s, m, d} = HOLIDAYS[k];
-        this.setAction( ACTIONS.MESSAGE, `**${s}** is in ${daysUntil} days! (${MONTH_NAMES[m]} ${d}${d%10===1?'st':d%10===2?'nd':d%10===3?'rd':'th'})` );
+        this.setAction( ACTIONS.MESSAGE, `**${s}** is in ${daysUntil} days! ` +
+            `(${MONTH_NAMES[m]} ${d}${d%10===1?'st':d%10===2?'nd':d%10===3?'rd':'th'})` );
     }
 
     allHolidays() {
@@ -197,65 +216,6 @@ class Calendar extends Component {
         }
 
         return du;
-    }
-
-    tomorrow() {
-        const am = new Date();
-        am.setHours( 24 );
-        am.setMinutes( 0 );
-        am.setSeconds( 15 );
-        am.setMilliseconds( 0 );
-        return am;
-    }
-
-    today() {
-        const am = new Date();
-        am.setHours( 0 );
-        am.setMinutes( 0 );
-        am.setSeconds( 15 );
-        am.setMilliseconds( 0 );
-        return am;
-    }
-
-    newDay() {
-        const lastDayTime = _.get( this.json, 'lastDay', 0 );
-        const currentTime = new Date();
-        if ( currentTime.getTime() - lastDayTime < DAYMS ) {
-            return;
-        }
-
-        const today = this.today();
-        this.json['lastDay'] = today.getTime();
-        this.saveJSON();
-
-        // slots saturday
-        if ( today.getDay() === 6 ) {
-            this.setAction( 'message', 'Slots Saturday! Everyone with 0 maze slots free rolls gets one!' );
-            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
-            this.actor.handle( this.commitAction(), null );
-
-            Object.values( BUCKS ).forEach( id => {
-                const fr = _.get( lottery.json, `${id}.maze.freeRolls`, 0 );
-                if ( fr === 0 ) {
-                    _.set( lottery.json, `${id}.maze.freeRolls`, 1 );
-                    lottery.saveJSON();
-                }
-            } );
-        }
-        // slots sunday
-        if ( today.getDay() === 0 ) {
-            this.setAction( 'message', 'Slots Sunday! Everyone with 0 grid slots free rolls gets one of each!' );
-            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
-            this.actor.handle( this.commitAction(), null );
-
-            Object.values( BUCKS ).forEach( id => {
-                const fr = _.get( lottery.json, `${id}.grid.freeRolls`, 0 );
-                if ( fr === 0 ) {
-                    _.set( lottery.json, `${id}.grid.freeRolls`, 1 );
-                    lottery.saveJSON();
-                }
-            } );
-        }
     }
 
 }

@@ -26,6 +26,7 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         clist.forEach( c => {
             registerCommand( c.regex, component, c.cb );
         } );
+        component.setActor( actor ); // indiscriminately give components access to actor
     };
 
     const message = async ( msg ) => {

@@ -14,12 +14,8 @@ const Client = ( max_messages, login_token ) => {
     // try to login every 60 seconds if disconnected
     cli.login( login_token ).then( () => cli.setInterval(
         function tryLogin() {
-            try {
-                if ( cli.status !== CLIENT_CONNECTED ) {
-                    cli.login( login_token );
-                }
-            } catch ( err ) {
-                debug( 'Client error: ' + err.message );
+            if ( cli.status !== CLIENT_CONNECTED ) {
+                cli.login( login_token ).catch(console.error);
             }
         },
         60000

@@ -9,6 +9,7 @@ class Admin extends Component {
         super( ID );
         this.addCommand( /^#say (.*)$/, this.betaSay );
         this.addCommand( /^#give (\d+) (-?\d+)$/, this.adminGive );
+        this.addCommand( /^#shutdown$/, this.shutdown );
     }
 
     betaSay( msg ) {
@@ -23,6 +24,13 @@ class Admin extends Component {
         this.setAction( 'message', `**user#${id}** has been granted ${val} credits!` );
         if ( PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
             bank.addAmount( id, val );
+        }
+    }
+
+    shutdown(metaInfo) {
+        this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
+        if ( PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            process.exit(0);
         }
     }
 }

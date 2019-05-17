@@ -6,8 +6,7 @@ const debug = require( 'debug' )( 'basic' );
 const ID = 'payroll';
 
 const ALLOWANCE_AMOUNT = 3;
-const HOURS_BETWEEN_PAYMENT = 12;
-const PERIOD = 1000*60*60*HOURS_BETWEEN_PAYMENT;
+const PERIOD = 1000*60*60*12;
 
 class Payroll extends Component {
     constructor() {
@@ -16,41 +15,26 @@ class Payroll extends Component {
         this.addCommand( /^-allowance/, this.allowanceInfo );
     }
 
-    bootUp( actor ) {
-        const nextPayout = this.nextPayout();
-        const currentTime = new Date();
-        const lastPayout = new Date( this.json['lastPayout'] );
-        if ( lastPayout ) {
-            const timePassed = currentTime.getTime() - lastPayout.getTime();
-            if ( timePassed > PERIOD ) {
-                const paysPassed = Math.floor( timePassed/PERIOD );
-                this.payout( ALLOWANCE_AMOUNT*paysPassed );
+    bootUp() {
+        const am1019 = new Date();
+        am1019.setHours( 10 );
+        am1019.setMinutes( 19 );
+        am1019.setSeconds( 15 );
+        am1019.setMilliseconds( 0 );
+        this.addScheduledEvent( am1019, 'timestamps.default', PERIOD );
+    }
 
-                const previousPayout = new Date( nextPayout );
-                previousPayout.setHours( previousPayout.getHours()-HOURS_BETWEEN_PAYMENT );
-
-                this.setAction( 'message', `Sorry guys, I missed ${paysPassed} pay period! I believe I owe you all ${ALLOWANCE_AMOUNT*paysPassed} credits in allowance.` );
-                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
-                debug( 'Payroll just paid out!' );
-                actor.handle( this.commitAction(), null );
-
-                this.overwritePayoutTime( previousPayout );
-            }
-        }
-        setTimeout( () => {
-            this.payout( ALLOWANCE_AMOUNT );
-            debug( 'Payroll just paid out!' );
+    scheduledEvent( misses ) {
+        debug( 'Payroll just paid out!' );
+        if ( misses > 0 ) {
+            this.setAction( 'message', `Sorry guys, I missed ${misses} pay period! ` +
+                `I believe I owe you all ${ALLOWANCE_AMOUNT*misses} credits in allowance.` );
+            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+        } else {
             this.setAction( 'message', `Allowance of ${ALLOWANCE_AMOUNT} credits has been paid out!` );
             this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
-            actor.handle( this.commitAction(), null );
-            setInterval( () => {
-                this.payout( ALLOWANCE_AMOUNT );
-                debug( 'Payroll just paid out!' );
-                this.setAction( 'message', `Allowance of ${ALLOWANCE_AMOUNT} credits has been paid out!` );
-                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
-                actor.handle( this.commitAction(), null );
-            }, PERIOD );
-        }, nextPayout.getTime() - currentTime.getTime() );
+        }
+        this.bypassDispatcher();
     }
 
     // COMMANDS
@@ -85,39 +69,17 @@ class Payroll extends Component {
         const id = metaInfo.authorId;
         if ( id === BUCKS.LUNES || id === BUCKS.KENRICASUEBERRY ) {
             this.setAction( 'message', `Spending Money! ${amnt} credits each!` );
-            this.payout( amnt, true );
+            this.payout( amnt );
         }
     }
 
     // HELPERS
 
     payout( amnt ) {
+        debug( 'Payroll just paid out!' );
         Object.values( BUCKS ).forEach( id => {
             bank.addAmount( id, amnt );
         } );
-        this.json['lastPayout'] = new Date();
-        this.saveJSON();
-    }
-
-    overwritePayoutTime( date ) {
-        this.json['lastPayout'] = date;
-        this.saveJSON();
-    }
-
-    nextPayout() {
-        const am1019 = new Date();
-        am1019.setHours( 10 );
-        am1019.setMinutes( 19 );
-        am1019.setSeconds( 15 );
-        am1019.setMilliseconds( 0 );
-        const currentTime = new Date();
-        const nextPayout = new Date( am1019 );
-        if ( currentTime.getTime() > am1019.getTime() + PERIOD ) {
-            nextPayout.setHours( nextPayout.getHours()+2*HOURS_BETWEEN_PAYMENT );
-        } else if ( currentTime.getTime() > am1019.getTime() ) {
-            nextPayout.setHours( nextPayout.getHours()+HOURS_BETWEEN_PAYMENT );
-        }
-        return nextPayout;
     }
 }
 

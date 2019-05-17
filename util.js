@@ -65,13 +65,7 @@ exports.backupOnRepeat = () => {
 
 const backup = () => {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const day = now.getDate();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    const dateStr = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+    const dateStr = toFileString( now );
     const fileName = `backups/backup_${dateStr}.zip`;
 
     const output = fs.createWriteStream( fileName );
@@ -82,3 +76,34 @@ const backup = () => {
     debug( 'Data Backed up!' );
 };
 exports.backup = backup;
+
+const tomorrow = () => {
+    const am = new Date();
+    am.setHours( 24 );
+    am.setMinutes( 0 );
+    am.setSeconds( 15 );
+    am.setMilliseconds( 0 );
+    return am;
+};
+const today = () => {
+    const am = new Date();
+    am.setHours( 0 );
+    am.setMinutes( 0 );
+    am.setSeconds( 15 );
+    am.setMilliseconds( 0 );
+    return am;
+};
+const toFileString = ( date ) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+};
+exports.time = {
+    tomorrow,
+    today,
+    toFileString,
+};
