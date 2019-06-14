@@ -47,32 +47,32 @@ class Inventory extends Component {
         this.addCommand( /^-gift ([^ ]+) (.*)$/, this.gift );
         this.addCommand( /^#gift ([^ ]+) (.*)$/, this.adminGift );
 
-        if ( !this.get('relics.holymantle') ) {
-            this.set('relics.holymantle', {owner: BUCKS.GINGE});
-            this.set('227593217963589632.holymantle.count', 1);
+        if ( !this.get( 'relics.holymantle' ) ) {
+            this.set( 'relics.holymantle', {owner: BUCKS.GINGE} );
+            this.set( '227593217963589632.holymantle.count', 1 );
         }
-        if ( !this.get('relics.vietnamwarhorn') ) {
-            this.set('relics.vietnamwarhorn', {owner: BUCKS.XXCOWFACE});
-            this.set('120350426779353088.vietnamwarhorn.count', 1);
+        if ( !this.get( 'relics.vietnamwarhorn' ) ) {
+            this.set( 'relics.vietnamwarhorn', {owner: BUCKS.XXCOWFACE} );
+            this.set( '120350426779353088.vietnamwarhorn.count', 1 );
         }
-        if ( !this.get('relics.mikoto') ) {
-            this.set('relics.mikoto', {owner: BUCKS.BUCKBOT});
+        if ( !this.get( 'relics.mikoto' ) ) {
+            this.set( 'relics.mikoto', {owner: BUCKS.BUCKBOT} );
         }
-        if ( !this.get('relics.brokentimepiece') ) {
-            this.set('relics.brokentimepiece', {owner: BUCKS.BUCKBOT});
+        if ( !this.get( 'relics.brokentimepiece' ) ) {
+            this.set( 'relics.brokentimepiece', {owner: BUCKS.BUCKBOT} );
         }
-        if ( !this.get('relics.excalibur') ) {
-            this.set('relics.excalibur', {owner: BUCKS.BUCKBOT});
+        if ( !this.get( 'relics.excalibur' ) ) {
+            this.set( 'relics.excalibur', {owner: BUCKS.BUCKBOT} );
         }
-        if ( !this.get('relics.burgercrown') ) {
-            this.set('relics.burgercrown', {owner: BUCKS.BUGSLINGER});
-            this.set('106853033526247424.burgercrown.count', 1);
+        if ( !this.get( 'relics.burgercrown' ) ) {
+            this.set( 'relics.burgercrown', {owner: BUCKS.BUGSLINGER} );
+            this.set( '106853033526247424.burgercrown.count', 1 );
         }
-        if ( !this.get('relics.immobilityorb') ) {
-            this.set('relics.immobilityorb', {owner: BUCKS.BUCKBOT});
+        if ( !this.get( 'relics.immobilityorb' ) ) {
+            this.set( 'relics.immobilityorb', {owner: BUCKS.BUCKBOT} );
         }
 
-        this.set('items', {
+        this.set( 'items', {
             burgercrown: {
                 relic: true,
                 unique: true,
@@ -111,66 +111,66 @@ class Inventory extends Component {
                 relic: true,
                 unique: true,
                 giftable: true,
-                name: `Mikoto's Affection`,
+                name: 'Mikoto\'s Affection',
                 description: 'Looks like she finds you cute'
             },
             vietnamwarhorn: {
                 relic: true,
                 unique: true,
                 giftable: true,
-                name: `Vietnam War Horn`,
+                name: 'Vietnam War Horn',
                 description: 'Allows you to use -good morning vietnam'
             },
             lumpofcoal: {
                 relic: false,
                 unique: true,
                 giftable: true,
-                name: `Lump Of Coal`,
+                name: 'Lump Of Coal',
                 description: 'This allows the IRS to redistribute some of your money until you\'re paid off.'
             },
             darkwhispers: {
                 relic: false,
                 unique: true,
                 giftable: true,
-                name: `Dark Whispers`,
+                name: 'Dark Whispers',
                 description: 'It seems like something\'s been watching you from the shadows...'
             },
             gridslotsgiftcard: {
                 relic: false,
                 unique: false,
                 giftable: true,
-                name: `Grid Slots Gift Card`,
+                name: 'Grid Slots Gift Card',
                 description: 'Use to get a free roll!'
             },
             mazeslotsgiftcard: {
                 relic: false,
                 unique: false,
                 giftable: true,
-                name: `Maze Slots Gift Card`,
+                name: 'Maze Slots Gift Card',
                 description: 'Use to get a free roll!'
             },
             modmarble: {
                 relic: false,
                 unique: true,
                 giftable: true,
-                name: `Mod Marble`,
+                name: 'Mod Marble',
                 description: 'Raises income by 10%'
             },
             goldenmarble: {
                 relic: false,
                 unique: true,
                 giftable: true,
-                name: `Golden Marble`,
+                name: 'Golden Marble',
                 description: 'Raises income by 10%'
             },
             platinummarble: {
                 relic: false,
                 unique: true,
                 giftable: true,
-                name: `Platinum Marble`,
+                name: 'Platinum Marble',
                 description: 'Raises income by 20%'
             },
-        })
+        } );
     }
 
     // Each Item has properties
@@ -184,95 +184,95 @@ class Inventory extends Component {
 
     // Relics keep track of who owns them
 
-    getInventory(metaInfo) {
+    getInventory( metaInfo ) {
         const id = metaInfo.authorId;
         let msg = `Inventory of **${metaInfo.author}**:\n`;
-        const inventory = this.get(id, {});
-        Object.keys(inventory).forEach(k => {
-            let item = this.get(`items.${k}`);
-            let amount = this.get(`${id}.${k}.count`);
-            if (amount > 0) {
-                msg += `\`${`${item.name} ${(amount>1?`(${amount}x) `:'')}`.padEnd( 25 )}- ${item.description}\`\n`
+        const inventory = this.get( id, {} );
+        Object.keys( inventory ).forEach( k => {
+            const item = this.get( `items.${k}` );
+            const amount = this.get( `${id}.${k}.count` );
+            if ( amount > 0 ) {
+                msg += `\`${`${item.name} ${( amount>1?`(${amount}x) `:'' )}`.padEnd( 25 )}- ${item.description}\`\n`;
             }
-        });
-        this.setAction('message', msg);
+        } );
+        this.setAction( 'message', msg );
     }
 
     seeRelics() {
-        this.setAction('message', `The relics on the server are:
-Holy Mantle - owned by ${util.getUser(this.get('relics.holymantle.owner'))}
-Vietnam War Horn - owned by ${util.getUser(this.get('relics.vietnamwarhorn.owner'))}
-Burger Crown - owned by ${util.getUser(this.get('relics.burgercrown.owner'))}
-Broken Timepiece - owned by ${util.getUser(this.get('relics.brokentimepiece.owner'))}
-Excalibur - owned by ${util.getUser(this.get('relics.excalibur.owner'))}
+        this.setAction( 'message', `The relics on the server are:
+Holy Mantle - owned by ${util.getUser( this.get( 'relics.holymantle.owner' ) )}
+Vietnam War Horn - owned by ${util.getUser( this.get( 'relics.vietnamwarhorn.owner' ) )}
+Burger Crown - owned by ${util.getUser( this.get( 'relics.burgercrown.owner' ) )}
+Broken Timepiece - owned by ${util.getUser( this.get( 'relics.brokentimepiece.owner' ) )}
+Excalibur - owned by ${util.getUser( this.get( 'relics.excalibur.owner' ) )}
 Immobility Orb - ???
-Mikoto's Affection - owned by ${util.getUser(this.get('relics.mikoto.owner'))}
+Mikoto's Affection - owned by ${util.getUser( this.get( 'relics.mikoto.owner' ) )}
 
-Stay tuned for the relic auction!`)
+Stay tuned for the relic auction!` );
     }
 
-    gift(to, item, metaInfo) {
+    gift( to, item, metaInfo ) {
         const itemSaid = item;
-        item = item.toLowerCase().replace(/\s/g, '');
+        item = item.toLowerCase().replace( /\s/g, '' );
 
         const id = metaInfo.authorId;
-        const toId = util.getId(to);
-        if (!toId) {
+        const toId = util.getId( to );
+        if ( !toId ) {
             this.setAction( 'message', `user ${to} was not found.` );
             return;
         }
-        if ( id === toId) {
+        if ( id === toId ) {
             this.setAction( 'message', `You are **${to}**` );
             return;
         }
-        const obj = this.get(`items.${item}`);
-        if (!obj) {
+        const obj = this.get( `items.${item}` );
+        if ( !obj ) {
             this.setAction( 'message', `item ${itemSaid} was not found. Use -inventory if you are confused` );
             return;
         }
-        let count = this.get(`${id}.${item}.count`, 0);
-        let toCount = this.get(`${toId}.${item}.count`, 0);
-        if (count <= 0) {
-            this.setAction( 'message', `You don't have enough to give.` );
+        const count = this.get( `${id}.${item}.count`, 0 );
+        const toCount = this.get( `${toId}.${item}.count`, 0 );
+        if ( count <= 0 ) {
+            this.setAction( 'message', 'You don\'t have enough to give.' );
             return;
         }
-        if (! obj.giftable ) {
-            this.setAction( 'message', `This item cannot be gifted.` );
+        if ( ! obj.giftable ) {
+            this.setAction( 'message', 'This item cannot be gifted.' );
             return;
         }
-        if ( obj.unique && toCount >= 1) {
-            this.setAction( 'message', `The recipient already has the maximum of one of these` );
+        if ( obj.unique && toCount >= 1 ) {
+            this.setAction( 'message', 'The recipient already has the maximum of one of these' );
             return;
         }
 
-        this.loseItem(id, item);
-        this.getItem(toId, item);
+        this.loseItem( id, item );
+        this.getItem( toId, item );
     }
 
-    adminGift(to, item, metaInfo) {
-        item = item.toLowerCase().replace(/\s/g, '');
-        if (!PERMISSION_LEVELS.ADMIN.includes(metaInfo.authorId)) {
-            this.setAction( 'message', `You don't have permission to do that.` );
+    adminGift( to, item, metaInfo ) {
+        item = item.toLowerCase().replace( /\s/g, '' );
+        if ( !PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            this.setAction( 'message', 'You don\'t have permission to do that.' );
             return;
         }
 
-        const toId = util.getId(to);
-        if (!toId) {
+        const toId = util.getId( to );
+        if ( !toId ) {
             this.setAction( 'message', `user ${to} was not found.` );
             return;
         }
-        const obj = this.get(`items.${item}`);
-        if (!obj) {
+        const obj = this.get( `items.${item}` );
+        if ( !obj ) {
             this.setAction( 'message', `item ${item} does not exist.` );
             return;
         }
-        this.setAction( ACTIONS.MESSAGE, 'Success!');
-        this.getItem(toId, item);
+        this.setAction( ACTIONS.MESSAGE, 'Success!' );
+        this.getItem( toId, item );
     }
 
     goodMorningVietnam( metaInfo ) {
         const id = metaInfo.authorId;
-        if ( id !== this.get('relics.vietnamwarhorn.owner') ) {
+        if ( id !== this.get( 'relics.vietnamwarhorn.owner' ) ) {
             this.setAction( 'message', 'You do not possess the vietnam war horn!.' );
             return;
         }
@@ -294,33 +294,33 @@ Stay tuned for the relic auction!`)
             streak = _.get( this.json,'vietnamStreak', 0 )+1;
         }
         switch ( streak ) {
-            case 1: reward = 0; break;
-            case 2: reward = 0; break;
-            case 3: reward = 0; break;
-            case 4: reward = 1; break;
-            case 5: reward = 1; break;
-            case 6: reward = 1; break;
-            case 7: reward = 1; break;
-            case 8: reward = 1; break;
-            case 9: reward = 2; break;
-            case 10: reward = 2; break;
-            case 11: reward = 2; break;
-            case 12: reward = 2; break;
-            case 13: reward = 2; break;
-            case 14: reward = -1; break;
-            case 15: reward = -1; break;
-            case 16: reward = -3; break;
-            case 17: reward = -5; break;
-            case 18: reward = -7; break;
-            case 19: reward = 5; break;
-            case 20: reward = 5; break;
-            case 21: reward = 5; break;
-            case 22: reward = 3; break;
-            case 23: reward = 3; break;
-            case 24: reward = 3; break;
-            case 25: reward = -30; break;
-            case 26: reward = 10; break;
-            default: reward = 5; break;
+        case 1: reward = 0; break;
+        case 2: reward = 0; break;
+        case 3: reward = 0; break;
+        case 4: reward = 1; break;
+        case 5: reward = 1; break;
+        case 6: reward = 1; break;
+        case 7: reward = 1; break;
+        case 8: reward = 1; break;
+        case 9: reward = 2; break;
+        case 10: reward = 2; break;
+        case 11: reward = 2; break;
+        case 12: reward = 2; break;
+        case 13: reward = 2; break;
+        case 14: reward = -1; break;
+        case 15: reward = -1; break;
+        case 16: reward = -3; break;
+        case 17: reward = -5; break;
+        case 18: reward = -7; break;
+        case 19: reward = 5; break;
+        case 20: reward = 5; break;
+        case 21: reward = 5; break;
+        case 22: reward = 3; break;
+        case 23: reward = 3; break;
+        case 24: reward = 3; break;
+        case 25: reward = -30; break;
+        case 26: reward = 10; break;
+        default: reward = 5; break;
         }
         if ( reward < 0 ) {
             if ( !bank.payAmount( id, -reward ) ) {
@@ -346,7 +346,7 @@ Stay tuned for the relic auction!`)
     }
 
     holyMantle( n, metaInfo ){
-        if ( metaInfo.authorId !== this.get('relics.holymantle.owner') ) {
+        if ( metaInfo.authorId !== this.get( 'relics.holymantle.owner' ) ) {
             this.setAction( 'message', 'The holy mantle (currently) belongs to **Ginge**' );
             return;
         }
@@ -366,42 +366,42 @@ Stay tuned for the relic auction!`)
         this.setAction( 'message', `**${user}**${str}` );
     }
 
-    useItem(item, metaInfo) {
+    useItem( item, metaInfo ) {
         item = item.toLowerCase();
-        item = item.replace(/\s/g, '');
+        item = item.replace( /\s/g, '' );
         const id = metaInfo.authorId;
-        const obj = this.get(`items.${item}`);
-        if (!obj) {
+        const obj = this.get( `items.${item}` );
+        if ( !obj ) {
             this.setAction( 'message', `item ${item} does not exist.` );
             return;
         }
-        let count = this.get(`${id}.${item}.count`, 0);
-        if (count <= 0) {
-            this.setAction( 'message', `You don't one to use.` );
+        const count = this.get( `${id}.${item}.count`, 0 );
+        if ( count <= 0 ) {
+            this.setAction( 'message', 'You don\'t one to use.' );
             return;
         }
-        switch (item) {
-            default:
-                this.setAction(ACTIONS.MESSAGE, 'That item isn\'t usable at this time.');
-                break;
+        switch ( item ) {
+        default:
+            this.setAction( ACTIONS.MESSAGE, 'That item isn\'t usable at this time.' );
+            break;
         }
     }
 
     // API
 
-    getItem(id, item) {
-        _.set(this.json, `${id}.${item}.count`, _.get(this.json, `${id}.${item}.count`, 0) + 1);
-        if (this.get(`items.${item}.relic`, false)) {
-            this.set(`relics.${item}.owner`, id)
+    getItem( id, item ) {
+        _.set( this.json, `${id}.${item}.count`, _.get( this.json, `${id}.${item}.count`, 0 ) + 1 );
+        if ( this.get( `items.${item}.relic`, false ) ) {
+            this.set( `relics.${item}.owner`, id );
         }
     }
 
-    loseItem(id, item) {
-        this.update(`${id}.${item}.count`, -1)
+    loseItem( id, item ) {
+        this.update( `${id}.${item}.count`, -1 );
     }
 
-    has(id, item) {
-        return this.get(`${id}.${item}.count`, 0) > 0
+    has( id, item ) {
+        return this.get( `${id}.${item}.count`, 0 ) > 0;
     }
 }
 

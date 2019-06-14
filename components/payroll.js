@@ -31,11 +31,11 @@ class Payroll extends Component {
             this.setAction( 'message', `Sorry guys, I missed ${misses} pay periods! ` +
                 `I believe I owe you all ${ALLOWANCE_AMOUNT*misses} credits in allowance.` );
             this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
-            this.payout(misses*ALLOWANCE_AMOUNT)
+            this.payout( misses*ALLOWANCE_AMOUNT );
         } else {
             this.setAction( 'message', `Allowance of ${ALLOWANCE_AMOUNT} credits has been paid out!` );
             this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
-            this.payout(ALLOWANCE_AMOUNT)
+            this.payout( ALLOWANCE_AMOUNT );
         }
         this.bypassDispatcher();
     }
@@ -98,19 +98,19 @@ class Payroll extends Component {
         debug( 'Payroll just paid out!' );
         Object.values( BUCKS ).forEach( id => {
             let multiplier = 1;
-            if (inventory.has(id, 'goldenmarble')) {
+            if ( inventory.has( id, 'goldenmarble' ) ) {
                 multiplier *= 1.1;
             }
-            if (inventory.has(id, 'platinummarble')) {
+            if ( inventory.has( id, 'platinummarble' ) ) {
                 multiplier *= 1.2;
             }
-            if (inventory.has(id, 'modmarble')) {
+            if ( inventory.has( id, 'modmarble' ) ) {
                 multiplier *= 1.1;
             }
             bank.addAmount( id, amnt*multiplier );
 
             // IRS
-            if (inventory.has(id, 'lumpOfCoal')) {
+            if ( inventory.has( id, 'lumpOfCoal' ) ) {
                 bank.addAmount( id, -2 );
                 const to = bank.mostInDebtTo( id );
                 bank.payOffLoan( id, to, 2 );

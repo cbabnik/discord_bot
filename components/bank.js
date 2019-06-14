@@ -68,7 +68,7 @@ class Bank extends Component {
         const id = metaInfo.authorId;
         const user = metaInfo.author;
         let amount;
-        const bamount = this.balance( id, 'buckbucks');
+        const bamount = this.balance( id, 'buckbucks' );
         if ( exact ) {
             amount = this.exactBalance( id );
         } else {
@@ -568,16 +568,16 @@ class Bank extends Component {
     }
 
     mostInDebtTo( id ) {
-        let most = 0
-        let mostId = undefined
+        let most = 0;
+        let mostId = undefined;
         Object.keys( _.get( this.json, `${id}.debt`, {} ) ).forEach( loaner => {
             const debt = _.get( this.json, `${id}.debt.${loaner}.loanSize`, 0 ) + _.get( this.json, `${id}.debt.${loaner}.interest`, 0 );
-            if (debt > most) {
-                most = debt
-                mostId = loaner
+            if ( debt > most ) {
+                most = debt;
+                mostId = loaner;
             }
         } );
-        return mostId
+        return mostId;
     }
 }
 

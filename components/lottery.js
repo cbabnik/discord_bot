@@ -71,14 +71,14 @@ class Lottery extends Component {
         this.addCommand( /^-freerolls$/ , this.countRolls );
         this.addCommand( /^-privacy on$/ , this.privacyOn );
         this.addCommand( /^-privacy off$/ , this.privacyOff );
-        this.addCommand( /^-use maze slots gift card$/, this.usemgc) ;
-        this.addCommand( /^-use grid slots gift card$/, this.useggc) ;
+        this.addCommand( /^-use maze slots gift card$/, this.usemgc ) ;
+        this.addCommand( /^-use grid slots gift card$/, this.useggc ) ;
 
         this.waitUntil = new Date().getTime();
     }
 
     scheduledEvent() {
-        Object.keys(BUCKS).forEach(k => {
+        Object.keys( BUCKS ).forEach( k => {
             //if (this.get(`${BUCKS[k]}.grid.discount`, 0) < 5) {
             //    this.update(`${BUCKS[k]}.grid.discount`, 1);
             //    _.set(this.json, '`${BUCKS[k]}.grid.discount`', _.get(this.json, `${BUCKS[k]}.grid.discount`, 0) + 1);
@@ -86,38 +86,38 @@ class Lottery extends Component {
             //if (this.get(`${BUCKS[k]}.maze.discount`, 0) < 20) {
             //    _.set(this.json, '`${BUCKS[k]}.maze.discount`', _.get(this.json, `${BUCKS[k]}.maze.discount`, 0) + 1);
             //}
-        });
-        this.update('pigBalance', 10);
+        } );
+        this.update( 'pigBalance', 10 );
     }
 
-    privacyOn(mi) {
-        _.set(this.json, `${mi.authorId}.privacy`, true);
-        this.setAction('message', `Option set.`);
+    privacyOn( mi ) {
+        _.set( this.json, `${mi.authorId}.privacy`, true );
+        this.setAction( 'message', 'Option set.' );
     }
-    privacyOff(mi) {
+    privacyOff( mi ) {
         _.set( this.json, `${mi.authorId}.privacy`, false );
-        this.setAction( 'message', `Option set.` );
+        this.setAction( 'message', 'Option set.' );
     }
 
-    usemgc(mi) {
+    usemgc( mi ) {
         const id = mi.authorId;
-        if ( inventory.has(id, 'mazeslotsgiftcard')) {
-            this.setAction( ACTIONS.MESSAGE, `You gained a free roll`);
-            _.set(this.json, `${id}.maze.freeRolls`, _.get(this.json, `${id}.maze.freeRolls`, 0) -1 )
-            inventory.loseItem(id, 'mazeslotsgiftcard')
+        if ( inventory.has( id, 'mazeslotsgiftcard' ) ) {
+            this.setAction( ACTIONS.MESSAGE, 'You gained a free roll' );
+            _.set( this.json, `${id}.maze.freeRolls`, _.get( this.json, `${id}.maze.freeRolls`, 0 ) -1 );
+            inventory.loseItem( id, 'mazeslotsgiftcard' );
         } else {
-            this.setAction( ACTIONS.MESSAGE, `You don't have that`);
+            this.setAction( ACTIONS.MESSAGE, 'You don\'t have that' );
         }
     }
 
-    useggc(mi) {
+    useggc( mi ) {
         const id = mi.authorId;
-        if ( inventory.has(id, 'gridslotsgiftcard')) {
-            this.setAction( ACTIONS.MESSAGE, `You gained a free roll`);
-            _.set(this.json, `${id}.grid.freeRolls`, _.get(this.json, `${id}.grid.freeRolls`, 0) -1 )
-            inventory.loseItem(id, 'gridslotsgiftcard')
+        if ( inventory.has( id, 'gridslotsgiftcard' ) ) {
+            this.setAction( ACTIONS.MESSAGE, 'You gained a free roll' );
+            _.set( this.json, `${id}.grid.freeRolls`, _.get( this.json, `${id}.grid.freeRolls`, 0 ) -1 );
+            inventory.loseItem( id, 'gridslotsgiftcard' );
         } else {
-            this.setAction( ACTIONS.MESSAGE, `You don't have that`);
+            this.setAction( ACTIONS.MESSAGE, 'You don\'t have that' );
         }
     }
 
@@ -150,7 +150,7 @@ ${mazes} free maze roll${mazes===1?'':'s'}
 ${bucks} free buck roll${bucks===1?'':'s'}
 ${gridDis || mazeDis ?'Current discounts:':''}
 ${gridDis?`grid slots: ${gridDis}`:''}
-${mazeDis?`maze slots: ${mazeDis}`:''}`);
+${mazeDis?`maze slots: ${mazeDis}`:''}` );
     }
 
     giveRolls( count, type, metaInfo ) {
@@ -345,11 +345,11 @@ Coin slots has ${total.coin<0?`claimed \`${-total.coin}\` hard earned credits`:`
         // reward winnings
         bank.addAmount( id, chain );
 
-        if (!_.get( this.json, `${id}.privacy`, false)) {
+        if ( !_.get( this.json, `${id}.privacy`, false ) ) {
             this.queueAction();
             this.setAction( 'editId', `lottery-${uuid}` );
             this.setAction( 'message', `**${user}** rolled the slots! (Costed 1 credit)\nCoin Slots - Keep flipping till you lose!\n${chainStr}\nReward: ${chain}
-Your new balance is ${bank.balance(id)}` );
+Your new balance is ${bank.balance( id )}` );
         }
     }
 
@@ -404,13 +404,13 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
         // add winnings
         bank.addAmount( id, winnings );
 
-        if (!_.get( this.json, `${id}.privacy`, false)) {
+        if ( !_.get( this.json, `${id}.privacy`, false ) ) {
             this.setAction( 'message', `**${user}** rolled the slots! (Costed 5 credits)\nGrid Slots - 8 possible rows!
 **[** ${grid[0][0]}${grid[1][0]}${grid[2][0]} **]**
 **[** ${grid[0][1]}${grid[1][1]}${grid[2][1]} **]**
 **[** ${grid[0][2]}${grid[1][2]}${grid[2][2]} **]**
 Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck Slots! They will happen in 3 seconds.`:''}
-Your new balance is ${bank.balance(id)}` );
+Your new balance is ${bank.balance( id )}` );
         }
         // buck slots
         if ( deerWins ) {
@@ -453,7 +453,7 @@ Your new balance is ${bank.balance(id)}` );
         while ( grid[pos.y][pos.x] === ':white_square_button:' ) {
             const swap_pos = { x: Math.floor( Math.random()*11 ), y: Math.floor( Math.random()*7 )};
             grid[pos.y][pos.x] = grid[swap_pos.y][swap_pos.x];
-            grid[swap_pos.y][swap_pos.x] = ':white_square_button:'
+            grid[swap_pos.y][swap_pos.x] = ':white_square_button:';
         }
         // slot logic!
         visible_grid[pos.y][pos.x] = grid[pos.y][pos.x];
@@ -516,9 +516,9 @@ Your new balance is ${bank.balance(id)}` );
         // add winnings
         bank.addAmount( id, winnings );
 
-        if (!_.get( this.json, `${id}.privacy`, false)) {
+        if ( !_.get( this.json, `${id}.privacy`, false ) ) {
             this.setAction( 'message', `${user} rolled the slots! (Costed 20 credits)\nMaze Slots - Let the Journey Begin!\n${visible_grid.map( row => row.join( '' ) ).join( '\n' )}\nYou hit a dead end! **Game Over**.\n${setsString}\nTotal winnings are: **${winnings}**
-Your new balance is ${bank.balance(id)}` );
+Your new balance is ${bank.balance( id )}` );
         }
         // buck rolls
         if ( deerWins ) {
@@ -563,125 +563,125 @@ Your new balance is ${bank.balance(id)}` );
 
         const sguuid = uuidv4();
         this.setAction( 'message', `**${user}** rolled the slots! (Costed 1000 credits)\nBig Grid Slots - Go make a snack, you have time.
-${visible_grid.map(row => row.join('')).join('\n')}
+${visible_grid.map( row => row.join( '' ) ).join( '\n' )}
 Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck Slots! They will happen after.`:''}
 ${best?`Best Row: ${bestString}`:''}` );
-        this.setAction( 'messageId', sguuid);
+        this.setAction( 'messageId', sguuid );
 
-        for (let y = 0; y < 9; y++) {
-            for (let x = 0; x < 9; x++) {
+        for ( let y = 0; y < 9; y++ ) {
+            for ( let x = 0; x < 9; x++ ) {
                 const icon = grid[y][x];
                 visible_grid[y][x] = icon;
                 let length = 0;
                 let value = 0;
-                for (let y2 = y; y2 >= 0; y2--) {
-                    if (grid[y2][x] !== icon)
+                for ( let y2 = y; y2 >= 0; y2-- ) {
+                    if ( grid[y2][x] !== icon ) {
                         break;
+                    }
                     length += 1;
                 }
-                if (length >= 3) {
-                    value = SIGNS.find((item) => item.emote === icon).value * (2**(length-3));
-                    if (icon === ':deer:') {
+                if ( length >= 3 ) {
+                    value = SIGNS.find( ( item ) => item.emote === icon ).value * ( 2**( length-3 ) );
+                    if ( icon === ':deer:' ) {
                         // buck win
-                        deerWins += 2**(length-3);
+                        deerWins += 2**( length-3 );
                         value = 0;
                     }
                 }
-                if (length === 3) {
-                    winnings += value
+                if ( length === 3 ) {
+                    winnings += value;
+                } else if ( length > 3 ) {
+                    winnings += value/2;
                 }
-                else if (length > 3) {
-                    winnings += value/2
-                }
-                if (value > best) {
+                if ( value > best ) {
                     best = value;
-                    bestString = _.repeat(icon,length) + ` worth **${best}**`
+                    bestString = _.repeat( icon,length ) + ` worth **${best}**`;
                 }
                 length = 0;
                 value = 0;
-                for (let x2 = x; x2 >= 0; x2--) {
-                    if (grid[y][x2] !== icon)
+                for ( let x2 = x; x2 >= 0; x2-- ) {
+                    if ( grid[y][x2] !== icon ) {
                         break;
+                    }
                     length += 1;
                 }
-                if (length >= 3) {
-                    value = SIGNS.find((item) => item.emote === icon).value * (2**(length-3));
-                    if (icon === ':deer:') {
+                if ( length >= 3 ) {
+                    value = SIGNS.find( ( item ) => item.emote === icon ).value * ( 2**( length-3 ) );
+                    if ( icon === ':deer:' ) {
                         // buck win
-                        deerWins += 2**(length-3);
+                        deerWins += 2**( length-3 );
                         value = 0;
                     }
                 }
-                if (length === 3) {
-                    winnings += value
+                if ( length === 3 ) {
+                    winnings += value;
+                } else if ( length > 3 ) {
+                    winnings += value/2;
                 }
-                else if (length > 3) {
-                    winnings += value/2
-                }
-                if (value > best) {
+                if ( value > best ) {
                     best = value;
-                    bestString = _.repeat(icon,length) + ` worth **${best}**`
+                    bestString = _.repeat( icon,length ) + ` worth **${best}**`;
                 }
                 length = 0;
                 value = 0;
-                for (let xy2 = [x, y]; xy2[0] >= 0 && xy2[1] >=0;) {
-                    if (grid[xy2[1]][xy2[0]] !== icon)
+                for ( let xy2 = [x, y]; xy2[0] >= 0 && xy2[1] >=0; ) {
+                    if ( grid[xy2[1]][xy2[0]] !== icon ) {
                         break;
+                    }
                     length += 1;
                     xy2[0] -= 1;
                     xy2[1] -= 1;
                 }
-                if (length >= 3) {
-                    value = SIGNS.find((item) => item.emote === icon).value * (2**(length-3));
-                    if (icon === ':deer:') {
+                if ( length >= 3 ) {
+                    value = SIGNS.find( ( item ) => item.emote === icon ).value * ( 2**( length-3 ) );
+                    if ( icon === ':deer:' ) {
                         // buck win
-                        deerWins += 2**(length-3);
+                        deerWins += 2**( length-3 );
                         value = 0;
                     }
                 }
-                if (length === 3) {
-                    winnings += value
+                if ( length === 3 ) {
+                    winnings += value;
+                } else if ( length > 3 ) {
+                    winnings += value/2;
                 }
-                else if (length > 3) {
-                    winnings += value/2
-                }
-                if (value > best) {
+                if ( value > best ) {
                     best = value;
-                    bestString = _.repeat(icon,length) + ` worth **${best}**`
+                    bestString = _.repeat( icon,length ) + ` worth **${best}**`;
                 }
                 length = 0;
                 value = 0;
-                for (let xy2 = [x, y]; xy2[0] < 9 && xy2[1] >=0;) {
-                    if (grid[xy2[1]][xy2[0]] !== icon)
+                for ( let xy2 = [x, y]; xy2[0] < 9 && xy2[1] >=0; ) {
+                    if ( grid[xy2[1]][xy2[0]] !== icon ) {
                         break;
+                    }
                     length += 1;
                     xy2[0] += 1;
                     xy2[1] -= 1;
                 }
-                if (length >= 3) {
-                    value = SIGNS.find((item) => item.emote === icon).value * (2**(length-3));
-                    if (icon === ':deer:') {
+                if ( length >= 3 ) {
+                    value = SIGNS.find( ( item ) => item.emote === icon ).value * ( 2**( length-3 ) );
+                    if ( icon === ':deer:' ) {
                         // buck win
-                        deerWins += 2**(length-3);
+                        deerWins += 2**( length-3 );
                         value = 0;
                     }
                 }
-                if (length === 3) {
-                    winnings += value
+                if ( length === 3 ) {
+                    winnings += value;
+                } else if ( length > 3 ) {
+                    winnings += value/2;
                 }
-                else if (length > 3) {
-                    winnings += value/2
-                }
-                if (value > best) {
+                if ( value > best ) {
                     best = value;
-                    bestString = _.repeat(icon,length) + ` worth **${best}**`
+                    bestString = _.repeat( icon,length ) + ` worth **${best}**`;
                 }
 
                 this.queueAction();
                 this.setAction( ACTIONS.DELAY, 15 );
-                this.setAction( ACTIONS.EDIT_ID, sguuid);
+                this.setAction( ACTIONS.EDIT_ID, sguuid );
                 this.setAction( ACTIONS.MESSAGE, `**${user}** rolled the slots! (Costed 1000 credits)\nBig Grid Slots - Go make a snack, you have time.
-${visible_grid.map(row => row.join('')).join('\n')}
+${visible_grid.map( row => row.join( '' ) ).join( '\n' )}
 Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck Slots! They will happen after.`:''}
 ${best?`Best Row: ${bestString}`:''}` );
                 // track stats
@@ -691,12 +691,12 @@ ${best?`Best Row: ${bestString}`:''}` );
 
         let slowSlotsDelay = 15*81;
         // add winnings
-        setTimeout(() => {
+        setTimeout( () => {
             bank.addAmount( id, winnings );
             _.set( this.json, `${id}.slow.best`, Math.max( _.get( this.json, `${id}.slow.best`, 0 ), winnings ) );
             _.set( this.json, `${id}.slow.winnings`, _.get( this.json, `${id}.slow.winnings`, 0 ) + winnings );
             _.set( this.json, `${id}.slow.attempts`, _.get( this.json, `${id}.slow.attempts`, 0 ) + 1 );
-        }, slowSlotsDelay * 1000);
+        }, slowSlotsDelay * 1000 );
         // buck rolls
         if ( deerWins ) {
             this.queueAction();
@@ -706,7 +706,7 @@ ${best?`Best Row: ${bestString}`:''}` );
             }
             slowSlotsDelay += 3 + deerWins;
         }
-        this.offLimitsFor(slowSlotsDelay)
+        this.offLimitsFor( slowSlotsDelay );
     }
 
 
@@ -724,79 +724,79 @@ ${best?`Best Row: ${bestString}`:''}` );
             bank.addAmount( id, 10 );
         }
 
-        this.setAction( 'message', `**${user}** rolled the slots! (Costed 10 credits)\nWill your money break the bank?`);
+        this.setAction( 'message', `**${user}** rolled the slots! (Costed 10 credits)\nWill your money break the bank?` );
 
         this.queueAction();
-        this.setAction( ACTIONS.IMAGE_LINK, 'https://media1.tenor.com/images/83a1c344dc2f112ad93d373c726de4cb/tenor.gif');
+        this.setAction( ACTIONS.IMAGE_LINK, 'https://media1.tenor.com/images/83a1c344dc2f112ad93d373c726de4cb/tenor.gif' );
 
         this.queueAction();
         this.setAction( ACTIONS.DELAY, 10 );
 
-        let pigBalance = this.get('pigBalance', 50);
-        let pigLevel = this.get('pigLevel', 1);
-        let pigChance = this.get('pigChance', 0.10);
-        pigChance *= 1 + (pigLevel-1)/4;
+        const pigBalance = this.get( 'pigBalance', 50 );
+        const pigLevel = this.get( 'pigLevel', 1 );
+        let pigChance = this.get( 'pigChance', 0.10 );
+        pigChance *= 1 + ( pigLevel-1 )/4;
 
-        if (Math.random() < pigChance) {
+        if ( Math.random() < pigChance ) {
             // pig breaks
-            this.setAction( 'message', `You won! **${user}** has earned \`${pigBalance+10}\` credits `);
-            this.setAction( ACTIONS.IMAGE_LINK, 'https://s.hswstatic.com/gif/how-much-money-to-live-1.jpg');
-            bank.addAmount( id, pigBalance+10);
+            this.setAction( 'message', `You won! **${user}** has earned \`${pigBalance+10}\` credits ` );
+            this.setAction( ACTIONS.IMAGE_LINK, 'https://s.hswstatic.com/gif/how-much-money-to-live-1.jpg' );
+            bank.addAmount( id, pigBalance+10 );
             _.set( this.json, `${id}.pig.best`, Math.max( _.get( this.json, `${id}.pig.best`, 0 ), pigBalance+10 ) );
             _.set( this.json, `${id}.pig.winnings`, _.get( this.json, `${id}.pig.winnings`, 0 ) + pigBalance+10 );
             this.resetPig();
         } else {
-            this.set('pigBalance', pigBalance+5);
+            this.set( 'pigBalance', pigBalance+5 );
 
-            this.setAction( 'message', `Sorry! The bank didn't break, but the pig is now worth 5 more credits!`);
+            this.setAction( 'message', 'Sorry! The bank didn\'t break, but the pig is now worth 5 more credits!' );
 
-            if (pigLevel < 5) {
-                if (Math.random() < pigChance*3+0.1) {
+            if ( pigLevel < 5 ) {
+                if ( Math.random() < pigChance*3+0.1 ) {
                     this.queueAction();
-                    this.setAction( 'message', `The pig became more frail! It will break a little bit easier.`);
-                    _.set(this.json, 'pigLevel', _.get(this.json, 'pigLevel', 1) + 1);
-                    this.pigLook()
+                    this.setAction( 'message', 'The pig became more frail! It will break a little bit easier.' );
+                    _.set( this.json, 'pigLevel', _.get( this.json, 'pigLevel', 1 ) + 1 );
+                    this.pigLook();
                 }
             }
         }
         _.set( this.json, `${id}.pig.attempts`, _.get( this.json, `${id}.pig.attempts`, 0 ) + 1 );
 
-        this.offLimitsFor(10)
+        this.offLimitsFor( 10 );
 
-        if (!_.get( this.json, `${id}.privacy`, false)) {
+        if ( !_.get( this.json, `${id}.privacy`, false ) ) {
             this.queueAction();
-            this.setAction( 'message', `Your new balance is ${bank.balance(id)}` );
+            this.setAction( 'message', `Your new balance is ${bank.balance( id )}` );
         }
     }
 
-    pigLook( ) {
-        let pigLevel = this.get('pigLevel', 1);
-        switch (pigLevel) {
-            case 1:
-                this.setAction( ACTIONS.IMAGE_LINK, 'https://cdn.discordapp.com/attachments/533736402085478410/586044845072580608/depositphotos_120976292-stock-photo-skinny-piggy-bank-icon.png');
-                break;
-            case 2:
-                this.setAction( ACTIONS.IMAGE_LINK, 'https://cdn.discordapp.com/attachments/533736402085478410/586045158362054656/piggy-bank-970340_960_720.png');
-                break;
-            case 3:
-                this.setAction( ACTIONS.IMAGE_LINK, 'https://cdn.discordapp.com/attachments/533736402085478410/586044939109007373/166142726.png');
-                break;
-            case 4:
-                this.setAction( ACTIONS.IMAGE_LINK, 'https://cdn.discordapp.com/attachments/533736402085478410/586045055345885197/Piggy-Bank.png');
-                break;
-            case 5:
-                this.setAction( ACTIONS.IMAGE_LINK, 'https://previews.123rf.com/images/vladru/vladru1702/vladru170200008/71442406-fat-piggy-bank-and-coin-3d-illustration.jpg');
-                break;
+    pigLook() {
+        const pigLevel = this.get( 'pigLevel', 1 );
+        switch ( pigLevel ) {
+        case 1:
+            this.setAction( ACTIONS.IMAGE_LINK, 'https://cdn.discordapp.com/attachments/533736402085478410/586044845072580608/depositphotos_120976292-stock-photo-skinny-piggy-bank-icon.png' );
+            break;
+        case 2:
+            this.setAction( ACTIONS.IMAGE_LINK, 'https://cdn.discordapp.com/attachments/533736402085478410/586045158362054656/piggy-bank-970340_960_720.png' );
+            break;
+        case 3:
+            this.setAction( ACTIONS.IMAGE_LINK, 'https://cdn.discordapp.com/attachments/533736402085478410/586044939109007373/166142726.png' );
+            break;
+        case 4:
+            this.setAction( ACTIONS.IMAGE_LINK, 'https://cdn.discordapp.com/attachments/533736402085478410/586045055345885197/Piggy-Bank.png' );
+            break;
+        case 5:
+            this.setAction( ACTIONS.IMAGE_LINK, 'https://previews.123rf.com/images/vladru/vladru1702/vladru170200008/71442406-fat-piggy-bank-and-coin-3d-illustration.jpg' );
+            break;
         }
     }
     // HELPERS
 
     resetPig() {
-        this.set('pigLevel', 1);
-        let chance = Math.random()/20 + 0.005;
-        let balance = Math.floor((5/chance) *.6);
-        this.set('pigBalance', balance);
-        this.set('pigChance', chance);
+        this.set( 'pigLevel', 1 );
+        const chance = Math.random()/20 + 0.005;
+        const balance = Math.floor( ( 5/chance ) *.6 );
+        this.set( 'pigBalance', balance );
+        this.set( 'pigChance', chance );
     }
 
     buckSlots( user, id ) {
@@ -967,18 +967,18 @@ ${best?`Best Row: ${bestString}`:''}` );
             this.queueAction();
             return true;
         }
-        let discount = _.get( this.json, `${id}.${type}.discount`, 0);
+        const discount = _.get( this.json, `${id}.${type}.discount`, 0 );
         cost -= discount;
         if ( !bank.payAmount( id, cost ) ) {
             this.setAction( 'message', `Sorry **${user}**, but this costs **${cost}** credit(s). You don't have enough.` );
             return false;
         }
-        this.set( `${id}.${type}.discount`, 0);
+        this.set( `${id}.${type}.discount`, 0 );
         return true;
     }
 
     hasHolyMantle( id ) {
-        return inventory.has(id, 'holyMantle');
+        return inventory.has( id, 'holyMantle' );
     }
 
     results( wins, overrules ) {

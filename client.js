@@ -15,7 +15,7 @@ const Client = ( max_messages, login_token ) => {
     cli.login( login_token ).then( () => cli.setInterval(
         function tryLogin() {
             if ( cli.status !== CLIENT_CONNECTED ) {
-                cli.login( login_token ).catch(console.error);
+                cli.login( login_token ).catch( console.error );
             }
         },
         60000

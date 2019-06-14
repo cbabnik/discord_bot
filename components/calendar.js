@@ -84,25 +84,25 @@ class Calendar extends Component {
             } );
         }
 
-        Object.keys(BIRTHDAYS).forEach(k => {
+        Object.keys( BIRTHDAYS ).forEach( k => {
             const bd = BIRTHDAYS[k];
-            const name = k.charAt(0).toUpperCase() + k.toLowerCase().substr(1);
-            if ( this.isDay(bd, new Date())) {
+            const name = k.charAt( 0 ).toUpperCase() + k.toLowerCase().substr( 1 );
+            if ( this.isDay( bd, new Date() ) ) {
                 this.setAction( 'message', `Happy birthday ${name}! Have 100 credits!` );
                 this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
                 this.actor.handle( this.commitAction(), null );
             }
-        });
+        } );
 
-        Object.keys(HOLIDAYS).forEach(k => {
+        Object.keys( HOLIDAYS ).forEach( k => {
             const hd = HOLIDAYS[k];
-            if ( this.isDay(hd, new Date())) {
+            if ( this.isDay( hd, new Date() ) ) {
                 this.setAction( 'message', `It's ${k.s}! Everyone gets ${k.v} credits` );
                 this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
                 this.actor.handle( this.commitAction(), null );
-                this.payout(hd.v)
+                this.payout( hd.v );
             }
-        });
+        } );
     }
 
     // COMMANDS
@@ -241,13 +241,13 @@ class Calendar extends Component {
         debug( 'Payroll just paid out!' );
         Object.values( BUCKS ).forEach( id => {
             let multiplier = 1;
-            if (inventory.has(id, 'goldenmarble')) {
+            if ( inventory.has( id, 'goldenmarble' ) ) {
                 multiplier *= 1.1;
             }
-            if (inventory.has(id, 'platinummarble')) {
+            if ( inventory.has( id, 'platinummarble' ) ) {
                 multiplier *= 1.2;
             }
-            if (inventory.has(id, 'modmarble')) {
+            if ( inventory.has( id, 'modmarble' ) ) {
                 multiplier *= 1.1;
             }
             bank.addAmount( id, amnt*multiplier );

@@ -192,7 +192,7 @@ valid use: \`-addburger <link url>\` - Add another burger!`
     }
 
     playListHelp() {
-        this.setAction( 'audioFile', 'list');
+        this.setAction( 'audioFile', 'list' );
         this.playHelp();
     }
 
