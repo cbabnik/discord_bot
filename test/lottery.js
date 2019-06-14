@@ -119,7 +119,7 @@ describe( 'Lottery', () => {
             }
             // wins an appropriate amount
             const totalWinnings = lottery.json['0']['maze']['winnings'] + _.get( lottery.json['0'], 'buck.winnings', 0 );
-            expect( totalWinnings ).to.equal( 2172 );
+            expect( totalWinnings ).to.equal( 2480 );
             // bank is modified correctly
             expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 2000 );
             // holy mantle called
