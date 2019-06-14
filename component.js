@@ -59,21 +59,21 @@ class Component {
     }
 
     saveJSON() {
-        if (fs.existsSync( this.jsonFile ) || this.json !== {}) {
+        if ( fs.existsSync( this.jsonFile ) || this.json !== {} ) {
             fs.writeFileSync( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {} );
         }
     }
 
     get( field, default_val=0 ) {
-        _.set( this.json, field, default_val );
+        return _.get( this.json, field, default_val );
     }
 
     set( field, value ) {
         _.set( this.json, field, value );
     }
 
-    update( field, operator, default_val=0, f = _.sum ) {
-        _.set( this.json, field, f( _.get( this.json, field, default_val ) , operator ) );
+    update( field, operand, default_val=0, f = _.sum ) {
+        _.set( this.json, field, f( _.get( this.json, field, default_val ) , operand ) );
     }
 
     bootUp() {
@@ -94,20 +94,23 @@ class Component {
             lastTime = time - Math.ceil( ( time-currentTime )/delay )*delay;
         }
         const nextTime = lastTime+delay;
-        const timestamp = this.get( field, undefined );
+        const timestamp = this.get( field );
         if ( typeof timestamp === 'undefined' ) {
-            this.scheduledEvent( 0, field );
+            this.scheduledEvent( -1, field );
             this.set( field, lastTime );
-        }
-        const misses =  Math.floor( ( currentTime - timestamp )/delay );
-        if ( misses > 0 ) {
-            this.set( field, lastTime );
-            this.scheduledEvent( misses, field );
+        } else {
+            const misses =  Math.floor( ( currentTime - timestamp )/delay );
+            if ( misses > 0 ) {
+                this.set( field, lastTime );
+                this.scheduledEvent( misses, field );
+            }
         }
         setTimeout( () => {
             this.scheduledEvent( 0, field );
+            this.set( field, new Date().getTime() );
             setInterval( () => {
-                this.set( field, lastTime );
+                this.set( field, new Date().getTime() );
+                this.scheduledEvent( 0, field );
             }, delay );
         }, nextTime - currentTime );
     }
