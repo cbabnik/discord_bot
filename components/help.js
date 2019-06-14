@@ -9,8 +9,8 @@ class Help extends Component {
         super( ID );
         this.addCommand( /^-help/, this.help );
         this.addCommand( /^\?help/, this.help );
-        this.addCommand( /^-list/, this.playHelp );
-        this.addCommand( /^!list/, this.playHelp );
+        this.addCommand( /^-list/, this.playListHelp );
+        this.addCommand( /^!list/, this.playListHelp );
         this.addCommand( /^\?roll/, this.rollHelp );
         this.addCommand( /^\?random/, this.randomHelp );
         this.addCommand( /^\?math/, this.mathHelp );
@@ -176,7 +176,9 @@ Unleashes a sweet picture.`
 Try your luck at the slots!
     \`-slots coin\` - ($1) For the slow rollers
     \`-slots grid\` - ($5) For the high rollers
+    \`-slots pig\` - ($10) For the push coin addicts
     \`-slots maze\` - ($20) For the foolish who want to win it all
+    \`-slots big grid\` - ($1000) For those with just too much money
 Put \` odds\` at the end of a command to see the odds! Ex. \`-slots coin odds\`
 Use \`-freeRolls\` to see if you have any free rolls saved up`
         );
@@ -187,6 +189,11 @@ Use \`-freeRolls\` to see if you have any free rolls saved up`
             `\`-addburger\`
 valid use: \`-addburger <link url>\` - Add another burger!`
         );
+    }
+
+    playListHelp() {
+        this.setAction( 'audioFile', 'list');
+        this.playHelp();
     }
 
     playHelp() {

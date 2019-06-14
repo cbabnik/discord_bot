@@ -1,11 +1,12 @@
 const { Component } = require( '../component' );
 const { BUCKS, CONFIG_DEFAULTS } = require( '../constants' );
 const { bank } = require( './bank' );
+const { inventory } = require( './inventory' );
 const debug = require( 'debug' )( 'basic' );
 
 const ID = 'payroll';
 
-const ALLOWANCE_AMOUNT = 3;
+const ALLOWANCE_AMOUNT = 5;
 const PERIOD = 1000*60*60*12;
 
 class Payroll extends Component {
@@ -27,12 +28,14 @@ class Payroll extends Component {
     scheduledEvent( misses ) {
         debug( 'Payroll just paid out!' );
         if ( misses > 0 ) {
-            this.setAction( 'message', `Sorry guys, I missed ${misses} pay period! ` +
+            this.setAction( 'message', `Sorry guys, I missed ${misses} pay periods! ` +
                 `I believe I owe you all ${ALLOWANCE_AMOUNT*misses} credits in allowance.` );
             this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.payout(misses*ALLOWANCE_AMOUNT)
         } else {
             this.setAction( 'message', `Allowance of ${ALLOWANCE_AMOUNT} credits has been paid out!` );
             this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.payout(ALLOWANCE_AMOUNT)
         }
         this.bypassDispatcher();
     }
@@ -65,6 +68,22 @@ class Payroll extends Component {
         }
     }
 
+    nextPayout() {
+        const am1019 = new Date();
+        am1019.setHours( 10 );
+        am1019.setMinutes( 19 );
+        am1019.setSeconds( 15 );
+        am1019.setMilliseconds( 0 );
+        const currentTime = new Date();
+        const nextPayout = new Date( am1019 );
+        if ( currentTime.getTime() > am1019.getTime() + PERIOD ) {
+            nextPayout.setHours( nextPayout.getHours()+2*12 );
+        } else if ( currentTime.getTime() > am1019.getTime() ) {
+            nextPayout.setHours( nextPayout.getHours()+12 );
+        }
+        return nextPayout;
+    }
+
     forcedPayout( amnt, metaInfo ) {
         const id = metaInfo.authorId;
         if ( id === BUCKS.LUNES || id === BUCKS.KENRICASUEBERRY ) {
@@ -78,7 +97,24 @@ class Payroll extends Component {
     payout( amnt ) {
         debug( 'Payroll just paid out!' );
         Object.values( BUCKS ).forEach( id => {
-            bank.addAmount( id, amnt );
+            let multiplier = 1;
+            if (inventory.has(id, 'goldenmarble')) {
+                multiplier *= 1.1;
+            }
+            if (inventory.has(id, 'platinummarble')) {
+                multiplier *= 1.2;
+            }
+            if (inventory.has(id, 'modmarble')) {
+                multiplier *= 1.1;
+            }
+            bank.addAmount( id, amnt*multiplier );
+
+            // IRS
+            if (inventory.has(id, 'lumpOfCoal')) {
+                bank.addAmount( id, -2 );
+                const to = bank.mostInDebtTo( id );
+                bank.payOffLoan( id, to, 2 );
+            }
         } );
     }
 }

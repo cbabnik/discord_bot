@@ -23,6 +23,9 @@ class Utility extends Component {
         this.addCommand( /^-coinflip (\S+) (\S+)$/, this.coinflip );
         this.addCommand( /^-coinflip/, this.coinflipInfo );
         this.addCommand( /^-roll (\d+)$/, ( max ) => this.roll( 1,max ) );
+        this.addCommand( /^-roll (\d+)d(\d+)$/, ( dice, max ) => this.rollExtra( dice, 1, max ) );
+        this.addCommand( /^-roll (\d+)d(\d+)-(\d+)$/, this.rollExtra );
+        this.addCommand( /^-roll maidstats$/, this.rollMaidStats );
         this.addCommand( /^-roll (-?\d+) (-?\d+)$/, this.roll );
         this.addCommand( /^-roll/, this.rollInfo );
     }
@@ -34,6 +37,35 @@ class Utility extends Component {
     roll( min, max ) {
         const result = bigInt.randBetween( min,max );
         this.setAction( 'message', `You rolled: **${result.toString()}**` );
+    }
+
+    rollExtra( dice, min, max ) {
+        let rolls = '';
+        let total = 0;
+        for ( let i = 0; i < dice; i++ ) {
+            const val = bigInt.randBetween( min, max );
+            total += val;
+            rolls += `\`${val}\` `;
+        }
+        this.setAction( 'message', `You rolled: ${rolls}. Total: **${total}**` );
+    }
+
+    rollMaidStats() {
+        let message = 'Your stats are:';
+        let totalvalue = 0;
+        ['Athletics', 'Affection', 'Skill', 'Cunning', 'Luck', 'Will'].forEach( stat => {
+            const rollA = bigInt.randBetween( 1,6 );
+            const rollB = bigInt.randBetween( 1,6 );
+            const total = rollA+rollB;
+            const value = Math.floor( total/3 );
+            totalvalue += value;
+            message += `\n\`${rollA}\`+\`${rollB}\` = ${total} / 3 = **${stat}: ${value}**`;
+        } );
+        this.setAction( 'message', message );
+        if ( totalvalue <= 9 ) {
+            this.queueAction();
+            this.setAction( 'message', 'Since you have a total of less than or equal to 9, you get a second maid power.' );
+        }
     }
 
     randomInfo() {

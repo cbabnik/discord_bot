@@ -19,9 +19,9 @@ class Audio extends Component {
         this.addCommand( /^-play (.+)$/, ( url ) => this.playYoutube( 0, url ) );
         this.addCommand( /^! from([\d.]+) (.+)$/, this.playYoutube );
         this.addCommand( /^!(.+)$/, ( url ) => this.playYoutube( 0, url ) );
-        this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p$/, ( metaInfo ) => this.queueItUp( 20, undefined, metaInfo ) );
-        this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (10|15|20) (.*)$/, this.queueItUp );
-        this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (.*)$/, ( url, metaInfo ) => this.queueItUp( 20, url, metaInfo ) );
+        //this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p$/, ( metaInfo ) => this.queueItUp( 20, undefined, metaInfo ) );
+        //this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (10|15|20) (.*)$/, this.queueItUp );
+        //this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (.*)$/, ( url, metaInfo ) => this.queueItUp( 20, url, metaInfo ) );
         this.addCommand( /^#prepare queue (.*)$/, this.prepareQueue );
     }
 
@@ -30,7 +30,6 @@ class Audio extends Component {
             const stack = _.get( this.json, 'qitup', [] );
             stack.push( url );
             this.json.qitup = stack;
-            this.saveJSON();
         }
         this.setAction( ACTIONS.SECURITY, PERMISSION_LEVELS.SUPERUSER );
         this.setAction( ACTIONS.MESSAGE, 'Ok, Its ready for when its needed' );
@@ -40,7 +39,6 @@ class Audio extends Component {
         if ( !url ) {
             if ( this.json.qitup ) {
                 url = this.json.qitup.pop();
-                this.saveJSON();
                 this.setAction( ACTIONS.MESSAGE, 'Queue what up? Hold on I\'ve got you.' );
                 this.queueAction();
                 this.setAction( ACTIONS.DELAY,2 );

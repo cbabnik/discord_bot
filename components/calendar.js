@@ -23,6 +23,7 @@ const BIRTHDAYS = {
     XXCOWFACE: {y:1995,m:7,d:14},
     LUNES: {y:1995,m:5,d:24},
     QEWE: {y:1996,m:6,d:9},
+    THEEVILSHOGUN: {y:1995,m:9,d:25}
 };
 
 const HOLIDAYS = {
@@ -66,7 +67,6 @@ class Calendar extends Component {
                 const fr = _.get( lottery.json, `${id}.maze.freeRolls`, 0 );
                 if ( fr === 0 ) {
                     _.set( lottery.json, `${id}.maze.freeRolls`, 1 );
-                    lottery.saveJSON();
                 }
             } );
         }
@@ -80,10 +80,29 @@ class Calendar extends Component {
                 const fr = _.get( lottery.json, `${id}.grid.freeRolls`, 0 );
                 if ( fr === 0 ) {
                     _.set( lottery.json, `${id}.grid.freeRolls`, 1 );
-                    lottery.saveJSON();
                 }
             } );
         }
+
+        Object.keys(BIRTHDAYS).forEach(k => {
+            const bd = BIRTHDAYS[k];
+            const name = k.charAt(0).toUpperCase() + k.toLowerCase().substr(1);
+            if ( this.isDay(bd, new Date())) {
+                this.setAction( 'message', `Happy birthday ${name}! Have 100 credits!` );
+                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.actor.handle( this.commitAction(), null );
+            }
+        });
+
+        Object.keys(HOLIDAYS).forEach(k => {
+            const hd = HOLIDAYS[k];
+            if ( this.isDay(hd, new Date())) {
+                this.setAction( 'message', `It's ${k.s}! Everyone gets ${k.v} credits` );
+                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.actor.handle( this.commitAction(), null );
+                this.payout(hd.v)
+            }
+        });
     }
 
     // COMMANDS
@@ -216,6 +235,23 @@ class Calendar extends Component {
         }
 
         return du;
+    }
+
+    payout( amnt ) {
+        debug( 'Payroll just paid out!' );
+        Object.values( BUCKS ).forEach( id => {
+            let multiplier = 1;
+            if (inventory.has(id, 'goldenmarble')) {
+                multiplier *= 1.1;
+            }
+            if (inventory.has(id, 'platinummarble')) {
+                multiplier *= 1.2;
+            }
+            if (inventory.has(id, 'modmarble')) {
+                multiplier *= 1.1;
+            }
+            bank.addAmount( id, amnt*multiplier );
+        } );
     }
 
 }

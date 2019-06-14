@@ -27,10 +27,10 @@ class Admin extends Component {
         }
     }
 
-    shutdown(metaInfo) {
+    shutdown( metaInfo ) {
         this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
         if ( PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
-            process.exit(0);
+            process.exit( 0 );
         }
     }
 }

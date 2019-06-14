@@ -32,7 +32,6 @@ class Pictures extends Component {
             } else {
                 this.setAction( 'message', 'Burger saved.' );
                 this.json['burgers'].push( link );
-                this.saveJSON();
             }
         } else {
             this.setAction( 'message', 'Bugs only bro.' );
@@ -56,7 +55,6 @@ class Pictures extends Component {
 
     unlockBugs() {
         this.json['bugs'] = 'unlocked';
-        this.saveJSON();
     }
 }
 

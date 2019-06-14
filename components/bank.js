@@ -52,7 +52,7 @@ class Bank extends Component {
         } );
 
         Object.keys( this.json ).forEach( k => {
-            if ( _.get( this.json, `${k}`.bankrupt, false ) ) {
+            if ( _.get( this.json, `${k}.bankrupt`, false ) ) {
                 if ( _.get( this.json[k], 'credits', 0 ) < 0 ) {
                     const halfDebt = Math.ceil( -_.get( this.json[k], 'credits', 0 )/2 );
                     this.addAmount( k, halfDebt );
@@ -61,13 +61,14 @@ class Bank extends Component {
                 }
             }
         } );
-        this.saveJSON();
+        
     }
 
     getAmount( exact, metaInfo ) {
         const id = metaInfo.authorId;
         const user = metaInfo.author;
         let amount;
+        const bamount = this.balance( id, 'buckbucks');
         if ( exact ) {
             amount = this.exactBalance( id );
         } else {
@@ -81,7 +82,7 @@ class Bank extends Component {
         } else if ( amount < 0 ) {
             msg = `Dang **${user}**, you're in debt! You owe slots \`${-amount} credits\`.` ;
         } else {
-            msg = `**${user}** has \`${amount} credits\` banked.`;
+            msg = `**${user}** has \`${amount} credits\` banked${bamount > 0?` and **${bamount}** Buck bucks!`:''}.`;
         }
 
         const ious = _.get( this.json, `${id}.iou`, {} );
@@ -124,7 +125,7 @@ class Bank extends Component {
         if ( this.balance( id ) > 0 ) {
             _.set( this.json, `${id}.credits`, 0 );
         }
-        this.saveJSON();
+        
     }
 
     bankruptcyCheck( id ) {
@@ -157,7 +158,7 @@ class Bank extends Component {
         }
         _.set( this.json, `${id}.${type}`, balance + value );
         this.bankruptcyCheck( id );
-        this.saveJSON();
+        
     }
 
     payAmount( id, value, type ) {
@@ -176,7 +177,7 @@ class Bank extends Component {
             return false;
         }
         _.set( this.json, `${id}.${type}`, balance - value );
-        this.saveJSON();
+        
         return true;
     }
 
@@ -234,7 +235,7 @@ class Bank extends Component {
 
     addIOU( from, to, amount ) {
         _.set( this.json, `${from}.iou.${to}`, _.get( this.json, `${from}.iou.${to}`, 0 ) + amount );
-        this.saveJSON();
+        
     }
 
     hasIOU( from, to ) {
@@ -327,7 +328,7 @@ class Bank extends Component {
             }
         }
 
-        this.saveJSON();
+        
     }
 
     offer( args, metaInfo ) {
@@ -408,7 +409,7 @@ class Bank extends Component {
 
         this.setAction( ACTIONS.MESSAGE, 'New Loan Set.' );
         _.set( this.json, `${metaInfo.authorId}.loan`, {offersLoan: true, max, rate, interest, type, flat} );
-        this.saveJSON();
+        
     }
 
     relinquish( metaInfo ) {
@@ -428,7 +429,7 @@ class Bank extends Component {
 
         this.setAction( ACTIONS.MESSAGE, 'Your loans were relinquished. Users debts have been transfered to IOUs.' );
         _.set( this.json, `${metaInfo.authorId}.loan`, {} );
-        this.saveJSON();
+        
     }
 
     takeOut( amount, user, metaInfo ) {
@@ -469,7 +470,7 @@ class Bank extends Component {
         const flat = _.get( this.json, `${id}.loan.flat`, 0 );
         _.set( this.json, `${metaInfo.authorId}.debt.${id}.interest`, _.get( this.json, `${metaInfo.authorId}.debt.${id}.interest`, 0 )+flat );
         this.setAction( ACTIONS.MESSAGE, `**${metaInfo.author}** has taken out a loan! Be mindful of the interest!` );
-        this.saveJSON();
+        
     }
 
     payOffLoan( from, to, amount ) {
@@ -492,7 +493,7 @@ class Bank extends Component {
             _.set( this.json, `${from}.debt.${to}.interest`, interest-amount );
             amountPaid += amount;
         }
-        this.saveJSON();
+        
         return amountPaid;
     }
 
@@ -564,6 +565,19 @@ class Bank extends Component {
             msg = 'You are not involved in any loans.';
         }
         this.setAction( ACTIONS.MESSAGE, msg );
+    }
+
+    mostInDebtTo( id ) {
+        let most = 0
+        let mostId = undefined
+        Object.keys( _.get( this.json, `${id}.debt`, {} ) ).forEach( loaner => {
+            const debt = _.get( this.json, `${id}.debt.${loaner}.loanSize`, 0 ) + _.get( this.json, `${id}.debt.${loaner}.interest`, 0 );
+            if (debt > most) {
+                most = debt
+                mostId = loaner
+            }
+        } );
+        return mostId
     }
 }
 

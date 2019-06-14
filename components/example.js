@@ -22,7 +22,6 @@ class Example extends Component {
         const {author} = metaInfo;
         const winsAmt = this.json[author]+1 || 1;
         this.json[author] = winsAmt;
-        this.saveJSON();
         this.setAction( 'message', 'You win! This was your ' + winsAmt +
             ( winsAmt%10===1?'st':winsAmt%10===2?'nd':winsAmt%10===3?'rd':'th' ) + ' win.' );
     }

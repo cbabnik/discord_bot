@@ -38,7 +38,7 @@ class Quotes extends Component {
         }
 
         this.json[id].push( {message: quote, date} );
-        this.saveJSON();
+        
 
         this.setAction( 'message', 'Quote accepted.' );
     }

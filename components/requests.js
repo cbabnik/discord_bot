@@ -21,8 +21,10 @@ class Requests extends Component {
         this.addCommand( /^-requests new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ) );
         this.addCommand( /^-requests (\d+)$/, ( n, metaInfo ) => this.listRequests( n, metaInfo ) );
         this.addCommand( /^-requests delete (\d+)$/, this.deleteRequestN );
-        this.addCommand( /^-requests accept (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, metaInfo ) );
-        this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, metaInfo ) );
+        this.addCommand( /^-requests accept (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ) );
+        this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ) );
+        this.addCommand( /^-requests accept (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, reply, metaInfo ) );
+        this.addCommand( /^-requests reject (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, reply, metaInfo ) );
         this.addCommand( /^-requests reply (\d+) (.+)$/, this.reply );
         this.addCommand( /^-requests/, this.checkRequests );
         this.addCommand( /^-new ?[rR]equest (.*)$/s, this.addRequest );
@@ -40,11 +42,11 @@ class Requests extends Component {
 
     addRequest( request, metaInfo ) {
         requests.push( {uuid: uuidv4(), user: metaInfo.author, id: metaInfo.authorId, request, unread: true, unreadreply: false, reply: '', status: STATUS_UNREAD} );
-        this.saveJSON();
+        
         this.setAction( 'message', 'Request made! You can check if the admins have read or replied to it with `-requests`' );
     }
 
-    changeStatus( n, status, metaInfo ) {
+    changeStatus( n, status, reply, metaInfo ) {
         if ( !PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
             this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
             return;
@@ -55,8 +57,18 @@ class Requests extends Component {
             return;
         }
         requests[n].status = status;
-        this.saveJSON();
-        this.setAction( 'message', 'Status updated' );
+        if ( reply ) {
+            requests[n].reply = reply;
+            requests[n].unreadreply = true;
+            this.setAction( 'message', 'Reply accepted.' );
+            if ( metaInfo.channelType === DMCHANNEL ) {
+                this.queueAction();
+                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.setAction( 'message', `One of **${requests[n].user}**'s requests was replied to!` );
+            }
+        } else {
+            this.setAction( 'message', 'Status updated' );
+        }
     }
 
     listRequests( mode, metaInfo ) {
@@ -118,7 +130,7 @@ class Requests extends Component {
             }
         }
         this.setAction( 'message', msg );
-        this.saveJSON();
+        
     }
 
     checkRequests( metaInfo ) {
@@ -164,7 +176,7 @@ You can check your requests with \`-requests N\`, \`-requests new\`, or \`-reque
         requests.splice( indexToDelete, 1 );
 
         this.setAction( 'message', 'Request deleted' );
-        this.saveJSON();
+        
     }
 
     reply( n, message, metaInfo ) {
@@ -185,7 +197,7 @@ You can check your requests with \`-requests N\`, \`-requests new\`, or \`-reque
             this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
             this.setAction( 'message', `One of **${requests[n].user}**'s requests was replied to!` );
         }
-        this.saveJSON();
+        
     }
 }
 
