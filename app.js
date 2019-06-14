@@ -4,10 +4,10 @@ if ( process.argv.length === 2 || !['--alpha','--beta'].includes( process.argv[2
 
 const fs = require( 'fs' );
 const util = require( './util' );
-const rl = require( 'readline' ).createInterface({
+const rl = require( 'readline' ).createInterface( {
     input: process.stdin,
     output: process.stdout
-});
+} );
 
 const { Client } = require( './client' );
 const { DispatcherGenerator } = require( './dispatch' );
@@ -24,13 +24,13 @@ Monitor( client, dispatcher );
 util.setClient( client );
 
 const componentsNames = ['utility', 'help', 'audio', 'pictures', 'lottery', 'admin', 'requests',
-    'quotes', 'fun', 'payroll', 'bank', 'calendar'];
+    'quotes', 'fun', 'payroll', 'bank', 'calendar', 'inventory', 'shop'];
 const components = [];
-componentsNames.forEach(c => {
+componentsNames.forEach( c => {
     const comp = require( `./components/${c}` )[c];
-    dispatcher.registerComponent(comp);
-    components.push(comp);
-});
+    dispatcher.registerComponent( comp );
+    components.push( comp );
+} );
 
 if ( !fs.existsSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY ) ) {
     fs.mkdirSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY, {}, () => {} );
@@ -46,25 +46,29 @@ if ( fs.existsSync( './components/secret.js' ) ) {
 
 setTimeout( () => {
     if ( CONFIG_DEFAULTS.VERSION === BETA.VERSION ) {
-        setInterval(() => {
-            components.forEach(c => {c.saveJSON()});
+        setInterval( () => {
+            components.forEach( c => {
+                c.saveJSON();
+            } );
             util.backup();
-        },1000*60*60);
+        },1000*60*60 );
     }
 
-    rl.on('SIGINT', () => {
-        process.emit('SIGINT');
-    });
-    process.on('SIGINT', () => {
-        process.exit(0);
-    });
+    rl.on( 'SIGINT', () => {
+        process.emit( 'SIGINT' );
+    } );
+    process.on( 'SIGINT', () => {
+        process.exit( 0 );
+    } );
 
-    process.on('exit', () => {
-        console.log('Doing exit cleanup...');
-        components.forEach(c => {c.saveJSON()});
+    process.on( 'exit', () => {
+        console.log( 'Doing exit cleanup...' );
+        components.forEach( c => {
+            c.saveJSON();
+        } );
         if ( CONFIG_DEFAULTS.VERSION === BETA.VERSION ) {
             util.backup();
         }
-        console.log('Done.');
-    });
+        console.log( 'Done.' );
+    } );
 }, 5000 );
