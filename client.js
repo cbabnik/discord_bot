@@ -4,7 +4,6 @@
 
 const Discord = require( 'discord.js' );
 const { CLIENT_CONNECTED } = require( './constants' );
-const debug = require( 'debug' )( 'basic' );
 
 const Client = ( max_messages, login_token ) => {
     const cli = new Discord.Client( {
@@ -25,22 +24,26 @@ const Client = ( max_messages, login_token ) => {
     const strikes = {};
     // after ~8 seconds of inactivity disconnect from voice channels
     cli.setInterval( () => {
-        cli.voiceConnections.array().forEach( ( c ) => {
-            const vc = c.channel;
-            const n = vc.name;
+        try {
+            cli.voiceConnections.array().forEach( ( c ) => {
+                const vc = c.channel;
+                const n = vc.name;
 
-            const streamCount = c.player.streamingData.count;
-            if ( streamCount === bytes_sent[n] ) {
-                strikes[n] = strikes[n]+1 || 1;
-                if ( strikes[n] > 2 ) {
-                    vc.leave();
+                const streamCount = c.player.streamingData.count;
+                if ( streamCount === bytes_sent[n] ) {
+                    strikes[n] = strikes[n]+1 || 1;
+                    if ( strikes[n] > 2 ) {
+                        vc.leave();
+                        strikes[n] = 0;
+                    }
+                } else {
                     strikes[n] = 0;
                 }
-            } else {
-                strikes[n] = 0;
-            }
-            bytes_sent[n] = streamCount;
-        } );
+                bytes_sent[n] = streamCount;
+            } );
+        } catch (e) {
+            console.error('Client recovered from an error')
+        }
     }, 3000 );
     return cli;
 };
