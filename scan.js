@@ -4,7 +4,7 @@
 const Scanner = () => {
     const regexList = [];
 
-    const addCommand = ( regex, id ) => {
+    const addRegex = ( regex, id ) => {
         regexList.push( {regex, id} );
     };
 
@@ -17,9 +17,21 @@ const Scanner = () => {
         return null;
     };
 
+    const multiScan = text => {
+        // this can be done in parallel
+        const matches = [];
+        for ( let i=0; i<regexList.length; i+=1 ) {
+            if ( text.match( regexList[i].regex ) !== null ) {
+                matches.push(regexList[i].id);
+            }
+        }
+        return matches;
+    };
+
     return {
-        addCommand,
-        scan
+        addRegex,
+        scan,
+        multiScan
     };
 };
 
