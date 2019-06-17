@@ -7,7 +7,11 @@
 const debug = require( 'debug' )( 'dispatcher' );
 const { BUCKS, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
 
-const DispatcherGenerator = ( Scanner ) => ( actor ) => {
+const { Storage } = require('./pdata');
+const STORAGE_ID = 'alias';
+const data = new Storage(STORAGE_ID);
+
+const DispatcherGenerator = ( Scanner ) => ( client, actor ) => {
 
     const commandLinkDict = {};
     const scanner = Scanner();
@@ -17,7 +21,7 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     // groups in the regex are treated as parameters to the callback
     const registerCommand = ( regex, component, cb ) => {
         commandLinkDict[next_id] = {regex, component, cb};
-        scanner.addCommand( regex, next_id );
+        scanner.addRegex( regex, next_id );
         next_id += 1;
     };
 
@@ -29,24 +33,79 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         component.setActor( actor ); // indiscriminately give components access to actor
     };
 
-    const message = async ( msg ) => {
+    const filter = (msg) => {
         if ( BUCKS.BUCKBOT === msg.author.id ) {
-            return;
+            return false;
         }
         if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
-            if ( msg.channel.id !== ALPHA.MAIN_CHANNEL ) {
-                return;
+            if (msg.channel.id !== ALPHA.MAIN_CHANNEL ) {
+                return false;
             }
         } else if ( CONFIG_DEFAULTS.VERSION !== BETA.VERSION ){
-            return;
+            return false;
         } else if ( msg.channel.id === ALPHA.MAIN_CHANNEL ) {
+            return false;
+        }
+        return true;
+    };
+    const filterContent = (msg) => {
+        let content = msg.content;
+        const userId = msg.author.id;
+        const aliases = data.get(`${userId}`);
+
+        if (aliases[content]) {
+            if (aliases[content].edit) {
+                if (msg.editable) {
+                    msg.edit(aliases[content].text);
+                }
+            }
+            return aliases[content].text
+        }
+
+        let contentEdit = ''+content;
+        let edit = false;
+        Object.keys(aliases).forEach((from) => {
+            const a = aliases[from];
+            if (a.inline) {
+                content = content.replace(RegExp(from), a.text);
+                if (a.edit) {
+                    edit = true;
+                    contentEdit = a.text.replace(RegExp(from), a.text);
+                }
+            }
+        });
+
+        if (edit) {
+            if (msg.editable) {
+                msg.edit(contentEdit);
+            }
+        }
+
+        return content
+    };
+
+    client.on( 'message', async ( msg ) => {
+        if ( ! filter(msg) ) {
             return;
         }
-        const command = scanner.scan( msg.content );
-        if ( command ) {
-            dispatch( msg.content, commandLinkDict[command], msg );
+        const content = filterContent(msg);
+        const commandId = scanner.scan( content );
+        if ( commandId ) {
+            dispatch( content, commandLinkDict[commandId], msg );
         }
-    };
+    } );
+
+    client.on( 'messageDelete', async ( msg ) => {
+        // stub
+    } );
+
+    client.on( 'messageUpdate', async ( oldMsg, newMsg ) => {
+        // stub
+    } );
+
+    client.on( 'messageReactionAdd', async ( reaction ) => {
+        // stub
+    } );
 
     const dispatch = async ( text, commandLink, msg ) => {
         const metaInfo = {
@@ -67,8 +126,7 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     };
 
     return {
-        registerComponent,
-        message
+        registerComponent
     };
 };
 
