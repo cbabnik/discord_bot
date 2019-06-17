@@ -1,49 +1,45 @@
 if ( process.argv.length === 2 || !['--alpha','--beta'].includes( process.argv[2] ) ) {
+    console.log( 'Use --alpha or --beta' );
     process.exit( 1 );
 }
 
+const { LOGIN_TOKEN } = require( './auth' );
+const { MAX_MESSAGES, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
 const fs = require( 'fs' );
+if ( !fs.existsSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY ) ) {
+    fs.mkdirSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY, {}, () => {} );
+}
 const util = require( './util' );
-const rl = require( 'readline' ).createInterface( {
-    input: process.stdin,
-    output: process.stdout
-} );
 
 const { Client } = require( './client' );
 const { DispatcherGenerator } = require( './dispatch' );
-const { Monitor } = require( './monitor' );
 const { Scanner } = require( './scan' );
 const { Actor } = require( './actor' );
-const { LOGIN_TOKEN } = require( './auth' );
-const { MAX_MESSAGES, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
 
 const client = Client( MAX_MESSAGES, LOGIN_TOKEN );
 const actor = Actor( client );
-const dispatcher = DispatcherGenerator( Scanner )( actor );
-Monitor( client, dispatcher );
+const dispatcher = DispatcherGenerator( Scanner )( client, actor );
 util.setClient( client );
 
 const componentsNames = ['utility', 'help', 'audio', 'pictures', 'lottery', 'admin', 'requests',
     'quotes', 'fun', 'payroll', 'bank', 'calendar', 'inventory', 'shop'];
+if ( fs.existsSync( './components/secret.js' ) ) {
+    componentsNames.push('secret');
+}
 const components = [];
 componentsNames.forEach( c => {
     const comp = require( `./components/${c}` )[c];
     dispatcher.registerComponent( comp );
     components.push( comp );
 } );
-
-if ( !fs.existsSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY ) ) {
-    fs.mkdirSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY, {}, () => {} );
-}
-
 if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
     // register any components which are still under initial test here.
 }
 
-if ( fs.existsSync( './components/secret.js' ) ) {
-    dispatcher.registerComponent( require( './components/secret' ).secret );
-}
-
+const rl = require( 'readline' ).createInterface( {
+    input: process.stdin,
+    output: process.stdout
+} );
 setTimeout( () => {
     if ( CONFIG_DEFAULTS.VERSION === BETA.VERSION ) {
         setInterval( () => {
