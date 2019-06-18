@@ -24,6 +24,17 @@ Dispatcher enlists a black box Scanner to parse a growing list of regex.
 
 *Monitor previously acted as an intermediate between Dispatcher and Client, and took care of logging. As Discord has good auditting records, Monitor has been removed.*
 
+### Screenshots
+
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/mslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/gslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/cslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/help.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/quote.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/roll.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/alias.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/calendar.png)
+
 ### Current Components
 
 **Lottery** - 
@@ -61,14 +72,3 @@ Admittedly pretty empty for now, Shop allows users to trade credits for small tr
 
 **Inventory** - 
 Safely manages item possesion.
-
-### Screenshots
-
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/mslots.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/gslots.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/cslots.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/help.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/quote.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/roll.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/alias.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/calendar.png)
