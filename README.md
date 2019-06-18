@@ -2,21 +2,25 @@
 
 Discord bot for the server **Big Buck Hunters**
 
+### Next Updates
+![Big Refactor Update](https://github.com/cbabnik/discord_bot/blob/master/images/updates/bigrefactor.png)
+Followed by the Adventure Update, Casino Update, Shoppalooza Update, Underworld Update, Slime Fight
+
 ### Architecture
 
 The bot is set up with a Service architecture, where many "Component"s carry out the role of Service.
 They each own their own data and provide an api to one another.
 
-![title](https://github.com/cbabnik/discord_bot/blob/master/UML%20Diagram.png)
+![UML Diagram](https://github.com/cbabnik/discord_bot/blob/master/UML%20Diagram.png)
 
-Client is a thin wrapper around discord.js 's Client class. The purpose of this class is two-fold. To set some sensible default settings, and to manage the clients connection with discord and inactive broadcast channels.
+**Client** is a thin wrapper around discord.js 's Client class. The purpose of this class is two-fold. To set some sensible default settings, and to manage the clients connection with discord and inactive broadcast channels.
 
-Dispatcher acts as the input mediator for Client's events. It is made aware of all Component commands through its method registerComponent, and matches user messages to the correct component functions.
+**Dispatcher** acts as the input mediator for Client's events. It is made aware of all Component commands through its method registerComponent, and matches user messages to the correct component functions.
 Dispatcher enlists a black box Scanner to parse a growing list of regex.
 
-Actor acts as the output mediator for Client. Complicated logic for interacting with Client is encapsulated into a list of ACTIONS handled by Actor. This makes more complicated actions simpler and safer than allowing Components to directly interact with Client.
+**Actor** acts as the output mediator for Client. Complicated logic for interacting with Client is encapsulated into a list of ACTIONS handled by Actor. This makes more complicated actions simpler and safer than allowing Components to directly interact with Client.
 
-Components register a command with Dispatcher and/or provide API for other Components. Each component has its own json storage and is responsible for its own potential race conditions.
+**Component**s register a command with Dispatcher and/or provide API for other Components. Each component has its own json storage and is responsible for its own potential race conditions.
 
 *Monitor previously acted as an intermediate between Dispatcher and Client, and took care of logging. As Discord has good auditting records, Monitor has been removed.*
 
@@ -57,3 +61,14 @@ Admittedly pretty empty for now, Shop allows users to trade credits for small tr
 
 **Inventory** - 
 Safely manages item possesion.
+
+### Screenshots
+
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/mslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/gslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/cslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/help.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/quote.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/roll.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/alias.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/calendar.png)
