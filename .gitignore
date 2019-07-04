@@ -5,6 +5,7 @@
 # Database files
 # ______________
 *.json
+*.zip
 
 # Secret keys
 # ___________
@@ -22,3 +23,7 @@ auth.js
 # Don't include all the node modules
 # __________________________________
 node_modules
+
+# Easter egg component
+# ____________________
+secret.js
