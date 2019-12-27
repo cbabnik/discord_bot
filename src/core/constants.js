@@ -21,12 +21,12 @@ const ALPHA = {
     NAME: 'BuckBotAlpha',
 };
 const BETA = {
-    STORAGE_DIRECTORY: './storage/beta/',
-    MAIN_CHANNEL: '265430059010097162',
-    MAIN_VOICE_CHANNEL: '265430059500699648',
-    GUILD: '265430059010097162',
-    VERSION: 'beta',
-    NAME: 'BuckBotAlpha',
+    //STORAGE_DIRECTORY: './storage/beta/',
+    //MAIN_CHANNEL: '265430059010097162',
+    //MAIN_VOICE_CHANNEL: '265430059500699648',
+    //GUILD: '265430059010097162',
+    //VERSION: 'beta',
+    //NAME: 'BuckBotAlpha',
 };
 if ( process.argv.length > 2 ) {
     let defaults = {};

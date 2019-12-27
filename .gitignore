@@ -20,6 +20,10 @@ auth.js
 # __________________________________
 node_modules
 
+# IDE files
+# _________
+*.code-workspace
+
 # Easter egg component
 # ____________________
 secret.js

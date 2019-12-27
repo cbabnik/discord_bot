@@ -3,7 +3,7 @@ if ( process.argv.length === 2 || !['--alpha','--beta'].includes( process.argv[2
     process.exit( 1 );
 }
 
-const { LOGIN_TOKEN } = require( './auth' );
+const { LOGIN_TOKEN } = require( './auth.js' );
 const { MAX_MESSAGES, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
 const fs = require( 'fs' );
 if ( !fs.existsSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY ) ) {
@@ -21,10 +21,8 @@ const actor = Actor( client );
 const dispatcher = DispatcherGenerator( Scanner )( client, actor );
 util.setClient( client );
 
-const componentsNames = ['utility', 'help', 'audio', 'pictures', 'lottery', 'admin', 'requests',
-    'quotes', 'fun', 'payroll', 'bank', 'calendar', 'inventory', 'shop'];
-if ( fs.existsSync( './components/secret.js' ) ) {
-    componentsNames.push('secret');
+const componentsNames = [];
+if ( fs.existsSync( './src/components/secret.js' ) ) {
 }
 const components = [];
 componentsNames.forEach( c => {
