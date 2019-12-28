@@ -7,9 +7,9 @@
 const debug = require( 'debug' )( 'dispatcher' );
 const { BUCKS, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
 
-const { Storage } = require('./pdata');
+const { Storage } = require( './pdata' );
 const STORAGE_ID = 'alias';
-const data = new Storage(STORAGE_ID);
+const data = new Storage( STORAGE_ID );
 
 const DispatcherGenerator = ( Scanner ) => ( client, actor ) => {
 
@@ -33,12 +33,12 @@ const DispatcherGenerator = ( Scanner ) => ( client, actor ) => {
         component.setActor( actor ); // indiscriminately give components access to actor
     };
 
-    const filter = (msg) => {
+    const filter = ( msg ) => {
         if ( BUCKS.BUCKBOT === msg.author.id ) {
             return false;
         }
         if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
-            if (msg.channel.id !== ALPHA.MAIN_CHANNEL ) {
+            if ( msg.channel.id !== ALPHA.MAIN_CHANNEL ) {
                 return false;
             }
         } else if ( CONFIG_DEFAULTS.VERSION !== BETA.VERSION ){
@@ -48,61 +48,64 @@ const DispatcherGenerator = ( Scanner ) => ( client, actor ) => {
         }
         return true;
     };
-    const filterContent = (msg) => {
+    const filterContent = ( msg ) => {
         let content = msg.content;
         const userId = msg.author.id;
-        const aliases = data.get(`${userId}`);
+        const aliases = data.get( `${userId}` );
 
-        if (aliases[content]) {
-            if (aliases[content].edit) {
-                if (msg.editable) {
-                    msg.edit(aliases[content].text);
+        if ( aliases[content] ) {
+            if ( aliases[content].edit ) {
+                if ( msg.editable ) {
+                    msg.edit( aliases[content].text );
                 }
             }
-            return aliases[content].text
+            return aliases[content].text;
         }
 
         let contentEdit = ''+content;
         let edit = false;
-        Object.keys(aliases).forEach((from) => {
+        Object.keys( aliases ).forEach( ( from ) => {
             const a = aliases[from];
-            if (a.inline) {
-                content = content.replace(RegExp(from), a.text);
-                if (a.edit) {
+            if ( a.inline ) {
+                content = content.replace( RegExp( from ), a.text );
+                if ( a.edit ) {
                     edit = true;
-                    contentEdit = a.text.replace(RegExp(from), a.text);
+                    contentEdit = a.text.replace( RegExp( from ), a.text );
                 }
             }
-        });
+        } );
 
-        if (edit) {
-            if (msg.editable) {
-                msg.edit(contentEdit);
+        if ( edit ) {
+            if ( msg.editable ) {
+                msg.edit( contentEdit );
             }
         }
 
-        return content
+        return content;
     };
 
     client.on( 'message', async ( msg ) => {
-        if ( ! filter(msg) ) {
+        if ( ! filter( msg ) ) {
             return;
         }
-        const content = filterContent(msg);
+        const content = filterContent( msg );
         const commandId = scanner.scan( content );
         if ( commandId ) {
             dispatch( content, commandLinkDict[commandId], msg );
         }
     } );
 
+    // eslint-disable-next-line no-unused-vars
     client.on( 'messageDelete', async ( msg ) => {
         // stub
     } );
 
+    // eslint-disable-next-line no-unused-vars
     client.on( 'messageUpdate', async ( oldMsg, newMsg ) => {
         // stub
     } );
 
+    // eslint-disable-next-line no-unused-vars
     client.on( 'messageReactionAdd', async ( reaction ) => {
         // stub
     } );

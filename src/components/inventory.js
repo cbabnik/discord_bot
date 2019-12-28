@@ -1,6 +1,6 @@
 const { Component } = require( '../component' );
 const _ = require( 'lodash' );
-const { PERMISSION_LEVELS, ACTIONS, CONFIG_DEFAULTS, BUCKS } = require( '../constants' );
+const { PERMISSION_LEVELS, ACTIONS, BUCKS } = require( '../constants' );
 
 const util = require( '../util' );
 const ID = 'inventory';

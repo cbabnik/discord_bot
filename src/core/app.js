@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 if ( process.argv.length === 2 || !['--alpha','--beta'].includes( process.argv[2] ) ) {
     console.log( 'Use --alpha or --beta' );
     process.exit( 1 );
@@ -22,8 +24,8 @@ const dispatcher = DispatcherGenerator( Scanner )( client, actor );
 util.setClient( client );
 
 const componentsNames = [];
-if ( fs.existsSync( './src/components/secret.js' ) ) {
-}
+//if ( fs.existsSync( './src/components/secret.js' ) ) {}
+
 const components = [];
 componentsNames.forEach( c => {
     const comp = require( `./components/${c}` )[c];

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 // client.js
 // This class is a thin wrapper around Discord's client. Any behavior to the client itself, regardless of the commands
 // that use it should be here. This means to reconnect the client when it disconnects, to accept or ignore invites, etc
@@ -41,8 +43,8 @@ const Client = ( max_messages, login_token ) => {
                 }
                 bytes_sent[n] = streamCount;
             } );
-        } catch (e) {
-            console.error('Client recovered from an error')
+        } catch ( e ) {
+            console.error( 'Client recovered from an error' );
         }
     }, 3000 );
     return cli;
