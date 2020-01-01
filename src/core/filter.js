@@ -9,7 +9,7 @@ const data = new Storage( STORAGE_ID );
 
 const Filter = ( client, dispatcher ) => {
 
-    const filter = ( msg ) => {
+    const filterChannel = ( msg ) => {
         if ( BUCKS.BUCKBOT === msg.author.id ) {
             return false;
         }
@@ -24,38 +24,34 @@ const Filter = ( client, dispatcher ) => {
         }
         return true;
     };
-    const filterContent = ( msg ) => {
-        let content = msg.content;
+
+    const applyAliases = ( content ) => {
         const userId = msg.author.id;
         const aliases = data.get( `${userId}` );
 
         if ( aliases[content] ) {
-            if ( aliases[content].edit ) {
-                if ( msg.editable ) {
-                    msg.edit( aliases[content].text );
-                }
-            }
             return aliases[content].text;
         }
 
         let contentEdit = ''+content;
-        let edit = false;
         Object.keys( aliases ).forEach( ( from ) => {
             const a = aliases[from];
             if ( a.inline ) {
                 content = content.replace( RegExp( from ), a.text );
-                if ( a.edit ) {
-                    edit = true;
-                    contentEdit = a.text.replace( RegExp( from ), a.text );
-                }
             }
         } );
 
         return content;
     };
 
+    const filterContent = ( msg ) => {
+        let content = msg.content;
+        content = applyAliases(content)
+        return content;
+    }
+
     client.on( 'message', async ( msg ) => {
-        if ( ! filter( msg ) ) {
+        if ( ! filterChannel( msg ) ) {
             return;
         }
         dispatcher.process( filterContent(msg), msg )
