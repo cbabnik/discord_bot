@@ -5,7 +5,6 @@
 // Dispatcher is a glorified map of commands basically.
 
 const debug = require( 'debug' )( 'dispatcher' );
-const { BUCKS, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
 
 const DispatcherGenerator = ( Scanner ) => ( actor ) => {
 

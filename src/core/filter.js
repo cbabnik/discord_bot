@@ -25,15 +25,13 @@ const Filter = ( client, dispatcher ) => {
         return true;
     };
 
-    const applyAliases = ( content ) => {
-        const userId = msg.author.id;
+    const applyAliases = ( userId, content ) => {
         const aliases = data.get( `${userId}` );
 
         if ( aliases[content] ) {
             return aliases[content].text;
         }
 
-        let contentEdit = ''+content;
         Object.keys( aliases ).forEach( ( from ) => {
             const a = aliases[from];
             if ( a.inline ) {
@@ -46,7 +44,7 @@ const Filter = ( client, dispatcher ) => {
 
     const filterContent = ( msg ) => {
         let content = msg.content;
-        content = applyAliases(content)
+        content = applyAliases(msg.author.id, content)
         return content;
     }
 
