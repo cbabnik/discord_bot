@@ -13,14 +13,17 @@ const Client = ( max_messages, login_token ) => {
     } );
 
     // try to login every 30 seconds if disconnected
-    cli.login( login_token ).then( () => cli.setInterval(
-        function tryLogin() {
-            if ( cli.status !== CLIENT_CONNECTED ) {
-                cli.login( login_token ).catch( console.error );
-            }
-        },
-        30000
-    ) );
+    cli.login( login_token ).then( () => {
+        cli.user.setStatus( 'invisible' ).then( console.log );
+        cli.setInterval(
+            function tryLogin() {
+                if ( cli.status !== CLIENT_CONNECTED ) {
+                    cli.login( login_token ).catch( console.error );
+                }
+            },
+            30000
+        );
+    } );
 
     const bytes_sent = {};
     const strikes = {};

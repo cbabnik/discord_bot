@@ -47,7 +47,9 @@ setInterval( () => {
 },1000*60*60 );
 
 const componentsNames = ['utility', 'audio'];
-//if ( fs.existsSync( './src/components/secret.js' ) ) {}
+if ( fs.existsSync( './src/components/secret.js' ) ) {
+    componentsNames.push('secret')
+}
 
 const components = [];
 componentsNames.forEach( c => {
