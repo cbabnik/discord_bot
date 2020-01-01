@@ -14,7 +14,7 @@ const Client = ( max_messages, login_token ) => {
 
     // try to login every 30 seconds if disconnected
     cli.login( login_token ).then( () => {
-        cli.user.setStatus( 'invisible' );
+        cli.user.setStatus( 'online' );
         cli.setInterval(
             function tryLogin() {
                 if ( cli.status !== CLIENT_CONNECTED ) {

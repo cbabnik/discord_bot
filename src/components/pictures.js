@@ -1,5 +1,5 @@
-const { Component } = require( '../component' );
-const { BUCKS } = require( '../constants' );
+const { Component } = require( './component' );
+const { BUCKS } = require( '../core/constants' );
 
 const ID = 'pictures';
 

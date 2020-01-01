@@ -23,7 +23,7 @@ const DAYMS = 1000*60*60*24;
 class Component {
     constructor( id ) {
         this.id = id;
-        this.jsonFile = CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
+        this.jsonFile = '/home/ec2-user/discord_bot/'+CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
         this.json = fs.existsSync( this.jsonFile )?require( this.jsonFile ):{};
         this.action = {};
         this.actionPart = this.action;

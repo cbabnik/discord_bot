@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "alpha": "cross-env DEBUG=actor,dispatcher,basic node src/core/app --alpha",
-    "beta": "mocha && cross-env DEBUG=actor,dispatcher,basic node src/core/app --beta",
+    "beta": "cross-env DEBUG=actor,dispatcher,basic node src/core/app --beta",
     "debug": "cross-env DEBUG=actor,dispatcher,basic node src/core/app --alpha",
     "tests": "mocha",
     "lint": "eslint ./",

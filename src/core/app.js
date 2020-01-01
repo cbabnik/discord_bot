@@ -42,11 +42,8 @@ process.on( 'exit', () => {
     //console.log( 'Backed up data.' );
 } );
 
-setInterval( () => {
-    util.backup();
-},1000*60*60 );
 
-const componentsNames = ['utility', 'audio'];
+const componentsNames = ['utility', 'audio', 'quotes', 'pictures'];
 if ( fs.existsSync( './src/components/secret.js' ) ) {
     componentsNames.push('secret')
 }

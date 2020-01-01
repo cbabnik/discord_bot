@@ -1,6 +1,6 @@
-const { Component } = require( '../component' );
-const { BUCKS } = require( '../constants' );
-const { getId } = require( '../util' );
+const { Component } = require( './component' );
+const { BUCKS } = require( '../core/constants' );
+const { getId } = require( '../core/util' );
 const _ = require( 'lodash' );
 
 const ID = 'quotes';
