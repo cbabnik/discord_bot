@@ -6,6 +6,17 @@ Discord bot for the server **Big Buck Hunters**
 ![Big Refactor Update](https://github.com/cbabnik/discord_bot/blob/master/res/images/updates/bigrefactor.png)
 Followed by the Adventure Update, Casino Update, Shoppalooza Update, Underworld Update, Slime Fight
 
+### Setup Guide
+
+1. Install each of
+    1. npm
+    1. ffmpeg
+        1. download
+        1. extract
+        1. add bin directory to path
+1. clone package
+1. run `npm install`
+
 ### Architecture
 
 The bot is set up with a Service architecture, where many "Component"s carry out the role of Service.
@@ -26,14 +37,14 @@ Dispatcher enlists a black box Scanner to parse a growing list of regex.
 
 ### Screenshots
 
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/mslots.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/gslots.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/cslots.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/help.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/quote.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/roll.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/alias.png)
-![](https://github.com/cbabnik/discord_bot/blob/master/images/screenshots/calendar.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/res/images/screenshots/mslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/res/images/screenshots/gslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/res/images/screenshots/cslots.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/res/images/screenshots/help.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/res/images/screenshots/quote.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/res/images/screenshots/roll.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/res/images/screenshots/alias.png)
+![](https://github.com/cbabnik/discord_bot/blob/master/res/images/screenshots/calendar.png)
 
 ### Current Components
 

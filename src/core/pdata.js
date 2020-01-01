@@ -10,7 +10,7 @@ const { time } = require( './util' );
 class Storage {
     constructor( id ) {
         this.id = id;
-        this.jsonFile = CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
+        this.jsonFile = '../../' + CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
 
         const dp = pdata.find( ( dp ) => {
             return dp.id === id;
@@ -63,9 +63,9 @@ const backup = () => {
 
     archive.directory( 'storage/' ).pipe( output );
     archive.finalize();
-    debug( 'Data Backed up!' );
 };
 
+/*
 const rl = require( 'readline' ).createInterface( {
     input: process.stdin,
     output: process.stdout
@@ -92,5 +92,5 @@ setTimeout( () => {
         console.log( 'Done pdata.' );
     } );
 }, 5000 );
-
+*/
 module.exports = { Storage };

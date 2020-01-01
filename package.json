@@ -13,18 +13,24 @@
   "dependencies": {
     "archiver": "^3.1.1",
     "big-integer": "^1.6.48",
+    "bufferutil": "^4.0.1",
     "chai": "^4.2.0",
     "cross-env": "^6.0.3",
     "debug": "^2.6.9",
     "discord.js": "^11.5.1",
+    "erlpack": "^0.1.3",
+    "lavalink": "^2.8.2",
+    "libsodium-wrappers": "^0.7.6",
     "lodash": "^4.17.15",
     "mocha": "^6.2.2",
+    "node-opus": "^0.3.3",
     "readline": "^1.3.0",
     "seed-random": "^2.2.0",
     "sinon": "^7.5.0",
     "tmp": "^0.1.0",
     "uuidv4": "^4.0.0",
-    "uws": "^100.0.1",
-    "ytdl-core": "^1.0.5"
+    "ytdl-core": "^1.0.5",
+    "zlib-sync": "^0.1.6",
+    "zucc": "^0.1.2"
   }
 }

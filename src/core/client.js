@@ -12,14 +12,14 @@ const Client = ( max_messages, login_token ) => {
         messageCacheMaxSize: max_messages
     } );
 
-    // try to login every 60 seconds if disconnected
+    // try to login every 30 seconds if disconnected
     cli.login( login_token ).then( () => cli.setInterval(
         function tryLogin() {
             if ( cli.status !== CLIENT_CONNECTED ) {
                 cli.login( login_token ).catch( console.error );
             }
         },
-        60000
+        30000
     ) );
 
     const bytes_sent = {};
