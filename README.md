@@ -9,7 +9,7 @@ Followed by the Adventure Update, Casino Update, Shoppalooza Update, Underworld 
 ### Setup Guide
 
 1. Install each of
-    1. npm
+    1. nodejs 9.x
     1. ffmpeg
         1. download
         1. extract

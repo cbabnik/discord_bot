@@ -80,7 +80,7 @@ class Audio extends Component {
         if ( !fileName.includes( '.' ) ) {
             fileName += '.mp3';
         }
-        if ( ! fs.existsSync( `res/audio/${fileName}` ) ) {
+        if ( ! fs.existsSync( `./res/audio/${fileName}` ) ) {
             this.setAction( 'message', `I couldn't find that file: "${fileName}"` );
             return;
         }
