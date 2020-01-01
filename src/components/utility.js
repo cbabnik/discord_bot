@@ -1,11 +1,11 @@
-const { Component } = require( '../component' );
+const { Component } = require( './component' );
 const _ = require( 'lodash' );
 
 const bigInt = require( 'big-integer' );
 
 const ID = 'utility';
 
-const { Storage } = require( '../pdata' );
+const { Storage } = require( '../core/pdata' );
 const alias_data = new Storage( 'alias' );
 
 class Utility extends Component {

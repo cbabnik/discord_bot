@@ -13,9 +13,9 @@
 // components themselves
 
 const fs = require( 'fs' );
-const { CONFIG_DEFAULTS } = require( './constants' );
+const { CONFIG_DEFAULTS } = require( '../core/constants' );
 const debug = require( 'debug' )( 'basic' );
-const util = require( './util' );
+const util = require( '../core/util' );
 const _ = require( 'lodash' );
 
 const DAYMS = 1000*60*60*24;

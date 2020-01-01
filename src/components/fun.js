@@ -67,7 +67,7 @@ class Fun extends Component {
 
         ids.forEach( ( id ) => {
             bank.addAmount( id, 1 );
-            this.setAction( 'message', 'The CS:Go winners each get 1 credit!' );
+            this.setAction( 'message', 'The game winners each get 1 credit!' );
         } );
     }
 }

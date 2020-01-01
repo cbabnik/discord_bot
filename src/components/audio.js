@@ -1,7 +1,7 @@
-const { Component } = require( '../component' );
+const { Component } = require( './component' );
 const _ = require( 'lodash' );
 const fs = require( 'fs' );
-const { CONFIG_DEFAULTS, ACTIONS, PERMISSION_LEVELS } = require( '../constants' );
+const { CONFIG_DEFAULTS, ACTIONS, PERMISSION_LEVELS } = require( '../core/constants' );
 
 const ID = 'audio';
 
@@ -80,7 +80,7 @@ class Audio extends Component {
         if ( !fileName.includes( '.' ) ) {
             fileName += '.mp3';
         }
-        if ( ! fs.existsSync( `./audio/${fileName}` ) ) {
+        if ( ! fs.existsSync( `res/audio/${fileName}` ) ) {
             this.setAction( 'message', `I couldn't find that file: "${fileName}"` );
             return;
         }
@@ -115,7 +115,7 @@ class Audio extends Component {
     }
 
     playRandom() {
-        const f = _.sample( fs.readdirSync( './audio' ) );
+        const f = _.sample( fs.readdirSync( 'res/audio' ) );
         this.setAction( 'audioFile', f );
     }
 }
