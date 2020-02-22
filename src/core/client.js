@@ -23,7 +23,7 @@ const Client = ( max_messages, login_token ) => {
             },
             30000
         );
-    } );
+    } ).catch( console.error );
 
     const bytes_sent = {};
     const strikes = {};
@@ -50,7 +50,12 @@ const Client = ( max_messages, login_token ) => {
             console.error( 'Client recovered from an error' );
         }
     }, 3000 );
+    
+    // when client encounters an error (like a timeout) log it without exiting node
+    cli.on('error', console.log);
+
     return cli;
 };
+
 
 module.exports = {Client};
