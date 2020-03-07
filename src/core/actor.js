@@ -156,6 +156,15 @@ const Actor = ( client ) => {
             }
         }
 
+        // messages
+        // ________
+
+        if ( ins.reaction ) {
+            msg.react(ins.reaction).then(() => {}).catch(() => {
+                msg.react('❓')
+            })
+        }
+
         // audio
         // _____
         if ( ins.endAudio ) {

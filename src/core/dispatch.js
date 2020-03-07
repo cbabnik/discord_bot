@@ -5,6 +5,7 @@
 // Dispatcher is a glorified map of commands basically.
 
 const debug = require( 'debug' )( 'dispatcher' );
+const { switchboard } = require( '../components/switchboard' );
 
 const DispatcherGenerator = ( Scanner ) => ( actor ) => {
 
@@ -14,8 +15,8 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     let next_id = 0;
 
     // groups in the regex are treated as parameters to the callback
-    const registerCommand = ( regex, component, cb, help, groupName ) => {
-        commandLinkDict[next_id] = {regex, component, cb};
+    const registerCommand = ( regex, component, cb, groupName ) => {
+        commandLinkDict[next_id] = {regex, component, cb, groupName};
         scanner.addRegex( regex, next_id );
         next_id += 1;
     };
@@ -23,7 +24,7 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     const registerComponent = ( component ) => {
         const clist = component.getAllCommands();
         clist.forEach( c => {
-            registerCommand( c.regex, component, c.cb );
+            registerCommand( c.regex, component, c.cb, c.groupName );
         } );
         component.setActor( actor ); // indiscriminately give components access to actor
     };
@@ -31,7 +32,10 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     const process = async ( content, msg ) => {
         const commandId = scanner.scan( content );
         if ( commandId ) {
-            dispatch( content, commandLinkDict[commandId], msg );
+            const cmd = commandLinkDict[commandId];
+            if (switchboard.isEnabled(cmd.groupName)) {
+                dispatch( content, cmd, msg );
+            }
         }
     };
 

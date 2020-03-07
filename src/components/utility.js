@@ -5,8 +5,8 @@ const bigInt = require( 'big-integer' );
 
 const ID = 'utility';
 
-const { Storage } = require( '../core/pdata' );
-const alias_data = new Storage( 'alias' );
+const Storage = require( '../core/pdata' );
+const alias_data = Storage( 'alias' );
 
 class Utility extends Component {
     constructor() {
@@ -21,7 +21,7 @@ class Utility extends Component {
         this.addCommand( /^-random (\S+(?: \S+)+)$/, ( list ) => this.random( 1,list ) );
         this.addCommand( /^-random \S+$/, this.randomInfoB );
         this.addCommand( /^-random/, this.randomInfo );
-        this.addCommand( /^-math ([ \-+*/.()\d]*)$/, this.calculate );
+        this.addCommand( /^-math ([ \-+*/.()\d]*)$/, this.calculate , "math" );
         this.addCommand( /^-coinflip$/, () => this.coinflip( '', '' ) );
         this.addCommand( /^-coinflip (\S+) (\S+)$/, this.coinflip );
         this.addCommand( /^-coinflip/, this.coinflipInfo );

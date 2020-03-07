@@ -8,10 +8,7 @@
 //     a publicly accessible [REGEX, CB] list.
 //     a list of other services it uses.
 
-const fs = require( 'fs' );
-const { CONFIG } = require( '../core/constants' );
 const Storage = require( '../core/pdata' );
-const { CONFIG_DEFAULTS } = require( '../core/constants' );
 const debug = require( 'debug' )( 'basic' );
 const util = require( '../core/util' );
 const _ = require( 'lodash' );
@@ -21,7 +18,8 @@ const DAYMS = 1000*60*60*24;
 class Component {
     constructor( id ) {
         this.id = id;
-        this.storage = await Storage( id );
+        this.storage = undefined;
+        (async () => {this.storage = await Storage(id);})();
         this.action = {};
         this.actionPart = this.action;
         this.commands = [];
@@ -31,8 +29,8 @@ class Component {
         }, 3000 );
     }
 
-    addCommand( regex, cb, help=false, groupName=this.id) {
-        this.commands.push( {regex, cb} );
+    addCommand( regex, cb, groupName=undefined) {
+        this.commands.push( {regex, cb, groupName} );
     }
 
     getAllCommands() {
@@ -53,18 +51,6 @@ class Component {
         this.action = {};
         this.actionPart = this.action;
         return temp;
-    }
-
-    get( field, default_val=0 ) {
-        this.storage.get(field, default_val)
-    }
-
-    set( field, value ) {
-        this.storage.set(field, default_val)
-    }
-
-    update( field, operand, default_val=0, f = (a,b) => a+b ) {
-        this.storage.apply(field, opearnd, default_val, f)
     }
 
     bootUp() {

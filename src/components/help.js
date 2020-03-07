@@ -1,4 +1,4 @@
-const { Component } = require( '../component' );
+const { Component } = require( './component' );
 const fs = require( 'fs' );
 const _ = require( 'lodash' );
 
@@ -7,47 +7,44 @@ const ID = 'help';
 class Help extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-help/, this.help );
-        this.addCommand( /^\?help/, this.help );
-        this.addCommand( /^-list/, this.playListHelp );
-        this.addCommand( /^!list/, this.playListHelp );
-        this.addCommand( /^\?roll/, this.rollHelp );
-        this.addCommand( /^\?random/, this.randomHelp );
-        this.addCommand( /^\?math/, this.mathHelp );
-        this.addCommand( /^-math$/, this.mathHelp );
-        this.addCommand( /^\?coinflip/, this.coinflipHelp );
-        this.addCommand( /^\?burger/, this.burgerHelp );
-        this.addCommand( /^\?add[bB]urger/, this.addBurgerHelp );
-        this.addCommand( /^\?slotstats/, this.slotStatsHelp );
-        this.addCommand( /^\?slotstatistics/, this.slotStatisticsHelp );
-        this.addCommand( /^\?slots/, this.slotsHelp );
-        this.addCommand( /^-slots$/, this.slotsHelp );
-        this.addCommand( /^\?!/, this.playHelp );
-        this.addCommand( /^\?play/, this.playHelp );
-        this.addCommand( /^-play$/, this.playHelp );
-        this.addCommand( /^\?endAudio/, this.endAudioHelp );
-        this.addCommand( /^\?secrets/, this.secretsHelp );
-        this.addCommand( /^\?allowance/, this.allowanceHelp );
-        this.addCommand( /^\?balance/, this.balanceHelp );
-        this.addCommand( /^\?give/, this.giveHelp );
-        this.addCommand( /^-request$/, this.requestHelp );
-        this.addCommand( /^\?request/, this.requestHelp );
-        this.addCommand( /^\?requests/, this.requestHelp );
-        this.addCommand( /^\?calendar/, this.calendarHelp );
-        this.addCommand( /^\?(?:next)[hH]oliday/, this.eventsHelp );
-        this.addCommand( /^\?(?:all)[hH]olidays/, this.eventsHelp );
-        this.addCommand( /^\?(?:next)[bB]irthdays/, this.eventsHelp );
-        this.addCommand( /^\?(?:all)[bB]irthdays/, this.eventsHelp );
-        this.addCommand( /^\?queue[iI]t[uU]p/, this.queueItUpHelp );
-        this.addCommand( /^-patchnotes/, this.patchnotes );
-        this.addCommand( /^\?patchnotes/, this.patchnotes );
-        this.addCommand( /^\?live/, this.liveHelp );
-        this.addCommand( /^\?new ?[qQ]uote/, this.quoteHelp );
-        this.addCommand( /^\?quote/, this.quoteHelp );
-        this.addCommand( /^-new ?[qQ]uote$/, this.quoteHelp );
-        this.addCommand( /^-loan$/, this.loanHelp );
-        this.addCommand( /^\?loan$/, this.loanHelp );
-        this.addCommand( /^\?(.+)/, this.helpInfo );
+        this.addCommand( /^-help/, this.help, 'help' );
+        this.addCommand( /^\?help/, this.help, 'help' );
+        this.addCommand( /^-list/, this.playListHelp, 'play' );
+        this.addCommand( /^!list/, this.playListHelp, 'play' );
+        this.addCommand( /^\?roll/, this.rollHelp, 'roll' );
+        this.addCommand( /^\?random/, this.randomHelp, 'random' );
+        this.addCommand( /^\?math/, this.mathHelp, 'math' );
+        this.addCommand( /^-math$/, this.mathHelp, 'math' );
+        this.addCommand( /^\?coinflip/, this.coinflipHelp, 'coinflip' );
+        this.addCommand( /^\?burger/, this.burgerHelp, 'burger' );
+        this.addCommand( /^\?add[bB]urger/, this.addBurgerHelp, 'burger' );
+        this.addCommand( /^\?slotstats/, this.slotStatsHelp, 'slots' );
+        this.addCommand( /^\?slotstatistics/, this.slotStatisticsHelp, 'slots' );
+        this.addCommand( /^\?slots/, this.slotsHelp, 'slots' );
+        this.addCommand( /^-slots$/, this.slotsHelp, 'slots' );
+        this.addCommand( /^\?!/, this.playHelp, 'play' );
+        this.addCommand( /^\?play/, this.playHelp, 'play' );
+        this.addCommand( /^-play$/, this.playHelp, 'play' );
+        this.addCommand( /^\?endAudio/, this.endAudioHelp, 'play' );
+        this.addCommand( /^\?secrets/, this.secretsHelp, 'secrets' );
+        this.addCommand( /^\?allowance/, this.allowanceHelp, 'allowance' );
+        this.addCommand( /^\?balance/, this.balanceHelp, 'bank' );
+        this.addCommand( /^\?give/, this.giveHelp, 'bank' );
+        this.addCommand( /^-request$/, this.requestHelp, 'requests' );
+        this.addCommand( /^\?request/, this.requestHelp, 'requests' );
+        this.addCommand( /^\?requests/, this.requestHelp, 'requests' );
+        this.addCommand( /^\?calendar/, this.calendarHelp, 'calendar' );
+        this.addCommand( /^\?(?:next) ?[hH]oliday/, this.eventsHelp, 'next holiday' );
+        this.addCommand( /^\?(?:all) ?[hH]olidays/, this.eventsHelp, 'holiday' );
+        this.addCommand( /^\?(?:next) ?[bB]irthday/, this.eventsHelp, 'next birthday' );
+        this.addCommand( /^\?(?:all) ?[bB]irthdays/, this.eventsHelp, 'birthdays');
+        this.addCommand( /^-patchnotes/, this.patchnotes, 'patchnotes' );
+        this.addCommand( /^\?patchnotes/, this.patchnotes, 'patchnotes' );
+        this.addCommand( /^\?live/, this.liveHelp, 'live' );
+        this.addCommand( /^\?new ?[qQ]uote/, this.quoteHelp, 'quote' );
+        this.addCommand( /^\?quote/, this.quoteHelp, 'quote' );
+        this.addCommand( /^-new ?[qQ]uote$/, this.quoteHelp, 'new quote' );
+        this.addCommand( /^\?(.+)/, this.helpInfo, 'help' );
     }
 
     help() {
@@ -261,19 +258,6 @@ Give away your cash, you won't.`
         this.setAction( 'message',
             `\`-slotstatistics\`
 Gives some brief overall statistics.`
-        );
-    }
-
-    loanHelp() {
-        this.setAction( 'message',
-            `valid uses:
-    \`-loans\` - check available loans
-    \`-loan debts\` - check loans you are involved with
-    \`-loan offer <args>\` - offer a new loan
-    \`-loan adjust <args>\` - change your loan offerring
-    \`-loan relinquish\` - destroy your offering, turning all debt to IOU
-    \`-loan takeout <amount> <player>\` - take out a loan
-\`<args>\` can include \`max=<amount>, type=compound, interest=<percent per day>, rate=<charge per day> flat=<charge to take out a loan>\``
         );
     }
 }

@@ -52,6 +52,7 @@ exports.ACTIONS = {
     CHANNEL_ID: 'channelId',
     VOICE_CHANNEL: 'voiceChannel',
     MESSAGE: 'message',
+    REACTION: 'reaction',
     MESSAGE_ID: 'messageId',
     MESSAGE_USER_ID: 'messageUserId',
     EDIT_ID: 'editId',

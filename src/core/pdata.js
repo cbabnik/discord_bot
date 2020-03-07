@@ -95,10 +95,6 @@ class Storage {
     async append( key, elem, default_val=[] ) {
         return await this.apply( key, elem, default_val, (arr, elem) => arr.concat([elem]) );
     }
-
-    backupAllStorageNow(name) {
-       backup(name)
-    }
 }
 
 const pdata = [];

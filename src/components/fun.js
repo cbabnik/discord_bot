@@ -60,14 +60,14 @@ class Fun extends Component {
             return;
         }
         if ( currentTime - lastTime < 1000*60*20 ) {
-            this.setAction( 'message', 'Do you really not want to have buck bot privledges anymore?' );
+            this.setAction( 'message', 'Do you really not want to have administrative privledges anymore?' );
             _.set( this.json, 'wewon', currentTime + 24*60*60*1000*1000 );
             return;
         }
 
         ids.forEach( ( id ) => {
-            bank.addAmount( id, 1 );
-            this.setAction( 'message', 'The game winners each get 1 credit!' );
+            bank.addAmount( id, 0.2 );
+            this.setAction( 'message', 'The game winners each get 0.2 credits!' );
         } );
     }
 }

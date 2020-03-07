@@ -3,9 +3,10 @@
 
 const debug = require( 'debug' )( 'dispatcher' );
 const { BUCKS, CONFIG, ALPHA, BETA } = require( './constants' );
-const { Storage } = require( './pdata' );
+const Storage = require( './pdata' );
 const STORAGE_ID = 'alias';
-const data = new Storage( STORAGE_ID );
+let data = undefined;
+(async () => {data = await Storage( STORAGE_ID )})();
 
 const Filter = ( client, dispatcher ) => {
 
@@ -25,8 +26,8 @@ const Filter = ( client, dispatcher ) => {
         return true;
     };
 
-    const applyAliases = ( userId, content ) => {
-        const aliases = data.get( `${userId}` );
+    const applyAliases = async ( userId, content ) => {
+        const aliases = await data.get( `${userId}` );
 
         if ( aliases[content] ) {
             return aliases[content].text;
@@ -42,9 +43,9 @@ const Filter = ( client, dispatcher ) => {
         return content;
     };
 
-    const filterContent = ( msg ) => {
+    const filterContent = async ( msg ) => {
         let content = msg.content;
-        content = applyAliases(msg.author.id, content)
+        content = await applyAliases(msg.author.id, content)
         return content;
     }
 
@@ -52,7 +53,7 @@ const Filter = ( client, dispatcher ) => {
         if ( ! filterChannel( msg ) ) {
             return;
         }
-        dispatcher.process( filterContent(msg), msg )
+        dispatcher.process( await filterContent(msg), msg )
     } );
 
     // eslint-disable-next-line no-unused-vars

@@ -61,16 +61,7 @@ process.on( 'exit', (code) => {
 // initialization
 // ______________________________
 
-const componentsNames = ['utility', 'audio', 'quotes', 'pictures'];
-if ( fs.existsSync( './src/components/secret.js' ) ) {
-    componentsNames.push( 'secret' );
-}
-const alphaComponentNames = ['admin']
-if ( CONFIG.VERSION === ALPHA.VERSION ) {
-    alphaComponentNames.forEach( comp_name => {
-        componentsNames.push( comp_name )
-    })
-}
+const componentsNames = require( '../components/switchboard' ).filesToLoad
 
 const components = [];
 componentsNames.forEach( c => {
