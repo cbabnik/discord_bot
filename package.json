@@ -11,7 +11,7 @@
     "lintfix": "eslint --fix ./"
   },
   "dependencies": {
-    "acorn": "^6.1.1",
+    "acorn": "^6.4.1",
     "archiver": "^3.0.0",
     "big-integer": "^1.6.44",
     "bufferutil": "^3.0.5",
