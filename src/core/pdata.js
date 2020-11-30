@@ -4,13 +4,13 @@
 const fs = require( 'fs' );
 const archiver = require( 'archiver' );
 const _ = require( 'lodash' );
-const {CONFIG_DEFAULTS, BETA} = require( './constants' );
+const {CONFIG, BETA} = require( './constants' );
 const { time } = require( './util' );
 
 class Storage {
     constructor( id ) {
         this.id = id;
-        this.jsonFile = '../../' + CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
+        this.jsonFile = '../../' + CONFIG.STORAGE_DIRECTORY+id+'.json';
 
         const dp = pdata.find( ( dp ) => {
             return dp.id === id;

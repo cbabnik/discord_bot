@@ -2,7 +2,7 @@
 // originally part of dispatcher, handles input gathering, filtering, and preprocessing
 
 const debug = require( 'debug' )( 'dispatcher' );
-const { BUCKS, CONFIG_DEFAULTS, ALPHA, BETA } = require( './constants' );
+const { BUCKS, CONFIG, ALPHA, BETA } = require( './constants' );
 const { Storage } = require( './pdata' );
 const STORAGE_ID = 'alias';
 const data = new Storage( STORAGE_ID );
@@ -13,11 +13,11 @@ const Filter = ( client, dispatcher ) => {
         if ( BUCKS.BUCKBOT === msg.author.id ) {
             return false;
         }
-        if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
+        if ( CONFIG.VERSION === ALPHA.VERSION ) {
             if ( msg.channel.id !== ALPHA.MAIN_CHANNEL ) {
                 return false;
             }
-        } else if ( CONFIG_DEFAULTS.VERSION !== BETA.VERSION ){
+        } else if ( CONFIG.VERSION !== BETA.VERSION ){
             return false;
         } else if ( msg.channel.id === ALPHA.MAIN_CHANNEL ) {
             return false;

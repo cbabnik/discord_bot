@@ -52,7 +52,7 @@ const Client = ( max_messages, login_token ) => {
     }, 3000 );
     
     // when client encounters an error (like a timeout) log it without exiting node
-    cli.on('error', console.log);
+    cli.on('error', console.error );
 
     return cli;
 };

@@ -1,4 +1,4 @@
-const { BUCKS, ALIASES, CONFIG_DEFAULTS } = require( './constants' );
+const { BUCKS, ALIASES, CONFIG } = require( './constants' );
 const archiver = require( 'archiver' );
 const fs = require( 'fs' );
 const debug = require( 'debug' )( 'basic' );
@@ -14,6 +14,11 @@ exports.getClient = () => {
     return client;
 };
 
+// accepts:
+// bugslinger (registered name)
+// spookslinger (current nickname)
+// 106853033526247424 (actual id)
+// bugs (aliases) 
 exports.getId = ( username ) => {
     const upperUser = username.toUpperCase();
     if ( Object.keys( BUCKS ).includes( upperUser ) ) {
@@ -33,6 +38,10 @@ exports.getId = ( username ) => {
     return user.id;
 };
 
+// prioritizes giving back:
+// user nickname
+// user name
+// "user#{id}"
 exports.getUser = ( id ) => {
     const user = client.users.find( u => u.id === id );
     if ( user ) {
@@ -46,7 +55,7 @@ exports.getUser = ( id ) => {
 
 exports.getVoiceChannel = ( id ) => {
     if ( !guildMembers ) {
-        guildMembers = client.guilds.get( CONFIG_DEFAULTS.GUILD ).members;
+        guildMembers = client.guilds.get( CONFIG.GUILD ).members;
     }
     const member = guildMembers.find( m => m.user.id === id );
     if ( member ) {

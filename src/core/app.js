@@ -9,13 +9,13 @@ if ( process.argv.length === 2 || !['--alpha','--beta'].includes( process.argv[2
 
 const util = require( './util' );
 const { LOGIN_TOKEN } = require( './auth.js' );
-const { MAX_MESSAGES, CONFIG_DEFAULTS, ALPHA } = require( './constants' );
+const { MAX_MESSAGES, CONFIG, ALPHA } = require( './constants' );
 const fs = require( 'fs' );
 if ( !fs.existsSync( './storage' ) ) {
     fs.mkdirSync( './storage', {}, () => {} );
 }
-if ( !fs.existsSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY ) ) {
-    fs.mkdirSync( CONFIG_DEFAULTS.STORAGE_DIRECTORY, { recursive: true }, () => {} );
+if ( !fs.existsSync( CONFIG.STORAGE_DIRECTORY ) ) {
+    fs.mkdirSync( CONFIG.STORAGE_DIRECTORY, { recursive: true }, () => {} );
 }
 
 // construction
@@ -58,6 +58,9 @@ const componentsNames = ['utility', 'audio', 'quotes', 'pictures'];
 if ( fs.existsSync( './src/components/secret.js' ) ) {
     componentsNames.push( 'secret' );
 }
+if ( CONFIG.VERSION === ALPHA.VERSION ) {
+    // push any components which are still under initial test here.
+}
 
 const components = [];
 componentsNames.forEach( c => {
@@ -65,7 +68,4 @@ componentsNames.forEach( c => {
     dispatcher.registerComponent( comp );
     components.push( comp );
 } );
-if ( CONFIG_DEFAULTS.VERSION === ALPHA.VERSION ) {
-    // register any components which are still under initial test here.
-}
 
