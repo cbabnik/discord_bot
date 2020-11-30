@@ -1,5 +1,5 @@
 const { Component } = require( '../component' );
-const { BUCKS, CONFIG_DEFAULTS } = require( '../constants' );
+const { BUCKS, CONFIG } = require( '../constants' );
 const { bank } = require( './bank' );
 const { inventory } = require( './inventory' );
 const debug = require( 'debug' )( 'basic' );
@@ -30,11 +30,11 @@ class Payroll extends Component {
         if ( misses > 0 ) {
             this.setAction( 'message', `Sorry guys, I missed ${misses} pay periods! ` +
                 `I believe I owe you all ${ALLOWANCE_AMOUNT*misses} credits in allowance.` );
-            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
             this.payout( misses*ALLOWANCE_AMOUNT );
         } else {
             this.setAction( 'message', `Allowance of ${ALLOWANCE_AMOUNT} credits has been paid out!` );
-            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
             this.payout( ALLOWANCE_AMOUNT );
         }
         this.bypassDispatcher();

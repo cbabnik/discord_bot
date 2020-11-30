@@ -1,7 +1,7 @@
 const { Component } = require( '../component' );
 const _ = require( 'lodash' );
 const { getId }  = require( '../util' );
-const { PERMISSION_LEVELS, CONFIG_DEFAULTS } = require( '../constants' );
+const { PERMISSION_LEVELS, CONFIG } = require( '../constants' );
 const { bank } = require( './bank' );
 
 const ID = 'fun';
@@ -25,7 +25,7 @@ class Fun extends Component {
         const id = metaInfo.authorId;
         const channelId = metaInfo.channelId;
 
-        if ( channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
+        if ( channelId !== CONFIG.MAIN_CHANNEL ) {
             this.setAction( 'message', 'Do this in a public channel' );
             return;
         }

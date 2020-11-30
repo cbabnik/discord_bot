@@ -71,7 +71,7 @@ const rl = require( 'readline' ).createInterface( {
     output: process.stdout
 } );
 setTimeout( () => {
-    if ( CONFIG_DEFAULTS.VERSION === BETA.VERSION ) {
+    if ( CONFIG.VERSION === BETA.VERSION ) {
         setInterval( () => {
             saveAll();
             //backup();

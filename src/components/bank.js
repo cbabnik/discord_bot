@@ -2,7 +2,7 @@ const { Component } = require( '../component' );
 const _ = require( 'lodash' );
 const util = require( '../util' );
 const debug = require( 'debug' )( 'basic' );
-const { ACTIONS, CONFIG_DEFAULTS } = require( '../constants' );
+const { ACTIONS, CONFIG } = require( '../constants' );
 
 const ID = 'bank';
 
@@ -114,7 +114,7 @@ class Bank extends Component {
         const id = metaInfo.authorId;
         const user = metaInfo.author;
         this.setAction( ACTIONS.MESSAGE, `**${user}** has declared Bankruptcy!!` );
-        this.setAction( ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL );
+        this.setAction( ACTIONS.CHANNEL_ID, CONFIG.MAIN_CHANNEL );
         if ( _.get( this.json, `${id}.dbankrupt`, false ) ) {
             this.setAction( ACTIONS.MESSAGE, undefined );
         } else if ( _.get( this.json, `${id}.bankrupt`, false ) ) {
@@ -133,7 +133,7 @@ class Bank extends Component {
             _.set( this.json, `${id}.bankrupt`, false );
             this.actor.handle( {
                 message: `**user#${id}** is no longer bankrupt!`,
-                channelId: CONFIG_DEFAULTS.MAIN_CHANNEL
+                channelId: CONFIG.MAIN_CHANNEL
             }, null );
         }
     }
@@ -188,7 +188,7 @@ class Bank extends Component {
             return;
         }
 
-        this.setAction( ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL );
+        this.setAction( ACTIONS.CHANNEL_ID, CONFIG.MAIN_CHANNEL );
         if ( this.payAmount( metaInfo.authorId, amnt ) ) {
             const paid = this.payOffLoan( metaInfo.authorId, id, amnt );
             const amntLeft = amnt-paid;
@@ -248,7 +248,7 @@ class Bank extends Component {
 
     adjust( args, metaInfo ) {
         args = args.split( ' ' );
-        if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
+        if ( metaInfo.channelId !== CONFIG.MAIN_CHANNEL ) {
             this.setAction( ACTIONS.MESSAGE, 'Please do this publicly.' );
             return;
         }
@@ -333,7 +333,7 @@ class Bank extends Component {
 
     offer( args, metaInfo ) {
         args = args.split( ' ' );
-        if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
+        if ( metaInfo.channelId !== CONFIG.MAIN_CHANNEL ) {
             this.setAction( ACTIONS.MESSAGE, 'Please do this publicly.' );
             return;
         }
@@ -439,7 +439,7 @@ class Bank extends Component {
             this.setAction( ACTIONS.MESSAGE, `User ${user} not found` );
             return;
         }
-        if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
+        if ( metaInfo.channelId !== CONFIG.MAIN_CHANNEL ) {
             this.setAction( ACTIONS.MESSAGE, 'Please do this publicly.' );
             return;
         }

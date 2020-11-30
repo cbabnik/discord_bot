@@ -1,5 +1,5 @@
 const { Component } = require( '../component' );
-const { BUCKS, CONFIG_DEFAULTS, ACTIONS } = require( '../constants' );
+const { BUCKS, CONFIG, ACTIONS } = require( '../constants' );
 const { lottery } = require( './lottery' );
 const _ = require( 'lodash' );
 
@@ -60,7 +60,7 @@ class Calendar extends Component {
         // slots saturday
         if ( today.getDay() === 6 ) {
             this.setAction( 'message', 'Slots Saturday! Everyone with 0 maze slots free rolls gets one!' );
-            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
             this.actor.handle( this.commitAction(), null );
 
             Object.values( BUCKS ).forEach( id => {
@@ -73,7 +73,7 @@ class Calendar extends Component {
         // slots sunday
         if ( today.getDay() === 0 ) {
             this.setAction( 'message', 'Slots Sunday! Everyone with 0 grid slots free rolls gets one of each!' );
-            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
             this.actor.handle( this.commitAction(), null );
 
             Object.values( BUCKS ).forEach( id => {
@@ -89,7 +89,7 @@ class Calendar extends Component {
             const name = k.charAt( 0 ).toUpperCase() + k.toLowerCase().substr( 1 );
             if ( this.isDay( bd, new Date() ) ) {
                 this.setAction( 'message', `Happy birthday ${name}! Have 100 credits!` );
-                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
                 this.actor.handle( this.commitAction(), null );
             }
         } );
@@ -98,7 +98,7 @@ class Calendar extends Component {
             const hd = HOLIDAYS[k];
             if ( this.isDay( hd, new Date() ) ) {
                 this.setAction( 'message', `It's ${k.s}! Everyone gets ${k.v} credits` );
-                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
                 this.actor.handle( this.commitAction(), null );
                 this.payout( hd.v );
             }

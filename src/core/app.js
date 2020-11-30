@@ -8,7 +8,7 @@ if ( process.argv.length === 2 || !['--alpha','--beta'].includes( process.argv[2
 // ______________________________
 
 const util = require( './util' );
-const { LOGIN_TOKEN } = require( './auth.js' );
+const { LOGIN_TOKEN } = require( '../../auth.js' );
 const { MAX_MESSAGES, CONFIG, ALPHA } = require( './constants' );
 const fs = require( 'fs' );
 if ( !fs.existsSync( './storage' ) ) {

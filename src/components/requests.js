@@ -1,7 +1,7 @@
 const uuidv4 = require( 'uuidv4' );
 
 const { Component } = require( '../component' );
-const { PERMISSION_LEVELS, DMCHANNEL, CONFIG_DEFAULTS } = require( '../constants' );
+const { PERMISSION_LEVELS, DMCHANNEL, CONFIG } = require( '../constants' );
 
 const STATUS_ACCEPTED = 'ACCEPTED';
 const STATUS_PENDING_JUDGEMENT = 'PENDING JUDGEMENT';
@@ -63,7 +63,7 @@ class Requests extends Component {
             this.setAction( 'message', 'Reply accepted.' );
             if ( metaInfo.channelType === DMCHANNEL ) {
                 this.queueAction();
-                this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
                 this.setAction( 'message', `One of **${requests[n].user}**'s requests was replied to!` );
             }
         } else {
@@ -194,7 +194,7 @@ You can check your requests with \`-requests N\`, \`-requests new\`, or \`-reque
         this.setAction( 'message', 'Reply accepted.' );
         if ( metaInfo.channelType === DMCHANNEL ) {
             this.queueAction();
-            this.setAction( 'channelId', CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
             this.setAction( 'message', `One of **${requests[n].user}**'s requests was replied to!` );
         }
         

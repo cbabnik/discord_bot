@@ -1,7 +1,7 @@
 const { lottery } = require( '../components/lottery' );
 const { bank } = require( '../components/bank' );
 const { pictures } = require( '../components/pictures' );
-const { CONFIG_DEFAULTS } = require( '../constants' );
+const { CONFIG } = require( '../constants' );
 const _ = require( 'lodash' );
 
 const sinon = require( 'sinon' );
@@ -10,7 +10,7 @@ const seed = require( 'seed-random' );
 
 const START_AMOUNT = 999999999;
 const metaInfo = {
-    channelId: CONFIG_DEFAULTS.MAIN_CHANNEL,
+    channelId: CONFIG.MAIN_CHANNEL,
     author: 'test',
     authorId: '0'
 };

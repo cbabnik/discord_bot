@@ -70,6 +70,11 @@ const Filter = ( client, dispatcher ) => {
         // stub
     } );
 
+    // eslint-disable-next-line no-unused-vars
+    client.on( 'messageReactionRemove', async ( reaction ) => {
+        // stub
+    } );
+
 };
 
 module.exports = { Filter };

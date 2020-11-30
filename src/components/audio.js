@@ -1,7 +1,7 @@
 const { Component } = require( './component' );
 const _ = require( 'lodash' );
 const fs = require( 'fs' );
-const { CONFIG_DEFAULTS, ACTIONS, PERMISSION_LEVELS } = require( '../core/constants' );
+const { CONFIG, ACTIONS, PERMISSION_LEVELS } = require( '../core/constants' );
 
 const ID = 'audio';
 
@@ -63,10 +63,10 @@ class Audio extends Component {
                 return;
             }
         } else {
-            if ( metaInfo.channelId === CONFIG_DEFAULTS.MAIN_CHANNEL ) {
+            if ( metaInfo.channelId === CONFIG.MAIN_CHANNEL ) {
                 this.setAction( ACTIONS.MESSAGE, 'Queue-It-Up Boys!' );
             } else {
-                this.setAction( ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL );
+                this.setAction( ACTIONS.CHANNEL_ID, CONFIG.MAIN_CHANNEL );
                 this.setAction( ACTIONS.MESSAGE, `Queue-It-Up Boys! ${url}` );
             }
         }

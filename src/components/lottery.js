@@ -3,7 +3,7 @@ const tmp = require( 'tmp' );
 let _ = require( 'lodash' );
 const uuidv4 = require( 'uuidv4' );
 const { Component } = require( '../component' );
-const { BUCKS, CONFIG_DEFAULTS, ACTIONS, PERMISSION_LEVELS } = require( '../constants' );
+const { BUCKS, CONFIG, ACTIONS, PERMISSION_LEVELS } = require( '../constants' );
 const { bank } = require( './bank' );
 const { inventory } = require( './inventory' );
 const { pictures } = require( './pictures' );
@@ -158,7 +158,7 @@ ${mazeDis?`maze slots: ${mazeDis}`:''}` );
             Object.values( BUCKS ).forEach( id => {
                 _.set( this.json, `${id}.${type}.freeRolls`, _.get( this.json, `${id}.${type}.freeRolls`, 0 ) + Number( count ) );
             } );
-            this.setAction( ACTIONS.CHANNEL_ID, CONFIG_DEFAULTS.MAIN_CHANNEL );
+            this.setAction( ACTIONS.CHANNEL_ID, CONFIG.MAIN_CHANNEL );
             if ( count > 1 ) {
                 this.setAction( ACTIONS.MESSAGE, `Everyone gets ${count} free ${type} rolls` );
             }
@@ -953,7 +953,7 @@ ${best?`Best Row: ${bestString}`:''}` );
     canEnter( metaInfo, type, cost ) {
         const user = metaInfo.author;
         const id = metaInfo.authorId;
-        if ( metaInfo.channelId !== CONFIG_DEFAULTS.MAIN_CHANNEL ) {
+        if ( metaInfo.channelId !== CONFIG.MAIN_CHANNEL ) {
             this.setAction( 'message', 'Please make your slot rolls public.' );
             return false;
         }

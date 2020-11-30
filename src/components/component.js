@@ -13,7 +13,7 @@
 // components themselves
 
 const fs = require( 'fs' );
-const { CONFIG_DEFAULTS } = require( '../core/constants' );
+const { CONFIG } = require( '../core/constants' );
 const debug = require( 'debug' )( 'basic' );
 const util = require( '../core/util' );
 const _ = require( 'lodash' );
@@ -23,7 +23,7 @@ const DAYMS = 1000*60*60*24;
 class Component {
     constructor( id ) {
         this.id = id;
-        this.jsonFile = '/home/ec2-user/discord_bot/'+CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
+        this.jsonFile = '/home/ec2-user/discord_bot/'+CONFIG.STORAGE_DIRECTORY+id+'.json';
         this.json = fs.existsSync( this.jsonFile )?require( this.jsonFile ):{};
         this.action = {};
         this.actionPart = this.action;
