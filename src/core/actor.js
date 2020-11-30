@@ -48,7 +48,7 @@ const Actor = ( client ) => {
 
         let channel;
         if ( ins[ACTIONS.MESSAGE_USER_ID] ) {
-            const user = client.users.get( ins[ACTIONS.MESSAGE_USER_ID] );
+            const user = client.users.resolve( ins[ACTIONS.MESSAGE_USER_ID] );
             user.createDM().then( ( dmchannel ) => {
                 dmchannel.send( ins.message );
                 handle( {...ins, message: undefined, messageUserId: undefined}, msg );
@@ -58,7 +58,7 @@ const Actor = ( client ) => {
             channel = msg.channel;
             ins.channelId = channel.id;
         } else {
-            channel = client.channels.get( ins.channelId );
+            channel = client.channels.resolve( ins.channelId );
         }
         if ( !channel ) {
             debug( 'There was a problem with setting channel' );
@@ -104,11 +104,11 @@ const Actor = ( client ) => {
             } );
         }
         if ( ins.asUsername ) {
-            msg.guild.members.get( client.user.id ).setNickname( ins.asUsername ).then( () => {
+            msg.guild.members.resolve( client.user.id ).setNickname( ins.asUsername ).then( () => {
                 nickname = ins.asUsername;
                 setTimeout( () => {
                     channel.send( ins.message ).then( () => {
-                        msg.guild.members.get( client.user.id ).setNickname( NAME ).then( () => {
+                        msg.guild.members.resolve( client.user.id ).setNickname( NAME ).then( () => {
                             nickname = NAME;
                             handle( {...ins, asUsername: undefined, message: undefined, messageId: undefined}, msg );
                         } );
@@ -118,7 +118,7 @@ const Actor = ( client ) => {
             return;
         }
         if ( nickname !== NAME ) {
-            msg.guild.members.get( client.user.id ).setNickname( NAME ).then( () => {
+            msg.guild.members.resolve( client.user.id ).setNickname( NAME ).then( () => {
                 nickname = NAME;
                 handle( ins, msg );
             } );
@@ -159,35 +159,37 @@ const Actor = ( client ) => {
         // audio
         // _____
         if ( ins.endAudio ) {
-            client.voiceConnections.array().forEach( ( c ) => {
-                c.channel.leave();
+            client.voice.connections.array().forEach( ( c ) => {
+                c.disconnect()
             } );
         }
         if ( ins[ACTIONS.VOICE_CHANNEL] && ( ins.audioFile || ins.audioYoutube || ins.audioLink || ins.audioYoutubeLive ) ) {
             try {
-                const vc = client.channels.get( ins.voiceChannel );
+                const vc = client.channels.resolve( ins.voiceChannel );
                 vc.join().then( connection => {
-                    const broadcast = client.createVoiceBroadcast();
+                    const broadcast = client.voice.createBroadcast();
                     if ( ins.audioFile ) {
                         if ( !ins.audioFile.includes( '.' ) ) {
                             ins.audioFile += '.mp3';
                         }
                         const path = 'res/audio/' + ins.audioFile;
                         if ( fs.existsSync( path ) ) {
-                            broadcast.playFile( path, {bitrate: 192000} );
+                            broadcast.play( path, {bitrate: 192000} );
                         } else {
                             debug( `File ${ins.audioFile} not found` );
                         }
                     } else if ( ins.audioYoutube ) {
                         const stream = ytdl( ins.audioYoutube, { filter: 'audioonly' } );
-                        broadcast.playStream( stream, {seek: ins.audioSeek, bitrate: 192000} );
+                        broadcast.play( stream, {seek: ins.audioSeek, bitrate: 192000} );
                     } else if ( ins.audioYoutubeLive ) {
                         const stream = ytdl( ins.audioYoutubeLive );
-                        broadcast.playStream( stream, {seek: ins.audioSeek, quality: '95'} );
+                        broadcast.play( stream, {seek: ins.audioSeek, quality: '95'} );
                     } else if ( ins.audioLink ) {
-                        broadcast.playArbitraryInput( ins.audioLink, {bitrate: 192000} );
+                        broadcast.play( ins.audioLink, {bitrate: 192000} );
                     }
-                    connection.playBroadcast( broadcast );
+                    connection.play( broadcast );
+                }, error => {
+                    throw error
                 } );
             } catch ( err ) {
                 debug( 'Audio error: ' + err.message );

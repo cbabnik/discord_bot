@@ -14,6 +14,10 @@ exports.getClient = () => {
     return client;
 };
 
+exports.getGuild = () => {
+    return client.guilds.resolve( CONFIG.GUILD )
+};
+
 // accepts:
 // bugslinger (registered name)
 // spookslinger (current nickname)
@@ -27,15 +31,11 @@ exports.getId = ( username ) => {
     if ( Object.keys( ALIASES ).includes( upperUser ) ) {
         return ALIASES[upperUser];
     }
-    let user = client.users.find( u => u.username.toUpperCase() === upperUser );
+    let user = client.users.resolve( upperUser );
     if ( user ) {
         return user.id;
     }
-    user = client.users.find( u => u.nickname?u.nickname.toUpperCase() === upperUser:false );
-    if ( !user ) {
-        return undefined;
-    }
-    return user.id;
+    return undefined;
 };
 
 // prioritizes giving back:
@@ -43,7 +43,7 @@ exports.getId = ( username ) => {
 // user name
 // "user#{id}"
 exports.getUser = ( id ) => {
-    const user = client.users.find( u => u.id === id );
+    const user = client.users.resolve( id );
     if ( user ) {
         if ( user.nickname ) {
             return user.nickname;
@@ -55,11 +55,11 @@ exports.getUser = ( id ) => {
 
 exports.getVoiceChannel = ( id ) => {
     if ( !guildMembers ) {
-        guildMembers = client.guilds.get( CONFIG.GUILD ).members;
+        guildMembers = client.guilds.resolve( CONFIG.GUILD ).members;
     }
-    const member = guildMembers.find( m => m.user.id === id );
+    const member = guildMembers.resolve( id );
     if ( member ) {
-        return member.voiceChannelID;
+        return member.voice.channelID;
     } else {
         debug( member );
     }

@@ -1,4 +1,4 @@
-exports.MAX_MESSAGES = 2000;
+exports.MAX_MESSAGES = 500;
 exports.BOT_PERMISSIONS = 1329069136;  // find this via the developer portal -> bot -> permissions calculator
 
 exports.CLIENT_CONNECTED = 0;

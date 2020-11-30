@@ -10,15 +10,16 @@ const { CLIENT_CONNECTED, CONFIG } = require( './constants' );
 const Client = ( max_messages, login_token ) => {
     const cli = new Discord.Client( {
         messageCacheMaxSize: max_messages,
-        status: CONFIG.INVISIBLE ? 'invisible' : 'online',
+        presence: {
+            status: CONFIG.INVISIBLE ? 'invisible' : 'online',
+        },
     } );
 
     // try to login every 30 seconds if disconnected
     cli.login( login_token ).then( () => {
-        cli.user.setStatus( CONFIG.INVISIBLE ? 'invisible' : 'online' );
         cli.setInterval(
             function tryLogin() {
-                if ( cli.status !== CLIENT_CONNECTED ) {
+                if ( cli.user.presence.status && cli.user.presence.status !== CLIENT_CONNECTED ) {
                     cli.login( login_token ).catch( console.error );
                 }
             },
@@ -31,7 +32,7 @@ const Client = ( max_messages, login_token ) => {
     // after ~8 seconds of inactivity disconnect from voice channels
     cli.setInterval( () => {
         try {
-            cli.voiceConnections.array().forEach( ( c ) => {
+            cli.voice.connections.array().forEach( ( c ) => {
                 const vc = c.channel;
                 const n = vc.name;
 
@@ -49,11 +50,15 @@ const Client = ( max_messages, login_token ) => {
             } );
         } catch ( e ) {
             console.error( 'Client recovered from an error' );
+            console.error( e )
         }
     }, 3000 );
     
     // when client encounters an error (like a timeout) log it without exiting node
-    cli.on('error', console.error );
+    cli.on('error', (e) => {
+        console.error( "Client error" )
+        console.error( e )
+    });
 
     return cli;
 };

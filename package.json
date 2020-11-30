@@ -17,7 +17,7 @@
     "chai": "^4.2.0",
     "cross-env": "^6.0.3",
     "debug": "^2.6.9",
-    "discord.js": "^11.5.1",
+    "discord.js": "^12.5.1",
     "erlpack": "^0.1.3",
     "ffmpeg": "0.0.4",
     "lavalink": "^2.8.2",
