@@ -5,16 +5,16 @@
 // that use it should be here. This means to reconnect the client when it disconnects, to accept or ignore invites, etc
 
 const Discord = require( 'discord.js' );
-const { CLIENT_CONNECTED } = require( './constants' );
+const { CLIENT_CONNECTED, CONFIG } = require( './constants' );
 
 const Client = ( max_messages, login_token ) => {
     const cli = new Discord.Client( {
-        messageCacheMaxSize: max_messages
+        messageCacheMaxSize: max_messages,
+        status: CONFIG.INVISIBLE ? 'invisible' : 'online',
     } );
 
     // try to login every 30 seconds if disconnected
     cli.login( login_token ).then( () => {
-        cli.user.setStatus( 'online' );
         cli.setInterval(
             function tryLogin() {
                 if ( cli.status !== CLIENT_CONNECTED ) {

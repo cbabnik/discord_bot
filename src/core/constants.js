@@ -7,6 +7,7 @@ exports.DMCHANNEL = 'dm';
 const CONFIG = {
     LOG_DIRECTORY: './logs',
     STORAGE_DIRECTORY: './storage/',
+    INVISIBLE: True,
 };
 const TEST = {
     STORAGE_DIRECTORY: 'storage/test/',
