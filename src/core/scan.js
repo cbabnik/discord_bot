@@ -22,7 +22,7 @@ const Scanner = () => {
         const matches = [];
         for ( let i=0; i<regexList.length; i+=1 ) {
             if ( text.match( regexList[i].regex ) !== null ) {
-                matches.push(regexList[i].id);
+                matches.push( regexList[i].id );
             }
         }
         return matches;

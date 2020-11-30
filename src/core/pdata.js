@@ -10,16 +10,18 @@ const { time } = require( './util' );
 class Storage {
     constructor( id ) {
         this.id = id;
-        this.jsonFile = CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
+        this.jsonFile = '../../' + CONFIG_DEFAULTS.STORAGE_DIRECTORY+id+'.json';
 
-        const dp = pdata.find( (dp) => {return dp.id === id} );
-        if (dp) {
+        const dp = pdata.find( ( dp ) => {
+            return dp.id === id;
+        } );
+        if ( dp ) {
             this.json = dp.json;
         } else {
             this.json = fs.existsSync( this.jsonFile )?require( this.jsonFile ):{};
         }
 
-        pdata.push(this);
+        pdata.push( this );
     }
 
     save() {
@@ -41,14 +43,14 @@ class Storage {
     }
 
     add( field, operand, default_val=0 ) {
-        this.apply(field, operand, default_val, _.sum)
+        this.apply( field, operand, default_val, _.sum );
     }
 }
 
 const pdata = [];
 
 const saveAll = () => {
-    pdata.forEach(c => c.save());
+    pdata.forEach( c => c.save() );
 };
 
 const backup = () => {
@@ -61,9 +63,9 @@ const backup = () => {
 
     archive.directory( 'storage/' ).pipe( output );
     archive.finalize();
-    debug( 'Data Backed up!' );
 };
 
+/*
 const rl = require( 'readline' ).createInterface( {
     input: process.stdin,
     output: process.stdout
@@ -90,5 +92,5 @@ setTimeout( () => {
         console.log( 'Done pdata.' );
     } );
 }, 5000 );
-
+*/
 module.exports = { Storage };

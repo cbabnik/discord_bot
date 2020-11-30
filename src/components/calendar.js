@@ -237,7 +237,9 @@ class Calendar extends Component {
         return du;
     }
 
+    // eslint-disable-next-line no-unused-vars
     payout( amnt ) {
+        /*
         debug( 'Payroll just paid out!' );
         Object.values( BUCKS ).forEach( id => {
             let multiplier = 1;
@@ -252,6 +254,7 @@ class Calendar extends Component {
             }
             bank.addAmount( id, amnt*multiplier );
         } );
+        */
     }
 
 }

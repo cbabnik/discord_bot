@@ -33,6 +33,9 @@ const Actor = ( client ) => {
 
     const handle = ( instructionPkg, msg ) => {
         logForDebug( instructionPkg );
+
+        // set
+        // ___
         const ins = { ...DEFAULT_INSTRUCTIONS, ...instructionPkg };
         if ( msg ) {
             const sourceVoice = getVoiceChannel( msg.author.id );
@@ -43,8 +46,6 @@ const Actor = ( client ) => {
             }
         }
 
-        // set
-        // ___
         let channel;
         if ( ins[ACTIONS.MESSAGE_USER_ID] ) {
             const user = client.users.get( ins[ACTIONS.MESSAGE_USER_ID] );
@@ -125,8 +126,8 @@ const Actor = ( client ) => {
         }
         const embeds = {};
         if ( ins.image ) {
-            let path = './images/' + ins.image;
-            if ( ins.image.includes( 'C:\\' ) ) {
+            let path = 'res/images/' + ins.image;
+            if ( ins.image.includes( ':\\' ) ) {
                 path = ins.image;
             } else if ( !ins.image.includes( '.' ) ) {
                 path += '.jpg';
@@ -171,7 +172,7 @@ const Actor = ( client ) => {
                         if ( !ins.audioFile.includes( '.' ) ) {
                             ins.audioFile += '.mp3';
                         }
-                        const path = './audio/' + ins.audioFile;
+                        const path = 'res/audio/' + ins.audioFile;
                         if ( fs.existsSync( path ) ) {
                             broadcast.playFile( path, {bitrate: 192000} );
                         } else {

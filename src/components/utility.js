@@ -1,12 +1,12 @@
-const { Component } = require( '../component' );
+const { Component } = require( './component' );
 const _ = require( 'lodash' );
 
 const bigInt = require( 'big-integer' );
 
 const ID = 'utility';
 
-const { Storage } = require('../pdata');
-const alias_data = new Storage('alias');
+const { Storage } = require( '../core/pdata' );
+const alias_data = new Storage( 'alias' );
 
 class Utility extends Component {
     constructor() {
@@ -31,11 +31,11 @@ class Utility extends Component {
         this.addCommand( /^-roll maidstats$/, this.rollMaidStats );
         this.addCommand( /^-roll (-?\d+) (-?\d+)$/, this.roll );
         this.addCommand( /^-roll/, this.rollInfo );
-        this.addCommand( /^-alias "([^"]*)" "([^"]*)"$/, (t, f, mi) => this.alias(t, f, {inline:false, edit:false}, mi) );
-        this.addCommand( /^-alias --inline "([^"]*)" "([^"]*)"$/, (t, f, mi) => this.alias(t, f, {inline:true, edit:false}, mi) );
-        this.addCommand( /^-alias --edit "([^"]*)" "([^"]*)"$/, (t, f, mi) => this.alias(t, f, {inline:false, edit:true}, mi) );
-        this.addCommand( /^-alias --inline --edit "([^"]*)" "([^"]*)"$/, (t, f, mi) => this.alias(t, f, {inline:true, edit:true}, mi) );
-        this.addCommand( /^-alias --edit --inline "([^"]*)" "([^"]*)"$/, (t, f, mi) => this.alias(t, f, {inline:true, edit:true}, mi) );
+        this.addCommand( /^-alias "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:false, edit:false}, mi ) );
+        this.addCommand( /^-alias --inline "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:false}, mi ) );
+        this.addCommand( /^-alias --edit "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:false, edit:true}, mi ) );
+        this.addCommand( /^-alias --inline --edit "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:true}, mi ) );
+        this.addCommand( /^-alias --edit --inline "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:true}, mi ) );
         this.addCommand( /^-aliases$/, this.aliasPrint );
         this.addCommand( /^-aliases clear$/, this.aliasClearAll );
     }
@@ -128,29 +128,28 @@ class Utility extends Component {
         this.setAction( 'message', 'Invalid use, try `-coinflip HEADS TAILS`' );
     }
 
-    alias(from, to, options, metaInfo) {
-        console.log(metaInfo);
+    alias( from, to, options, metaInfo ) {
         const id = metaInfo.authorId;
-        const aliases = alias_data.get(id, {});
+        const aliases = alias_data.get( id, {} );
         aliases[from] = {text: to, ...options};
-        alias_data.set(id, aliases);
-        this.setAction( 'message', 'Alias set.');
+        alias_data.set( id, aliases );
+        this.setAction( 'message', 'Alias set.' );
     }
 
-    aliasClearAll(metaInfo) {
+    aliasClearAll( metaInfo ) {
         const id = metaInfo.authorId;
-        alias_data.set(id, {});
-        this.setAction( 'message', 'Your aliases have been cleared.');
+        alias_data.set( id, {} );
+        this.setAction( 'message', 'Your aliases have been cleared.' );
     }
 
-    aliasPrint(metaInfo) {
+    aliasPrint( metaInfo ) {
         const id = metaInfo.authorId;
         let msg = 'Your aliases:';
-        const aliases = alias_data.get(id, {});
-        Object.keys(aliases).forEach((k) => {
-            msg += `\n\`${k}\` - \`${aliases[k].text}\``
-        });
-        this.setAction( 'message', msg);
+        const aliases = alias_data.get( id, {} );
+        Object.keys( aliases ).forEach( ( k ) => {
+            msg += `\n\`${k}\` - \`${aliases[k].text}\``;
+        } );
+        this.setAction( 'message', msg );
     }
 }
 

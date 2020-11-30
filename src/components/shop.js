@@ -1,6 +1,5 @@
 const { Component } = require( '../component' );
-const _ = require( 'lodash' );
-const { PERMISSION_LEVELS, ACTIONS, CONFIG_DEFAULTS, BUCKS } = require( '../constants' );
+const { ACTIONS, BUCKS } = require( '../constants' );
 
 const ID = 'inventory';
 const { inventory } = require( './inventory' );
@@ -28,7 +27,7 @@ class Shop extends Component {
     buy( item, metaInfo ) {
         item = item.toLowerCase();
         const itemId = item.replace( /\s/g, '' );
-        const obj = inventory.get( 'items.${itemId}' );
+        //const obj = inventory.get( 'items.${itemId}' );
         const id = metaInfo.authorId;
         let cost = 0;
         let costbb = 0;

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 // client.js
 // This class is a thin wrapper around Discord's client. Any behavior to the client itself, regardless of the commands
 // that use it should be here. This means to reconnect the client when it disconnects, to accept or ignore invites, etc
@@ -10,15 +12,18 @@ const Client = ( max_messages, login_token ) => {
         messageCacheMaxSize: max_messages
     } );
 
-    // try to login every 60 seconds if disconnected
-    cli.login( login_token ).then( () => cli.setInterval(
-        function tryLogin() {
-            if ( cli.status !== CLIENT_CONNECTED ) {
-                cli.login( login_token ).catch( console.error );
-            }
-        },
-        60000
-    ) );
+    // try to login every 30 seconds if disconnected
+    cli.login( login_token ).then( () => {
+        cli.user.setStatus( 'online' );
+        cli.setInterval(
+            function tryLogin() {
+                if ( cli.status !== CLIENT_CONNECTED ) {
+                    cli.login( login_token ).catch( console.error );
+                }
+            },
+            30000
+        );
+    } ).catch( console.error );
 
     const bytes_sent = {};
     const strikes = {};
@@ -41,11 +46,16 @@ const Client = ( max_messages, login_token ) => {
                 }
                 bytes_sent[n] = streamCount;
             } );
-        } catch (e) {
-            console.error('Client recovered from an error')
+        } catch ( e ) {
+            console.error( 'Client recovered from an error' );
         }
     }, 3000 );
+    
+    // when client encounters an error (like a timeout) log it without exiting node
+    cli.on('error', console.log);
+
     return cli;
 };
+
 
 module.exports = {Client};

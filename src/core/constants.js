@@ -9,11 +9,11 @@ const CONFIG_DEFAULTS = {
     STORAGE_DIRECTORY: './storage/',
 };
 const TEST = {
-    STORAGE_DIRECTORY: './storage/test/',
+    STORAGE_DIRECTORY: 'storage/test/',
     VERSION: 'test',
 };
 const ALPHA = {
-    STORAGE_DIRECTORY: './storage/alpha/',
+    STORAGE_DIRECTORY: 'storage/alpha/',
     MAIN_CHANNEL: '533736402085478410',
     MAIN_VOICE_CHANNEL: '533736402085478412',
     GUILD: '533736401225908224',

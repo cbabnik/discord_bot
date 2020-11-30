@@ -1,13 +1,15 @@
-const { Component } = require( '../component' );
+const { Component } = require( './component' );
 const _ = require( 'lodash' );
 const fs = require( 'fs' );
-const { CONFIG_DEFAULTS, ACTIONS, PERMISSION_LEVELS } = require( '../constants' );
+const { CONFIG_DEFAULTS, ACTIONS, PERMISSION_LEVELS } = require( '../core/constants' );
 
 const ID = 'audio';
 
 class Audio extends Component {
     constructor() {
         super( ID );
+        this.addCommand( /^-list/, this.playListHelp );
+        this.addCommand( /^!list/, this.playListHelp );
         this.addCommand( /^-play random$/, this.playRandom );
         this.addCommand( /^!random$/, this.playRandom );
         this.addCommand( /^-endAudio$/, this.endAudio );
@@ -23,6 +25,18 @@ class Audio extends Component {
         //this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (10|15|20) (.*)$/, this.queueItUp );
         //this.addCommand( /^-[qQ]ueue[- ]?[iI]t[- ]?[uU]p (.*)$/, ( url, metaInfo ) => this.queueItUp( 20, url, metaInfo ) );
         this.addCommand( /^#prepare queue (.*)$/, this.prepareQueue );
+    }
+
+    playListHelp() {
+        this.setAction( 'audioFile', 'list' );
+        this.playHelp();
+    }
+
+    playHelp() {
+        const files = fs.readdirSync( 'res/audio' ).map( f => f.padEnd( 25 ) );
+        this.setAction( 'message', 'Play a sound!\nEither `-play 20.mp3` or `!20` will work.\n' +
+            _.chunk( files, 3 ).map( chunk => `\`${chunk.join( '' )}\`` ).join( '\n' )
+        );
     }
 
     prepareQueue( url, metaInfo ) {
@@ -80,7 +94,7 @@ class Audio extends Component {
         if ( !fileName.includes( '.' ) ) {
             fileName += '.mp3';
         }
-        if ( ! fs.existsSync( `./audio/${fileName}` ) ) {
+        if ( ! fs.existsSync( `./res/audio/${fileName}` ) ) {
             this.setAction( 'message', `I couldn't find that file: "${fileName}"` );
             return;
         }
@@ -115,7 +129,7 @@ class Audio extends Component {
     }
 
     playRandom() {
-        const f = _.sample( fs.readdirSync( './audio' ) );
+        const f = _.sample( fs.readdirSync( 'res/audio' ) );
         this.setAction( 'audioFile', f );
     }
 }
