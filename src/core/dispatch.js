@@ -35,6 +35,10 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         }
     };
 
+    const rawPost = async ( content, msg ) => {
+        actor.handle( { message: content }, msg );
+    };
+
     const dispatch = async ( text, commandLink, msg ) => {
         const metaInfo = {
             author: msg.author.username,
@@ -55,7 +59,8 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
 
     return {
         registerComponent,
-        process
+        process,
+        rawPost,
     };
 };
 

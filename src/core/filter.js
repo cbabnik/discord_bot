@@ -57,7 +57,10 @@ const Filter = ( client, dispatcher ) => {
 
     // eslint-disable-next-line no-unused-vars
     client.on( 'messageDelete', async ( msg ) => {
-        // stub
+        if ( ! filterChannel( msg ) ) {
+            return;
+        }
+        dispatcher.rawPost( ":eye:", msg )
     } );
 
     // eslint-disable-next-line no-unused-vars
