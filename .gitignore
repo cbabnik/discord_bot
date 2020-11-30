@@ -23,3 +23,13 @@ node_modules
 # Easter egg component
 # ____________________
 secret.js
+
+# IDE settings
+# ____________
+.idea/BuckBot.iml
+.idea/jsLibraryMappings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/runConfigurations/bin_www.xml
