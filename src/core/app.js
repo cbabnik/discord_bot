@@ -46,9 +46,16 @@ rl.on( 'SIGINT', () => {
 process.on( 'SIGINT', () => {
     process.exit( 0 );
 } );
-process.on( 'exit', () => {
-    //util.backup();
-    //console.log( 'Backed up data.' );
+process.on( 'exit', (code) => {
+    console.log( 'Shutdown detected!' );
+    console.log( `Exitting with code: ${code}` );
+    util.backup();
+    console.log( 'Backed up data.' );
+    util.getClient().destroy();
+    console.log( 'Client destroyed.' );
+    if (code != 0) {
+        // Curtis should get alerted in some way. Email? SMS?
+    }
 } );
 
 // initialization
@@ -58,8 +65,11 @@ const componentsNames = ['utility', 'audio', 'quotes', 'pictures'];
 if ( fs.existsSync( './src/components/secret.js' ) ) {
     componentsNames.push( 'secret' );
 }
+const alphaComponentNames = ['admin']
 if ( CONFIG.VERSION === ALPHA.VERSION ) {
-    // push any components which are still under initial test here.
+    alphaComponentNames.forEach( comp_name => {
+        componentsNames.push( comp_name )
+    })
 }
 
 const components = [];
