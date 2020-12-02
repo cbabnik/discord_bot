@@ -22,7 +22,7 @@
     "ffmpeg": "0.0.4",
     "lavalink": "^2.8.2",
     "libsodium-wrappers": "^0.7.6",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.20",
     "mocha": "^6.2.2",
     "node-gyp": "^5.0.7",
     "node-opus": "^0.3.3",
