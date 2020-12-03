@@ -66,16 +66,26 @@ exports.getVoiceChannel = ( id ) => {
 };
 
 exports.backupOnRepeat = () => {
-    backup();
-    setInterval( () => {
-        backup();
-    }, 3600000 ); // one hour hard coded
+    setTimeout(() => {
+        setInterval(() => {
+            backup()
+        }, 60*60*1000)
+    }, 60*60*1000)
 };
 
-const backup = () => {
+const backup = (name=undefined) => {
     const now = new Date();
     const dateStr = toFileString( now );
-    const fileName = `backups/backup_${dateStr}.zip`;
+
+    if (!fs.existsSync('backups')) {
+        fs.mkdirSync('backups')
+    }
+    let fileName;
+    if (name === undefined) {
+        fileName = `backups/backup_${dateStr}.zip`;
+    } else {
+        fileName = `backups/${name}.zip`
+    }
 
     const output = fs.createWriteStream( fileName );
     const archive = archiver( 'zip' );
@@ -85,6 +95,12 @@ const backup = () => {
     debug( 'Data Backed up!' );
 };
 exports.backup = backup;
+
+setTimeout(() => {
+    setInterval(() => {
+        backup()
+    }, 60*60*1000)
+}, 60*60*1000)
 
 const tomorrow = () => {
     const am = new Date();

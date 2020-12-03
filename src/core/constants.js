@@ -6,15 +6,14 @@ exports.DMCHANNEL = 'dm';
 
 const CONFIG = {
     LOG_DIRECTORY: './logs',
-    STORAGE_DIRECTORY: './storage/',
     INVISIBLE: true,
 };
 const TEST = {
-    STORAGE_DIRECTORY: 'storage/test/',
+    STORAGE_DIRECTORY: './storage/test/',
     VERSION: 'test',
 };
 const ALPHA = {
-    STORAGE_DIRECTORY: 'storage/alpha/',
+    STORAGE_DIRECTORY: './storage/alpha/',
     MAIN_CHANNEL: '783065930950508544', // secret channel
     // MAIN_CHANNEL: '533736402085478410',
     MAIN_VOICE_CHANNEL: '783066002304270377', // secret voice channel
@@ -37,7 +36,7 @@ if ( process.argv.length > 2 ) {
         defaults = ALPHA;
     } else if ( process.argv[2] === '--beta' ) {
         defaults = BETA;
-    } else if ( process.argv[2] === '--test' ) {
+    } else {
         defaults = TEST;
     }
     Object.keys( defaults ).forEach( k => {

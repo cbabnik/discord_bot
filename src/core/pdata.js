@@ -1,96 +1,106 @@
 // persistent data storage
-// for now this uses json, but may be changed to SQL in the future
+// uses node-persist and local data
+// it might be good to use AWS database stuff in the future
 
-const fs = require( 'fs' );
-const archiver = require( 'archiver' );
-const _ = require( 'lodash' );
-const {CONFIG, BETA} = require( './constants' );
+const persist = require('node-persist');
+const { Mutex } = require( 'async-mutex' );
+
 const { time } = require( './util' );
+const {CONFIG} = require( './constants' );
+
+const archiver = require( 'archiver' );
+const fs = require( 'fs' );
+const _ = require( 'lodash' );
+
+const debug = require( 'debug' )( 'basic' );
+
+const supply_mutex = new Mutex();
+StorageSupplier = async (id) => {
+    await supply_mutex.acquire();
+    if (id in pdata) {
+        supply_mutex.release(); 
+        return pdata[id]  
+    }
+    else {
+        const storage = new Storage(id);
+        pdata[id] = storage;
+        await storage.storage.init()
+        supply_mutex.release();
+        return storage;
+    }
+};
 
 class Storage {
     constructor( id ) {
         this.id = id;
-        this.jsonFile = '../../' + CONFIG.STORAGE_DIRECTORY+id+'.json';
+        this.mutex = new Mutex();
+        this.location = CONFIG.STORAGE_DIRECTORY+id;
+        this.storage = persist.create( {dir: this.location} );
+    }
 
-        const dp = pdata.find( ( dp ) => {
-            return dp.id === id;
-        } );
-        if ( dp ) {
-            this.json = dp.json;
+    seperate_out(key) {
+        if (typeof key !== "string") return [key, undefined]
+        let idx = key.indexOf('.')
+        if (idx === -1) return [key, undefined]
+        return [key.substring(0,idx), key.substring(idx+1)]
+    }
+
+    async get( key, default_val=0 ) {
+        const [bin, field] = this.seperate_out(key)
+        if (field === undefined) {
+            const val = await this.storage.getItem(bin)
+            return (val===undefined?default_val:val)
+        }
+        const json = await this.storage.getItem(bin)
+        return (json===undefined?default_val:_.get( json, field, default_val ))
+    }
+
+    async set( key, value ) {
+        const [bin, field] = this.seperate_out(key)
+        if (field === undefined) {
+            await this.storage.setItem(bin,value)
         } else {
-            this.json = fs.existsSync( this.jsonFile )?require( this.jsonFile ):{};
-        }
-
-        pdata.push( this );
-    }
-
-    save() {
-        if ( fs.existsSync( this.jsonFile ) || this.json !== {} ) {
-            fs.writeFileSync( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {} );
+            let json = await this.storage.getItem(bin)
+            if (json === undefined) json = {};
+            _.set( json, field, value )
+            await this.storage.setItem(bin, json)
         }
     }
 
-    get( field, default_val=0 ) {
-        return _.get( this.json, field, default_val );
+    async hold( key, default_val=0 ) {
+        await this.mutex.acquire()
+        return await this.get(key, default_val )
     }
 
-    set( field, value ) {
-        _.set( this.json, field, value );
+    async letgo( key, value ) {
+        await this.set( key, value )
+        this.mutex.release()
     }
 
-    apply( field, operand, default_val=0, fn ) {
-        _.set( this.json, field, fn( _.get( this.json, field, default_val ) , operand ) );
+    async apply( key, argument, default_val, fn ) {
+        const old_val = await this.hold(key, default_val)
+        const new_val = fn(old_val, argument)
+        await this.letgo(key, new_val)
+        return new_val
     }
 
-    add( field, operand, default_val=0 ) {
-        this.apply( field, operand, default_val, _.sum );
+    async add( key, operand=1, default_val=0 ) {
+        return await this.apply( key, operand, default_val, (a,b) => a+b );
+    }
+
+    async multiply( key, operand, default_val=1 ) {
+        return await this.apply( key, operand, default_val, _.multiply );
+    }
+
+    async append( key, elem, default_val=[] ) {
+        return await this.apply( key, elem, default_val, (arr, elem) => arr.concat([elem]) );
+    }
+
+    backupAllStorageNow(name) {
+       backup(name)
     }
 }
 
 const pdata = [];
 
-const saveAll = () => {
-    pdata.forEach( c => c.save() );
-};
-
-const backup = () => {
-    const now = new Date();
-    const dateStr = time.toFileString( now );
-    const fileName = `backups/backup_${dateStr}.zip`;
-
-    const output = fs.createWriteStream( fileName );
-    const archive = archiver( 'zip' );
-
-    archive.directory( 'storage/' ).pipe( output );
-    archive.finalize();
-};
-
-/*
-const rl = require( 'readline' ).createInterface( {
-    input: process.stdin,
-    output: process.stdout
-} );
-setTimeout( () => {
-    if ( CONFIG.VERSION === BETA.VERSION ) {
-        setInterval( () => {
-            saveAll();
-            //backup();
-        },1000*60*60 );
-    }
-
-    rl.on( 'SIGINT', () => {
-        process.emit( 'SIGINT' );
-    } );
-    process.on( 'SIGINT', () => {
-        process.exit( 0 );
-    } );
-
-    process.on( 'exit', () => {
-        console.log( 'Doing pdata exit cleanup...' );
-        saveAll();
-        //backup();
-        console.log( 'Done pdata.' );
-    } );
-}, 5000 );
-*/
-module.exports = { Storage };
+module.exports = StorageSupplier;
