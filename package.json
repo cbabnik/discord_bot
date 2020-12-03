@@ -22,7 +22,7 @@
     "lavalink": "^2.8.2",
     "libsodium-wrappers": "^0.7.6",
     "lodash": "^4.17.20",
-    "mocha": "^6.2.2",
+    "mocha": "^8.2.1",
     "node-gyp": "^5.0.7",
     "node-opus": "^0.3.3",
     "nodemailer": "^6.4.16",
