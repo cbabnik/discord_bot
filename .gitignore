@@ -1,39 +1,25 @@
 # Log files
-#__________
-*.log
+logs/
 
 # Database files
-# ______________
-*.json
-*.zip
+storage/alpha
+storage/beta
+backups/
 
 # Secret keys
-# ___________
 auth.js
 
-# Exceptions to the rule
-# ______________________
-!package.json
-!package-lock.json
-
 # Don't include all the node modules
-# __________________________________
 node_modules
 
 # IDE files
-# _________
 *.code-workspace
 
 # Easter egg component
-# ____________________
 secret.js
 
 # IDE settings
-# ____________
-.idea/BuckBot.iml
-.idea/jsLibraryMappings.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
-.idea/runConfigurations/bin_www.xml
+.idea/
+
+# Old stuff
+legacy/
