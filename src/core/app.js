@@ -44,7 +44,7 @@ rl.on( 'SIGINT', () => {
     process.emit( 'SIGINT' );
 } );
 process.on( 'SIGINT', () => {
-    process.exit( 1 );
+    process.exit( 0 );
 } );
 process.on( 'exit', (code) => {
     console.log( 'Shutdown detected!' );
@@ -53,9 +53,9 @@ process.on( 'exit', (code) => {
     console.log( 'Backed up data.' );
     util.getClient().destroy();
     console.log( 'Client destroyed.' );
-    if (code == 0) {
+    if (code != 0) {
         // Curtis should get alerted in some way. Email? SMS?
-        // implemented for now at bash level with extra script
+        console.log( 'script should get triggered to email Curtis now' )
     }
 } );
 
