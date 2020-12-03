@@ -34,7 +34,6 @@ describe('core', () => {
             fs.rmdirSync('storage/test/coreA', { recursive: true })
             fs.rmdirSync('storage/test/coreB', { recursive: true })
             fs.rmdirSync('storage/test/coreC', { recursive: true })
-            fs.closeSync()
         })
 
         // tests
