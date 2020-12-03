@@ -14,7 +14,7 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
     let next_id = 0;
 
     // groups in the regex are treated as parameters to the callback
-    const registerCommand = ( regex, component, cb ) => {
+    const registerCommand = ( regex, component, cb, help, groupName ) => {
         commandLinkDict[next_id] = {regex, component, cb};
         scanner.addRegex( regex, next_id );
         next_id += 1;

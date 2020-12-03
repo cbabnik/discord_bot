@@ -8,12 +8,10 @@
 //     a publicly accessible [REGEX, CB] list.
 //     a list of other services it uses.
 
-// down the line there should be some mechanism for service update hotswapping. the list of services would be ids
-// point to a central service collection object. For now the list of other services are simply references to the
-// components themselves
-
 const fs = require( 'fs' );
 const { CONFIG } = require( '../core/constants' );
+const Storage = require( '../core/pdata' );
+const { CONFIG_DEFAULTS } = require( '../core/constants' );
 const debug = require( 'debug' )( 'basic' );
 const util = require( '../core/util' );
 const _ = require( 'lodash' );
@@ -23,8 +21,7 @@ const DAYMS = 1000*60*60*24;
 class Component {
     constructor( id ) {
         this.id = id;
-        this.jsonFile = '/home/ec2-user/discord_bot/'+CONFIG.STORAGE_DIRECTORY+id+'.json';
-        this.json = fs.existsSync( this.jsonFile )?require( this.jsonFile ):{};
+        this.storage = await Storage( id );
         this.action = {};
         this.actionPart = this.action;
         this.commands = [];
@@ -34,7 +31,7 @@ class Component {
         }, 3000 );
     }
 
-    addCommand( regex, cb ) {
+    addCommand( regex, cb, help=false, groupName=this.id) {
         this.commands.push( {regex, cb} );
     }
 
@@ -58,22 +55,16 @@ class Component {
         return temp;
     }
 
-    saveJSON() {
-        if ( fs.existsSync( this.jsonFile ) || this.json !== {} ) {
-            fs.writeFileSync( this.jsonFile, JSON.stringify( this.json ), 'utf8', () => {} );
-        }
-    }
-
     get( field, default_val=0 ) {
-        return _.get( this.json, field, default_val );
+        this.storage.get(field, default_val)
     }
 
     set( field, value ) {
-        _.set( this.json, field, value );
+        this.storage.set(field, default_val)
     }
 
-    update( field, operand, default_val=0, f = _.sum ) {
-        _.set( this.json, field, f( _.get( this.json, field, default_val ) , operand ) );
+    update( field, operand, default_val=0, f = (a,b) => a+b ) {
+        this.storage.apply(field, opearnd, default_val, f)
     }
 
     bootUp() {
