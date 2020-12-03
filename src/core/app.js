@@ -50,7 +50,6 @@ process.on( 'exit', (code) => {
     console.log( 'Shutdown detected!' );
     console.log( `Exitting with code: ${code}` );
     util.backup();
-    console.log( 'Backed up data.' );
     util.getClient().destroy();
     console.log( 'Client destroyed.' );
     if (code != 0) {
