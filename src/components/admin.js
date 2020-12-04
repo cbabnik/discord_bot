@@ -1,15 +1,17 @@
 const { Component } = require( './component' );
-const { CONFIG, PERMISSION_LEVELS, ACTIONS } = require( '../core/constants' );
+const { CONFIG, PERMISSION_LEVELS, ACTIONS, BUCKS } = require( '../core/constants' );
 const util = require( '../core/util' );
 const debug = require( 'debug' )( 'basic' );
-
-const { Discord } = require( 'discord.js' ); // for type sanitity
+const Storage = require( '../core/pdata' );
 
 const ID = 'admin';
 
 class Admin extends Component {
     constructor() {
         super( ID );
+
+        this.datastores = {}
+
         this.addCommand( /^#say (.*)$/, this.betaSay );
         this.addCommand( /^#ready\?$/, this.readyCheck );
         this.addCommand( /^#shutdown$/, this.shutdown );
@@ -20,6 +22,7 @@ class Admin extends Component {
         this.addCommand( /^#set activity (.*)$/, this.setActivity )
         this.addCommand( /^#set avatar (.*)$/, this.setAvatar )
         this.addCommand( /^#set username (.*)$/, this.setUsername ) // once an hour
+        this.addCommand( /^#set nickname (.*)$/, this.setNickName )
         this.addCommand( /^#delete message (\d+)$/, this.deleteMessage )
         this.addCommand( /^#delete message +(\d+) +(\d+)$/, this.deleteMessageOnChannel )
         this.addCommand( /^#react +(\d+) (.*)$/, this.react )
@@ -34,6 +37,82 @@ class Admin extends Component {
         this.addCommand( /^#invite +(\d+)$/, this.serverInvite )
         this.addCommand( /^#mute +(\d+)$/, this.mute )
         this.addCommand( /^#unmute +(\d+)$/, this.unmute )
+        this.addCommand( /^#displaykeys +([^ ]+)$/, this.displayKeys )
+        this.addCommand( /^#display +([^ ]+) +([^ ]+)$/, this.displayData )
+        this.addCommand( /^#setval +([^ ]+) +([^ ]+) +"(.+)"$/, this.setDataString )
+        this.addCommand( /^#setval +([^ ]+) +([^ ]+) +(\d+)$/, this.setDataValue )
+    }
+
+    setNickName( nickname, metaInfo ) {
+        this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
+        if (!PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            return
+        }
+        util.getGuild().members.fetch(BUCKS.BUCKBOT).then(member => {
+            member.setNickname(nickname)
+        }).catch((e) => {
+            debug(`Failed to nickname: ${e}`)
+        })
+    }
+
+    async displayKeys( storeId, metaInfo ) {
+        this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
+        if (!PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            return
+        }
+        let store;
+        if ( Object.keys(this.datastores).includes(storeId) ) {
+            store = this.datastores[storeId]
+        } else {
+            store = await Storage( storeId );
+        }
+        const keys = await store.storage.keys()
+        this.setAction( 'message', keys)
+    }
+
+    async displayData( storeId, field, metaInfo ) {
+        this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
+        if (!PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            return
+        }
+        let store;
+        if ( Object.keys(this.datastores).includes(storeId) ) {
+            store = this.datastores[storeId]
+        } else {
+            store = await Storage( storeId );
+        }
+        const data = await store.get( field, "empty" )
+        this.setAction( 'message', JSON.stringify(data, null, 3))
+    }
+
+    async setDataValue( storeId, field, val, metaInfo ) {
+        this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
+        if ( !PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            return
+        }
+        let store;
+        if ( Object.keys(this.datastores).includes(storeId) ) {
+            store = this.datastores[storeId]
+        } else {
+            store = await Storage( storeId );
+        }
+        store.set(field, Number(val))
+        this.setAction( 'reaction', '🛫')
+    }
+
+    async setDataString( storeId, field, str, metaInfo ) {
+        this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
+        if ( !PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            return
+        }
+        let store;
+        if ( Object.keys(this.datastores).includes(storeId) ) {
+            store = this.datastores[storeId]
+        } else {
+            store = await Storage( storeId );
+        }
+        store.set(field, str)
+        this.setAction( 'reaction', '🛫');
     }
 
     mute( memberId, metaInfo ) {
@@ -250,8 +329,8 @@ activity \`${a?`${a.name} (${a.type}) url${a.url}`:"None"}\`
     }
 
     shutdown( metaInfo ) {
-        this.setAction( 'security', PERMISSION_LEVELS.ADMIN );
-        if ( PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+        this.setAction( 'security', PERMISSION_LEVELS.SUPERUSER );
+        if ( PERMISSION_LEVELS.SUPERUSER.includes( metaInfo.authorId ) ) {
             process.exit( 0 );
         }
     }
