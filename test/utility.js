@@ -1,9 +1,7 @@
-const { utility } = require( '../components/utility' );
+const { utility } = require( '../src/components/utility' );
 
 const expect = require( 'chai' ).expect;
 const sinon = require( 'sinon' );
-
-sinon.stub( utility, 'saveJSON' );
 
 describe( 'Utility', () => {
 

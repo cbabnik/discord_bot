@@ -6,38 +6,39 @@ const bigInt = require( 'big-integer' );
 const ID = 'utility';
 
 const Storage = require( '../core/pdata' );
-const alias_data = Storage( 'alias' );
+let alias_data = undefined;
+(async () => {alias_data = await Storage( 'alias' )})();
 
 class Utility extends Component {
     constructor() {
         super( ID );
         // first one in the list is not working for some reason
-        this.addCommand( /^-notwork$/, this.rollInfo );
-        this.addCommand( /^-random pick(\d+) (\S+(?: \S+)+)$/, this.random );
-        this.addCommand( /^-random pick(\d+) (\S+(?:,[^\s,]+)+)$/, this.random );
-        this.addCommand( /^-random pick (\d+) (\S+(?: \S+)+)$/, this.random );
-        this.addCommand( /^-random pick (\d+) (\S+(?:,[^\s,]+)+)$/, this.random );
-        this.addCommand( /^-random (\S+(?:,[^\s,]+)+)$/, ( list ) => this.random( 1,list ) );
-        this.addCommand( /^-random (\S+(?: \S+)+)$/, ( list ) => this.random( 1,list ) );
-        this.addCommand( /^-random \S+$/, this.randomInfoB );
-        this.addCommand( /^-random/, this.randomInfo );
+        this.addCommand( /^####notwork#####$/, this.rollInfo );
+        this.addCommand( /^-random pick(\d+) (\S+(?: \S+)+)$/, this.random, "random" );
+        this.addCommand( /^-random pick(\d+) (\S+(?:,[^\s,]+)+)$/, this.random, "random" );
+        this.addCommand( /^-random pick (\d+) (\S+(?: \S+)+)$/, this.random, "random" );
+        this.addCommand( /^-random pick (\d+) (\S+(?:,[^\s,]+)+)$/, this.random, "random" );
+        this.addCommand( /^-random (\S+(?:,[^\s,]+)+)$/, ( list ) => this.random( 1,list ), "random" );
+        this.addCommand( /^-random (\S+(?: \S+)+)$/, ( list ) => this.random( 1,list ), "random" );
+        this.addCommand( /^-random \S+$/, this.randomInfoB, "random" );
+        this.addCommand( /^-random/, this.randomInfo, "random" );
         this.addCommand( /^-math ([ \-+*/.()\d]*)$/, this.calculate , "math" );
-        this.addCommand( /^-coinflip$/, () => this.coinflip( '', '' ) );
-        this.addCommand( /^-coinflip (\S+) (\S+)$/, this.coinflip );
-        this.addCommand( /^-coinflip/, this.coinflipInfo );
-        this.addCommand( /^-roll (\d+)$/, ( max ) => this.roll( 1,max ) );
-        this.addCommand( /^-roll (\d+)d(\d+)$/, ( dice, max ) => this.rollExtra( dice, 1, max ) );
-        this.addCommand( /^-roll (\d+)d(\d+)-(\d+)$/, this.rollExtra );
-        this.addCommand( /^-roll maidstats$/, this.rollMaidStats );
-        this.addCommand( /^-roll (-?\d+) (-?\d+)$/, this.roll );
-        this.addCommand( /^-roll/, this.rollInfo );
-        this.addCommand( /^-alias "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:false, edit:false}, mi ) );
-        this.addCommand( /^-alias --inline "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:false}, mi ) );
-        this.addCommand( /^-alias --edit "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:false, edit:true}, mi ) );
-        this.addCommand( /^-alias --inline --edit "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:true}, mi ) );
-        this.addCommand( /^-alias --edit --inline "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:true}, mi ) );
-        this.addCommand( /^-aliases$/, this.aliasPrint );
-        this.addCommand( /^-aliases clear$/, this.aliasClearAll );
+        this.addCommand( /^-coinflip$/, () => this.coinflip( '', '' ), "coinflip" );
+        this.addCommand( /^-coinflip (\S+) (\S+)$/, this.coinflip, "coinflip" );
+        this.addCommand( /^-coinflip/, this.coinflipInfo, "coinflip" );
+        this.addCommand( /^-roll (\d+)$/, ( max ) => this.roll( 1,max ), "roll" );
+        this.addCommand( /^-roll (\d+)d(\d+)$/, ( dice, max ) => this.rollExtra( dice, 1, max ), "roll" );
+        this.addCommand( /^-roll (\d+)d(\d+)-(\d+)$/, this.rollExtra, "roll" );
+        this.addCommand( /^-roll maidstats$/, this.rollMaidStats, "roll" );
+        this.addCommand( /^-roll (-?\d+) (-?\d+)$/, this.roll, "roll" );
+        this.addCommand( /^-roll/, this.rollInfo, "roll" );
+        this.addCommand( /^-alias "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:false, edit:false}, mi ), "alias" );
+        this.addCommand( /^-alias --inline "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:false}, mi ), "alias" );
+        this.addCommand( /^-alias --edit "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:false, edit:true}, mi ), "alias");
+        this.addCommand( /^-alias --inline --edit "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:true}, mi ), "alias" );
+        this.addCommand( /^-alias --edit --inline "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:true}, mi ), "alias" );
+        this.addCommand( /^-aliases$/, this.aliasPrint, "alias" );
+        this.addCommand( /^-aliases clear$/, this.aliasClearAll, "alias" );
     }
 
     rollInfo() {
@@ -128,24 +129,24 @@ class Utility extends Component {
         this.setAction( 'message', 'Invalid use, try `-coinflip HEADS TAILS`' );
     }
 
-    alias( from, to, options, metaInfo ) {
+    async alias( from, to, options, metaInfo ) {
         const id = metaInfo.authorId;
-        const aliases = alias_data.get( id, {} );
+        const aliases = await alias_data.get( id, {} );
         aliases[from] = {text: to, ...options};
-        alias_data.set( id, aliases );
+        await alias_data.set( id, aliases );
         this.setAction( 'message', 'Alias set.' );
     }
 
-    aliasClearAll( metaInfo ) {
+    async aliasClearAll( metaInfo ) {
         const id = metaInfo.authorId;
-        alias_data.set( id, {} );
+        await alias_data.set( id, {} );
         this.setAction( 'message', 'Your aliases have been cleared.' );
     }
 
-    aliasPrint( metaInfo ) {
+    async aliasPrint( metaInfo ) {
         const id = metaInfo.authorId;
         let msg = 'Your aliases:';
-        const aliases = alias_data.get( id, {} );
+        const aliases = await alias_data.get( id, {} );
         Object.keys( aliases ).forEach( ( k ) => {
             msg += `\n\`${k}\` - \`${aliases[k].text}\``;
         } );
