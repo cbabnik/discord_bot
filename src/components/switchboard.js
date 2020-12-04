@@ -63,7 +63,7 @@ const switchboard = {
                 subs: {
                     loan: { module: 'bank', status: DISABLED },
                     iou: { module: 'bank', status: ON },
-                    allowance: { module: 'payroll', status: ON },
+                    allowance: { module: 'payroll', status: LOCKED },
                 }},
             inventory: { module: 'inventory', status: REPAIR },
             profile: { module: 'inventory', status: REPAIR },
@@ -127,6 +127,7 @@ class SwitchBoard extends Component {
                 swi.status = OFF
             this.setAction('reaction', '✅')
         }
+        this.storage.set(`preference.${groupName}`, enabled)
     }
 
     // setup
@@ -141,6 +142,20 @@ class SwitchBoard extends Component {
             }
             if (swi['subs'])
                 this.switchboard_setup(swi['subs'], name)
+        })
+    }
+
+    async bootUp() {
+        const prefs = await this.storage.get('preference')
+        Object.keys(prefs).forEach((pref) => {
+            let swi = switches[pref]
+            if (swi.status == ON || swi.status == OFF) {
+                if (prefs[pref]) {
+                    swi.status = ON
+                } else {
+                    swi.status = OFF
+                }
+            }
         })
     }
 
