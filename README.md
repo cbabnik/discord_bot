@@ -22,7 +22,7 @@ Followed by the Adventure Update, Casino Update, Shoppalooza Update, Underworld 
 The bot is set up with a Service architecture, where many "Component"s carry out the role of Service.
 They each own their own data and provide an api to one another.
 
-![UML Diagram](https://github.com/cbabnik/discord_bot/blob/master/res/UML%20Diagram.png)
+![UML Diagram](https://github.com/cbabnik/discord_bot/blob/master/res/diagrams/UML%20Diagram.png)
 
 **Client** is a thin wrapper around discord.js 's Client class. The purpose of this class is two-fold. To set some sensible default settings, and to manage the clients connection with discord and inactive broadcast channels.
 
