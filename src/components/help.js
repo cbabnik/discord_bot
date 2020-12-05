@@ -38,8 +38,6 @@ class Help extends Component {
         this.addCommand( /^\?(?:all) ?[hH]olidays/, this.eventsHelp, 'holiday' );
         this.addCommand( /^\?(?:next) ?[bB]irthday/, this.eventsHelp, 'next birthday' );
         this.addCommand( /^\?(?:all) ?[bB]irthdays/, this.eventsHelp, 'birthdays');
-        this.addCommand( /^-patchnotes/, this.patchnotes, 'patchnotes' );
-        this.addCommand( /^\?patchnotes/, this.patchnotes, 'patchnotes' );
         this.addCommand( /^\?live/, this.liveHelp, 'live' );
         this.addCommand( /^\?new ?[qQ]uote/, this.quoteHelp, 'quote' );
         this.addCommand( /^\?quote/, this.quoteHelp, 'quote' );
@@ -58,20 +56,6 @@ class Help extends Component {
             'To learn more about any of them, try them with a ? upfront. example: `?roll`.\n' +
             _.chunk( COMMANDS, 3 ).map( chunk => `\`${chunk.join( '' )}\`` ).join( '\n' )
         );
-    }
-
-    patchnotes() {
-        this.setAction( 'message', `Recent Changes:
-Version... 0.0.2 lets say
-        
-Slots are fun now!
-Coin Slots now uses a weighted coin.
-New Commands: \`-calendar -allBirthdays -nextBirthday -nextHoliday -allHolidays -queueItUp -bankruptcy -patchnotes -live -quote -newquote -brag\`
-New Audio: \`prooh readygo\`
-
-Sound effects now only happen if the user is in a voice channel, and it happens in the same voice channel they are in.
-Live music can be played with \`-live url\`
-` );
     }
 
     quoteHelp() {
