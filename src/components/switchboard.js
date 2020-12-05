@@ -5,7 +5,7 @@ const fs = require( 'fs' );
 const _ = require( 'lodash' );
 const { CONFIG, PERMISSION_LEVELS } = require( '../core/constants' );
 
-const componentsEnabled = ['switchboard', 'help', 'utility'];
+const componentsEnabled = ['switchboard', 'utility', 'admin', 'patchnotes', 'help'];
 if ( CONFIG.VERSION == "alpha" ) {
 
 }
@@ -23,6 +23,7 @@ HIDDEN = 'HIDDEN'
 const switchboard = {
     switchboard: { module: 'switchboard', status: LOCKED },
     help: { module: 'help', status: LOCKED },
+    patchnotes: { module: 'patchnotes', status: LOCKED },
     utility: { module: 'utility', status: ON,
         subs: {
             random: { module: 'utility', status: ON },
@@ -78,11 +79,19 @@ class SwitchBoard extends Component {
         super( ID );
         this.addCommand( /^####BUG####$/, () => {} ) // first command not recognized
         this.addCommand( /^#switch on (\S+)$/, (name, mi) => this.switch(name, true, mi) )
+        this.addCommand( /^#switch off brag$/, this.bragSafeGuard )
         this.addCommand( /^#switch off (\S+)$/, (name, mi) => this.switch(name, false, mi) )
         this.addCommand( /^#switchboard$/, this.switchboard )
         this.addCommand( /^#features$/, this.switchboard )
 
         this.switchboard_setup(switchboard)
+    }
+
+    bragSafeGuard(metaInfo) {
+        this.setAction("message", "I don't mean to brag.... buut")
+        this.queueAction()
+        this.setAction("delay", 2)
+        this.setAction("message", `**${metaInfo.author}** tried to turn brag off and failed.`)
     }
 
     switchboard(metaInfo) {
@@ -106,6 +115,28 @@ class SwitchBoard extends Component {
             }
         })
         return output
+    }
+
+    switch( groupName, enabled, metaInfo ) {
+        this.setAction( 'security', PERMISSION_LEVELS.SUPERUSER );
+        if ( !PERMISSION_LEVELS.SUPERUSER.includes( metaInfo.authorId ) ) {
+            return;
+        }
+        if (!Object.keys(switches).includes(groupName)) {
+            this.setAction('message', 'not found')
+            return
+        }
+        let swi = switches[groupName]
+        if (swi.status != ON && swi.status != OFF) {
+            this.setAction('reaction', '❌')
+        } else {
+            if (enabled)
+                swi.status = ON
+            else
+                swi.status = OFF
+            this.setAction('reaction', '✅')
+        }
+        this.storage.set(`preference.${groupName}`, enabled)
     }
 
     switch( groupName, enabled, metaInfo ) {
@@ -170,7 +201,7 @@ class SwitchBoard extends Component {
         }
         let swi = switches[groupName]
         do {
-            if ( swi.status != ON ) {
+            if ( swi.status != ON && swi.status != LOCKED ) {
                 return false
             } else {
                 if ( swi.parent ) {
