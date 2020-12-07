@@ -3,6 +3,8 @@ const { BUCKS } = require( '../core/constants' );
 const { getId, getUser } = require( '../core/util' );
 const _ = require( 'lodash' );
 
+const { statistics } = require( './statistics' )
+
 const ID = 'quotes';
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -73,6 +75,7 @@ class Quotes extends Component {
 *${quoteMsg}*
 
 -**${username}**, ${quoteDate}` );
+        statistics.add( `times_quoted.${id}` )
     }
 }
 
