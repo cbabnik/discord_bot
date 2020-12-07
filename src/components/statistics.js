@@ -32,7 +32,6 @@ class Statistics extends Component {
         }
         const pieces = field_string.split(/[\. ]/)
         let given_depth = pieces.length -1;
-        console.log(given_depth)
         let [category, user, subcategories] = [pieces.shift(), pieces.shift(), pieces]
         if ( ["&","^","+","v"].includes(category)) {
             this.setAction("message", "Can't use wildcards on first statistic field. Try \`?statistics\` for more info")
@@ -46,7 +45,6 @@ class Statistics extends Component {
         const stat_data = await this.storage.get(category)
         let fields = [];
         const depth = this.find_depth(stat_data)
-        console.log(depth)
         if (given_depth < 1) {
             user = '&'
             given_depth = 1
@@ -114,9 +112,13 @@ class Statistics extends Component {
                             const old_val = _.get(stat_data,new_f,Number.MIN_SAFE_INTEGER)
                             const challenger_val = _.get(stat_data,f,Number.MIN_SAFE_INTEGER)
                             if (challenger_val > old_val) {
-                                owners[new_f] = f;
+                                if (field_string.includes("+") && order.indexOf("+") > order.indexOf("^")) {
+                                    owners[new_f] = new_f;
+                                } else {
+                                    owners[new_f] = f;
+                                }
                             }
-                            const val =  Math.max(_.get(stat_data,f,Number.MIN_SAFE_INTEGER) , )
+                            const val =  Math.max(challenger_val , old_val )
                             _.set(stat_data, new_f, val)
                         })
                         fields = [ ...Object.values(owners) ];
@@ -133,9 +135,13 @@ class Statistics extends Component {
                             const old_val = _.get(stat_data,new_f,Number.MAX_SAFE_INTEGER)
                             const challenger_val = _.get(stat_data,f,Number.MAX_SAFE_INTEGER)
                             if (challenger_val < old_val) {
-                                owners[new_f] = f;
+                                if (field_string.includes("+") && order.indexOf("+") > order.indexOf("v")) {
+                                    owners[new_f] = new_f;
+                                } else {
+                                    owners[new_f] = f;
+                                }
                             }
-                            const val =  Math.min(_.get(stat_data,f,Number.MAX_SAFE_INTEGER) , )
+                            const val =  Math.min(challenger_val , old_val )
                             _.set(stat_data, new_f, val)
                         })
                         fields = [ ...Object.values(owners) ];
@@ -144,8 +150,6 @@ class Statistics extends Component {
             }
         }
 
-        console.log(fields)
-        console.log(stat_data)
         let msg = `${category}:`
         fields = fields.sort()
         fields.forEach((f) => {

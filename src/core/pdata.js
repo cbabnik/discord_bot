@@ -46,6 +46,19 @@ class Storage {
     }
 
     async get( key, default_val=0 ) {
+        await this.mutex.acquire()
+        const [bin, field] = this.seperate_out(key)
+        if (field === undefined) {
+            const val = await this.storage.getItem(bin)
+            this.mutex.release()
+            return (val===undefined?default_val:val)
+        }
+        const json = await this.storage.getItem(bin)
+        this.mutex.release()
+        return (json===undefined?default_val:_.get( json, field, default_val ))
+    }
+
+    async getUnprotected( key, default_val=0 ) {
         const [bin, field] = this.seperate_out(key)
         if (field === undefined) {
             const val = await this.storage.getItem(bin)
@@ -69,7 +82,7 @@ class Storage {
 
     async hold( key, default_val=0 ) {
         await this.mutex.acquire()
-        return await this.get(key, default_val )
+        return await this.getUnprotected(key, default_val )
     }
 
     async letgo( key, value ) {
