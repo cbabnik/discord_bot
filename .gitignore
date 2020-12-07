@@ -2,9 +2,7 @@
 logs/
 
 # Database files
-storage/alpha
-storage/beta
-backups/
+storage/
 
 # Secret keys
 auth.js
