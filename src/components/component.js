@@ -71,22 +71,22 @@ class Component {
             lastTime = time - Math.ceil( ( time-currentTime )/delay )*delay;
         }
         const nextTime = lastTime+delay;
-        const timestamp = this.get( field );
+        const timestamp = this.storage.get( field );
         if ( typeof timestamp === 'undefined' ) {
             this.scheduledEvent( -1, field );
-            this.set( field, lastTime );
+            this.storage.set( field, lastTime );
         } else {
             const misses =  Math.floor( ( currentTime - timestamp )/delay );
             if ( misses > 0 ) {
-                this.set( field, lastTime );
+                this.storage.set( field, lastTime );
                 this.scheduledEvent( misses, field );
             }
         }
         setTimeout( () => {
             this.scheduledEvent( 0, field );
-            this.set( field, new Date().getTime() );
+            this.storage.set( field, new Date().getTime() );
             setInterval( () => {
-                this.set( field, new Date().getTime() );
+                this.storage.set( field, new Date().getTime() );
                 this.scheduledEvent( 0, field );
             }, delay );
         }, nextTime - currentTime );
