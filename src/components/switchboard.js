@@ -5,7 +5,7 @@ const fs = require( 'fs' );
 const _ = require( 'lodash' );
 const { CONFIG, PERMISSION_LEVELS } = require( '../core/constants' );
 
-const componentsEnabled = ['switchboard', 'utility', 'admin', 'patchnotes', 'help'];
+const componentsEnabled = ['switchboard', 'utility', 'admin', 'patchnotes', 'statistics', 'help'];
 if ( CONFIG.VERSION == "alpha" ) {
 
 }
@@ -24,6 +24,7 @@ const switchboard = {
     switchboard: { module: 'switchboard', status: LOCKED },
     help: { module: 'help', status: LOCKED },
     patchnotes: { module: 'patchnotes', status: LOCKED },
+    statistics: { module: 'statistics', status: ON },
     utility: { module: 'utility', status: ON,
         subs: {
             random: { module: 'utility', status: ON },
