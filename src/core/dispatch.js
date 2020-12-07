@@ -6,6 +6,7 @@
 
 const debug = require( 'debug' )( 'dispatcher' );
 const { switchboard } = require( '../components/switchboard' );
+const { statistics } = require( '../components/statistics' );
 
 const DispatcherGenerator = ( Scanner ) => ( actor ) => {
 
@@ -34,6 +35,9 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         if ( commandId ) {
             const cmd = commandLinkDict[commandId];
             if (switchboard.isEnabled(cmd.groupName)) {
+                if (cmd.groupName) {
+                    statistics.add(`feature_used.${msg.author.id}.${cmd.groupName}`)
+                }
                 dispatch( content, cmd, msg );
             }
         }
