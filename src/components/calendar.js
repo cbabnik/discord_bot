@@ -1,6 +1,5 @@
-const { Component } = require( '../component' );
-const { BUCKS, CONFIG, ACTIONS } = require( '../constants' );
-const { lottery } = require( './lottery' );
+const { Component } = require( './component' );
+const { BUCKS, CONFIG, ACTIONS } = require( '../core/constants' );
 const _ = require( 'lodash' );
 
 const ID = 'calendar';
@@ -36,16 +35,17 @@ const HOLIDAYS = {
     BUGSIVERSARY: {v:50,m:9,d:9,s:'Bugsiversary :bee:'},
     BIGBUCKHAUNTERS: {v:50,m:10,d:31,s:'Big Buck Haunters :ghost:'},
     REMEMBERENCEDAY: {v:50,m:11,d:11,s:'REMemberence Day :reminder_ribbon:'},
+    REMEMBERENCEDAY: {v:50,m:12,d:25,s:'Buckmas Day :christmas_tree:'},
 };
 
 class Calendar extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-(?:next)?[bB]irthday$/, this.nextBirthday );
-        this.addCommand( /^-(?:all)[bB]irthdays/, this.allBirthdays );
+        this.addCommand( /^-(?:next ?)?[bB]irthday$/, this.nextBirthday );
+        this.addCommand( /^-(?:all) ?[bB]irthdays/, this.allBirthdays );
         this.addCommand( /^-birthday (.*)$/, this.birthdayOf );
-        this.addCommand( /^-(?:all)[hH]olidays$/, this.allHolidays );
-        this.addCommand( /^-(?:next)?[hH]oliday$/, this.nextHoliday );
+        this.addCommand( /^-(?:all) ?[hH]olidays$/, this.allHolidays );
+        this.addCommand( /^-(?:next ?)?[hH]oliday$/, this.nextHoliday );
         this.addCommand( /^-calendar$/, this.calendar );
         this.addCommand( /^-calendar (.*)$/, this.calendarMonth );
     }
@@ -56,33 +56,6 @@ class Calendar extends Component {
 
     scheduledEvent() {
         const today = new Date();
-
-        // slots saturday
-        if ( today.getDay() === 6 ) {
-            this.setAction( 'message', 'Slots Saturday! Everyone with 0 maze slots free rolls gets one!' );
-            this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
-            this.actor.handle( this.commitAction(), null );
-
-            Object.values( BUCKS ).forEach( id => {
-                const fr = _.get( lottery.json, `${id}.maze.freeRolls`, 0 );
-                if ( fr === 0 ) {
-                    _.set( lottery.json, `${id}.maze.freeRolls`, 1 );
-                }
-            } );
-        }
-        // slots sunday
-        if ( today.getDay() === 0 ) {
-            this.setAction( 'message', 'Slots Sunday! Everyone with 0 grid slots free rolls gets one of each!' );
-            this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
-            this.actor.handle( this.commitAction(), null );
-
-            Object.values( BUCKS ).forEach( id => {
-                const fr = _.get( lottery.json, `${id}.grid.freeRolls`, 0 );
-                if ( fr === 0 ) {
-                    _.set( lottery.json, `${id}.grid.freeRolls`, 1 );
-                }
-            } );
-        }
 
         Object.keys( BIRTHDAYS ).forEach( k => {
             const bd = BIRTHDAYS[k];
