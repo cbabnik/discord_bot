@@ -9,37 +9,21 @@ class Pictures extends Component {
         this.addCommand( /^-burger/, this.burger );
         this.addCommand( /^-add[bB]urger (.*)/, this.addBurger );
         this.addCommand( /^-bugs$/, this.bugs );
-
-        if ( !this.json.burgers ) {
-            this.json['burgers'] = [];
-        }
     }
 
-    burger() {
-        if ( this.json['burgers'].length === 0 ) {
+    async burger() {
+        const burgers = await this.storage.get('burgers', [])
+        if ( burgers.length === 0 ) {
             this.setAction( 'message', 'Sorry, there are no burgers yet :(' );
         } else {
-            const index = Math.floor( Math.random()*this.json['burgers'].length );
-            const img = this.json['burgers'][index];
+            const index = Math.floor( Math.random()*burgers.length );
+            const img = burgers[index];
             this.setAction( 'imageLink', img );
         }
     }
 
-    addBurger( link, metaInfo ) {
-        if ( metaInfo.authorId === BUCKS.BUGSLINGER ) {
-            if ( !link.includes( 'http' ) ) {
-                this.setAction( 'message', 'Please submit a URL LINK to an image instead.' );
-            } else {
-                this.setAction( 'message', 'Burger saved.' );
-                this.json['burgers'].push( link );
-            }
-        } else {
-            this.setAction( 'message', 'Bugs only bro.' );
-        }
-    }
-
-    bugs() {
-        if ( this.json['bugs'] !== 'unlocked' ) {
+    async bugs() {
+        if ( this.storage.get('bugs') !== 'unlocked' ) {
             return;
         }
         switch ( Math.floor( 5*Math.random() ) ) {
@@ -54,7 +38,7 @@ class Pictures extends Component {
     // API
 
     unlockBugs() {
-        this.json['bugs'] = 'unlocked';
+       this.storage.set('bugs', 'unlocked')
     }
 }
 
