@@ -1,6 +1,6 @@
 const { Component } = require( './component' );
 const { BUCKS } = require( '../core/constants' );
-const { getId } = require( '../core/util' );
+const { getId, getUser } = require( '../core/util' );
 const _ = require( 'lodash' );
 
 const ID = 'quotes';
@@ -10,12 +10,12 @@ const MONTH_NAMES = ['January','February','March','April','May','June','July','A
 class Quotes extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-new ?[qQ]uote ([^ ]+) "(.+)"$/, ( username, quote ) => this.newQuote( username, undefined, quote ) );
-        this.addCommand( /^-new ?[qQ]uote ([^ ]+) (.+) "(.+)"$/, this.newQuote );
-        this.addCommand( /^-new ?[qQ]uote ([^ ]+) (.+)$/, ( username, quote ) => this.newQuote( username, undefined, quote ) );
-        this.addCommand( /^-quote ([^ ]+) (\d+)$/, this.quote );
-        this.addCommand( /^-quote ([^ ]+)$/, ( username ) => this.quote( username, undefined ) );
-        this.addCommand( /^-quote$/, () => this.quote( 'random', undefined ) );
+        this.addCommand( /^-new ?[qQ]uote ([^ ]+) "(.+)"$/, ( username, quote ) => this.newQuote( username, undefined, quote ), 'quotes' );
+        this.addCommand( /^-new ?[qQ]uote ([^ ]+) (.+) "(.+)"$/, this.newQuote, 'quotes' );
+        this.addCommand( /^-new ?[qQ]uote ([^ ]+) (.+)$/, ( username, quote ) => this.newQuote( username, undefined, quote ), 'quotes' );
+        this.addCommand( /^-quote ([^ ]+) (\d+)$/, this.quote, 'quotes' );
+        this.addCommand( /^-quote ([^ ]+)$/, ( username ) => this.quote( username, undefined ), 'quotes' );
+        this.addCommand( /^-quote$/, () => this.quote( 'random', undefined ), 'quotes' );
     }
 
     newQuote( username, date, quote ) {
@@ -33,27 +33,20 @@ class Quotes extends Component {
             date = `${y} ${m}`;
         }
 
-        if ( !this.json[id] ) {
-            this.json[id] = [];
-        }
-
-        this.json[id].push( {message: quote, date} );
-        
-
+        this.storage.append(id, {message: quote, date})
         this.setAction( 'message', 'Quote accepted.' );
     }
 
-    quote( username, idx ) {
+    async quote( username, idx ) {
         let id;
         if ( username === 'random' ) {
-            const keys = Object.keys( BUCKS ).filter( k => _.get( this.json, BUCKS[k], [] ).length > 0 );
+            const keys = await this.storage.storage.keys();
             if ( keys.length === 0 ) {
                 this.setAction( 'message', 'No one has any quotes' );
                 return;
             }
-            const k = _.sample( keys );
-            username = k.charAt( 0 ).toUpperCase() + k.toLowerCase().slice( 1 );
-            id = BUCKS[k];
+            id = _.sample( keys );
+            username = getUser(id)
         } else {
             id = getId( username );
             if ( !id ) {
@@ -62,7 +55,7 @@ class Quotes extends Component {
             }
         }
 
-        const quotes = _.get( this.json, id, [] );
+        const quotes = await this.storage.get( id, [] );
         if ( !quotes || quotes.length === 0 ) {
             this.setAction( 'message', `**${username}** does not have any quotes yet.` );
             return;
