@@ -1,7 +1,7 @@
 const uuidv4 = require( 'uuidv4' );
 
-const { Component } = require( '../component' );
-const { PERMISSION_LEVELS, DMCHANNEL, CONFIG } = require( '../constants' );
+const { Component } = require( './component' );
+const { PERMISSION_LEVELS, DMCHANNEL, CONFIG } = require( '../core/constants' );
 
 const STATUS_ACCEPTED = 'ACCEPTED';
 const STATUS_PENDING_JUDGEMENT = 'PENDING JUDGEMENT';
@@ -11,29 +11,32 @@ const STATUS_UNREAD = 'UNREAD';
 const ID = 'requests';
 
 let requests;
+let ready = false;
 
 class Requests extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-request all$/, ( metaInfo ) => this.listRequests( 'all', metaInfo ) );
-        this.addCommand( /^-requests all$/, ( metaInfo ) => this.listRequests( 'all', metaInfo ) );
-        this.addCommand( /^-request new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ) );
-        this.addCommand( /^-requests new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ) );
-        this.addCommand( /^-requests (\d+)$/, ( n, metaInfo ) => this.listRequests( n, metaInfo ) );
-        this.addCommand( /^-requests delete (\d+)$/, this.deleteRequestN );
-        this.addCommand( /^-requests accept (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ) );
-        this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ) );
-        this.addCommand( /^-requests accept (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, reply, metaInfo ) );
-        this.addCommand( /^-requests reject (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, reply, metaInfo ) );
-        this.addCommand( /^-requests reply (\d+) (.+)$/, this.reply );
-        this.addCommand( /^-requests/, this.checkRequests );
-        this.addCommand( /^-new ?[rR]equest (.*)$/s, this.addRequest );
-        this.addCommand( /^-request (.*)$/, this.requestInfo );
+        this.addCommand( /^-request all$/, ( metaInfo ) => this.listRequests( 'all', metaInfo ), "requests" );
+        this.addCommand( /^-requests all$/, ( metaInfo ) => this.listRequests( 'all', metaInfo ), "requests" );
+        this.addCommand( /^-request new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ), "requests" );
+        this.addCommand( /^-requests new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ), "requests" );
+        this.addCommand( /^-requests (\d+)$/, ( n, metaInfo ) => this.listRequests( n, metaInfo ), "requests" );
+        this.addCommand( /^-requests delete (\d+)$/, this.deleteRequestN, "requests" );
+        this.addCommand( /^-requests accept (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ), "requests" );
+        this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ), "requests" );
+        this.addCommand( /^-requests accept (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, reply, metaInfo ), "requests" );
+        this.addCommand( /^-requests reject (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, reply, metaInfo ), "requests" );
+        this.addCommand( /^-requests reply (\d+) (.+)$/, this.reply, "requests" );
+        this.addCommand( /^-requests/, this.checkRequests, "requests" );
+        this.addCommand( /^-new ?[rR]equest (.*)$/s, this.addRequest, "requests" );
+        this.addCommand( /^-request (.*)$/, this.requestInfo, "requests" );
+    }
 
-        if ( this.json['requests'] === undefined ) {
-            this.json['requests'] = [];
-        }
-        requests = this.json['requests'];
+    bootUp() {
+        (async () => {
+            requests = await this.storage.get('requests');
+            ready = true;
+        })();
     }
 
     requestInfo() {
@@ -44,6 +47,7 @@ class Requests extends Component {
         requests.push( {uuid: uuidv4(), user: metaInfo.author, id: metaInfo.authorId, request, unread: true, unreadreply: false, reply: '', status: STATUS_UNREAD} );
         
         this.setAction( 'message', 'Request made! You can check if the admins have read or replied to it with `-requests`' );
+        this.save();
     }
 
     changeStatus( n, status, reply, metaInfo ) {
@@ -69,6 +73,7 @@ class Requests extends Component {
         } else {
             this.setAction( 'message', 'Status updated' );
         }
+        this.save();
     }
 
     listRequests( mode, metaInfo ) {
@@ -130,7 +135,7 @@ class Requests extends Component {
             }
         }
         this.setAction( 'message', msg );
-        
+        this.save();
     }
 
     checkRequests( metaInfo ) {
@@ -156,6 +161,7 @@ You have \`${vr.length} requests\`.
 \`${newr.length} unread\` by admins.
 You can check your requests with \`-requests N\`, \`-requests new\`, or \`-requests all\`` );
         }
+        this.save();
     }
 
     deleteRequestN( n, metaInfo ) {
@@ -176,7 +182,7 @@ You can check your requests with \`-requests N\`, \`-requests new\`, or \`-reque
         requests.splice( indexToDelete, 1 );
 
         this.setAction( 'message', 'Request deleted' );
-        
+        this.save();
     }
 
     reply( n, message, metaInfo ) {
@@ -197,8 +203,15 @@ You can check your requests with \`-requests N\`, \`-requests new\`, or \`-reque
             this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
             this.setAction( 'message', `One of **${requests[n].user}**'s requests was replied to!` );
         }
-        
+        this.save();
     }
+
+    // helpers
+    save() {
+        if (ready)
+            this.storage.set("requests", requests)
+    }
+
 }
 
 module.exports = { requests: new Requests() };
