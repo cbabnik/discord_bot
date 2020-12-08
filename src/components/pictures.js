@@ -18,12 +18,13 @@ class Pictures extends Component {
         this.addCommand( /^-burger/, () => this.pic("AVzHYQFm"), 'burger' );
         this.addCommand( /^-bugs$/, this.bugs, 'pictures' );
         this.addCommand( /^-pic$/, () => this.pic("tw7sXUeU"), 'pictures' );
-        this.addCommand( /^-girl$/, () => this.pic("eYuUA9ty"), 'girl' );
+        this.addCommand( /^-waifu$/, () => this.pic("eYuUA9ty"), 'waifu' );
+        this.addCommand( /^-rem$/, () => this.pic("pcd5bd9z"), 'rem' );
         this.addCommand( /^-add ?pic[sS]$/, this.addpics, 'pictures' );
     }
 
     async pic(bin) {
-        const imgs = await pastebin.getPaste(bin)
+        const paste = await pastebin.getPaste(bin)
         const imgs = paste.split('\r\n')
         if ( imgs.length === 0 ) {
             this.setAction( 'message', 'Sorry, there are no burgers yet :(' );
