@@ -3,23 +3,39 @@ const { BUCKS } = require( '../core/constants' );
 
 const ID = 'pictures';
 
+const { PASTEBIN_USERNAME, PASTEBIN_PASSWORD, PASTEBIN_API_KEY } = require( '../../auth' )
+
+const PastebinAPI = require('pastebin-js')
+const pastebin = new PastebinAPI({
+    'api_dev_key' : PASTEBIN_API_KEY,
+    'api_user_name' : PASTEBIN_USERNAME,
+    'api_user_password' : PASTEBIN_PASSWORD,
+})
+
 class Pictures extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-burger/, this.burger );
-        this.addCommand( /^-add[bB]urger (.*)/, this.addBurger );
-        this.addCommand( /^-bugs$/, this.bugs );
+        this.addCommand( /^-burger/, () => this.pic("AVzHYQFm"), 'burger' );
+        this.addCommand( /^-bugs$/, this.bugs, 'pictures' );
+        this.addCommand( /^-pic$/, () => this.pic("tw7sXUeU"), 'pictures' );
+        this.addCommand( /^-girl$/, () => this.pic("eYuUA9ty"), 'girl' );
+        this.addCommand( /^-add ?pic[sS]$/, this.addpics, 'pictures' );
     }
 
-    async burger() {
-        const burgers = await this.storage.get('burgers', [])
-        if ( burgers.length === 0 ) {
+    async pic(bin) {
+        const imgs = await pastebin.getPaste(bin)
+        const imgs = paste.split('\r\n')
+        if ( imgs.length === 0 ) {
             this.setAction( 'message', 'Sorry, there are no burgers yet :(' );
         } else {
-            const index = Math.floor( Math.random()*burgers.length );
-            const img = burgers[index];
+            const index = Math.floor( Math.random()*imgs.length );
+            const img = imgs[index];
             this.setAction( 'imageLink', img );
         }
+    }
+
+    async addpics() {
+        this.setAction( 'message', 'Paste them here, one per line\nhttps://pastebin.com/tw7sXUeU' );
     }
 
     async bugs() {
