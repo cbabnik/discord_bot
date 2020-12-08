@@ -17,10 +17,10 @@ class Statistics extends Component {
     }
 
     async stats(field_string, order, mi) {
-        field_string = field_string.replace(".sum", "+")
-        field_string = field_string.replace(".min", "v")
-        field_string = field_string.replace(".max", "^")
-        field_string = field_string.replace(".all", "&")
+        field_string = field_string.replace(".sum", ".+")
+        field_string = field_string.replace(".min", ".v")
+        field_string = field_string.replace(".max", ".^")
+        field_string = field_string.replace(".all", ".&")
         if (!order.includes("+")) {
             order = order + "+"
         }
