@@ -156,12 +156,17 @@ const Actor = ( client ) => {
             }
         }
 
-        // messages
-        // ________
+        // reactions
+        // _________
 
         if ( ins.reaction ) {
-            msg.react(ins.reaction).then(() => {}).catch(() => {
-                msg.react('❓')
+            if (!Array.isArray(ins.reaction)) {
+                ins.reaction = [ins.reaction]
+            }
+            ins.reaction.forEach(async (r) => {
+                msg.react(r).then(() => {}).catch(() => {
+                    msg.react('❓')
+                })
             })
         }
 
