@@ -43,13 +43,14 @@ exports.getId = ( username ) => {
 // user name
 // "user#{id}"
 exports.getUser = ( id ) => {
-    const user = client.users.resolve( id );
+    const user = client.users.resolve( `${id}` );
     if ( user ) {
         if ( user.nickname ) {
             return user.nickname;
         }
         return user.username;
     }
+    client.users.fetch(`${id}`)
     return `user#${id}`;
 };
 
