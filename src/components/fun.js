@@ -10,6 +10,7 @@ class Fun extends Component {
         super( ID );
         this.addCommand( /^-[bB]rag$/, this.brag, "brag" );
         this.addCommand( /^-[hH]umble ?[bB]rag$/, this.humblebrag, "brag" );
+        this.addCommand( /^-[wW][iI][nN]\!?$/, this.win, "win" );
     }
 
     async brag ( metaInfo ) {
@@ -31,6 +32,12 @@ class Fun extends Component {
         } else {
             this.setAction( 'message', 'No brags found' );
         }
+    }
+
+    async win ( metaInfo ) {
+        const wins = await this.storage.add(`wins.${metaInfo.authorId}`)
+        const suffix = wins%10==2?"nd":wins%10==3?"rd":"th"
+        this.setAction( 'message', `**${metaInfo.author}** won! This is **${metaInfo.author}**'s *${wins}${suffix}* win!` );
     }
 }
 
