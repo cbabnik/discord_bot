@@ -15,17 +15,27 @@ const Client = ( max_messages, login_token ) => {
         },
     } );
 
+    let state = "disconnected"
     // try to login every 30 seconds if disconnected
     cli.login( login_token ).then( () => {
+        state = "connected"
         cli.setInterval(
             function tryLogin() {
-                if ( cli.user.presence.status && cli.user.presence.status !== CLIENT_CONNECTED ) {
-                    cli.login( login_token ).catch( console.error );
+                if ( state === "disconnected" ) {
+                    console.log(`Not logged in. (status: ${cli.user.presence.status}), logging in.`)
+                    cli.login( login_token ).then(() => {
+                        state = "connected"
+                    }).catch( console.error );
                 }
             },
             30000
         );
-    } ).catch( console.error );
+    } ).catch( console.error );        
+
+
+    cli.on("disconnected", () => {
+        state = "disconnected"
+    });
 
     const bytes_sent = {};
     const strikes = {};
