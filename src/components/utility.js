@@ -2,10 +2,13 @@ const { Component } = require( './component' );
 const _ = require( 'lodash' );
 
 const bigInt = require( 'big-integer' );
+const request = require( 'request' )
+const { STRAWPOLL_API_KEY } = require( '../../auth' )
 
 const ID = 'utility';
 
 const Storage = require( '../core/pdata' );
+const { setGracefulCleanup } = require('tmp');
 let alias_data = undefined;
 (async () => {alias_data = await Storage( 'alias' )})();
 
@@ -39,6 +42,11 @@ class Utility extends Component {
         this.addCommand( /^-alias --edit --inline "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:true}, mi ), "alias" );
         this.addCommand( /^-aliases$/, this.aliasPrint, "alias" );
         this.addCommand( /^-aliases clear$/, this.aliasClearAll, "alias" );
+        this.addCommand( /^-[sS]traw ?[pP]oll +\"(.*)\"$/, (a,b) => this.strawpoll(a,"yes,no",false,b), "vote" );
+        this.addCommand( /^-[sS]traw ?[pP]oll +\"(.*)\" +([^ ]*)$/, (a,b,c) => this.strawpoll(a,b,false,c), "vote" );
+        this.addCommand( /^-[sS]traw ?[pP]oll +\"(.*)\" +([^ ]*) +\[multi\]$/, (a,b,c) => this.strawpoll(a,b,true,c), "vote" );
+        this.addCommand( /^-[pP]ast ?[pP]olls$/, this.pastPolls, "vote" );
+        this.addCommand( /^-vote.*$/, this.vote, "vote" );
     }
 
     rollInfo() {
@@ -151,6 +159,53 @@ class Utility extends Component {
             msg += `\n\`${k}\` - \`${aliases[k].text}\``;
         } );
         this.setAction( 'message', msg );
+    }
+
+    async strawpoll(title, options, ma, metaInfo) {
+        options = options.split(",")
+        if (options.length < 2) {
+            this.setAction("message","Atleast two options please.")
+            return;
+        }
+        request.post({
+            url: "https://strawpoll.com/api/poll",
+            followAllRedirects: true,
+            body: {
+                "poll": {
+                    "title": title,
+                    "answers": options,
+                    "ma": ma,
+                    "captcha": false,
+                }
+            },
+            headers: {
+                "API-KEY": STRAWPOLL_API_KEY
+            },
+            json: true,
+        }, (error, response, body) => {
+            if (error) {
+                console.error(`strawpoll error: ${err}`)
+            } else if (response.statusCode != 200) {
+                console.error(`strawpoll returned code: ${response.statusCode}`)
+            } else if (! body.content_id ) {
+                console.log(body)
+                this.setAction("message", `Sorry **user**, there was an error processing your straw poll` )
+            } else {
+                this.setAction("message", `**${metaInfo.author}**, your strawpoll is ready at https://strawpoll.com/${body.content_id}` )
+                this.storage.append("past_polls",{title, id:body.content_id})
+            }
+        })
+        await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    async pastPolls() {
+        const past_polls = await this.storage.get("past_polls");
+        const msg = `Past polls:\n${past_polls.map(poll => `${poll.title}: https://strawpoll.com/${poll.id}`).join("\n")}`
+        this.setAction("message", msg)
+    }
+
+    vote() {
+        this.setAction("reaction", ["🇾","🇳"])
     }
 }
 
