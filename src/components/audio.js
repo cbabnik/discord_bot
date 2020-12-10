@@ -5,27 +5,30 @@ const { CONFIG, ACTIONS, PERMISSION_LEVELS } = require( '../core/constants' );
 
 const ID = 'audio';
 
+const { statistics } = require( './statistics' )
+
 class Audio extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-list/, this.playListHelp );
-        this.addCommand( /^!list/, this.playListHelp );
-        this.addCommand( /^-play random$/, this.playRandom );
-        this.addCommand( /^!random$/, this.playRandom );
-        this.addCommand( /^-endAudio$/, this.endAudio );
-        this.addCommand( /^!end$/, this.endAudio );
-        this.addCommand( /^-play ([^/\\]+)$/, this.playAudio );
-        this.addCommand( /^!([^/\\]+)$/, this.playAudio );
-        this.addCommand( /^-live (.+)$/, this.playYoutubeLive );
-        this.addCommand( /^-play from([\d.]+) (.+)$/, this.playYoutube );
-        this.addCommand( /^-play (.+)$/, ( url ) => this.playYoutube( 0, url ) );
-        this.addCommand( /^! from([\d.]+) (.+)$/, this.playYoutube );
-        this.addCommand( /^!(.+)$/, ( url ) => this.playYoutube( 0, url ) );
+        this.addCommand( /^-list/, this.playListHelp, 'play' );
+        this.addCommand( /^!list/, this.playListHelp, 'play' );
+        this.addCommand( /^-play random$/, this.playRandom, 'play' );
+        this.addCommand( /^!random$/, this.playRandom, 'play' );
+        this.addCommand( /^-endAudio$/, this.endAudio, 'play' );
+        this.addCommand( /^!end$/, this.endAudio, 'play' );
+        this.addCommand( /^-play ([^/\\]+)$/, this.playAudio, 'play' );
+        this.addCommand( /^!([^/\\]+)$/, this.playAudio, 'play' );
+        this.addCommand( /^-live (.+)$/, this.playYoutubeLive, 'live' );
+        this.addCommand( /^-play from([\d.]+) (.+)$/, this.playYoutube, 'play' );
+        this.addCommand( /^-play (.+)$/, ( url, mi  ) => this.playYoutube( 0, url, mi  ), 'play' );
+        this.addCommand( /^! from([\d.]+) (.+)$/, this.playYoutube, 'play' );
+        this.addCommand( /^!(.+)$/, ( url, mi ) => this.playYoutube( 0, url, mi  ), 'play' );
     }
 
-    playListHelp() {
+    playListHelp(mi) {
         this.setAction( 'audioFile', 'list' );
         this.playHelp();
+        statistics.add(`audio_played.${mi.authorId}.list`)
     }
 
     playHelp() {
@@ -35,7 +38,7 @@ class Audio extends Component {
         );
     }
 
-    playAudio( fileName ) {
+    playAudio( fileName, mi ) {
         if ( !fileName.includes( '.' ) ) {
             fileName += '.mp3';
         }
@@ -44,17 +47,19 @@ class Audio extends Component {
             return;
         }
         this.setAction( 'audioFile', fileName );
+        statistics.add(`audio_played.${mi.authorId}.${fileName}`)
     }
 
-    playYoutubeLive( url ) {
+    playYoutubeLive( url, mi ) {
         if ( url && url.includes( 'youtube' ) || url.includes( 'youtu.be' ) ) {
             this.setAction( 'audioYoutubeLive', url ) ;
         } else {
             this.setAction( 'message', 'Try a file name or a youtube url' );
         }
+        statistics.add(`audio_played.${mi.authorId}.youtube`)
     }
 
-    playYoutube( seek, url ) {
+    playYoutube( seek, url, mi ) {
         if ( seek > 45 ) {
             this.setAction( 'message', '30 seconds max on seek time. Cuz its freaking dumb. And expect a delay :/' );
             return;
@@ -67,15 +72,19 @@ class Audio extends Component {
         } else {
             this.setAction( 'message', 'Try a file name or a youtube url' );
         }
+
+        statistics.add(`audio_played.${mi.authorId}.youtube`)
     }
 
-    endAudio() {
+    endAudio(mi) {
         this.setAction( 'endAudio', true );
+        statistics.add(`audio_ended.${mi.authorId}`)
     }
 
-    playRandom() {
+    playRandom(mi) {
         const f = _.sample( fs.readdirSync( 'res/audio' ) );
         this.setAction( 'audioFile', f );
+        statistics.add(`audio_played.${mi.authorId}.random`)
     }
 }
 
