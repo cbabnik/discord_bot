@@ -5,7 +5,24 @@ const fs = require( 'fs' );
 const _ = require( 'lodash' );
 const { CONFIG, PERMISSION_LEVELS } = require( '../core/constants' );
 
-const componentsEnabled = ['switchboard', 'utility', 'admin', 'patchnotes', 'statistics', 'help'];
+const componentsEnabled = [
+    'switchboard',
+    'utility',
+    'admin',
+    'patchnotes',
+    'statistics',
+    'fun',
+    'pictures',
+    'calendar',
+    'quotes',
+    'requests',
+    'bank',
+    'payroll',
+    'audio',
+    'lottery',
+    //'inventory',
+    //'shop',
+    'help'];
 if ( CONFIG.VERSION == "alpha" ) {
 
 }
@@ -32,6 +49,7 @@ const switchboard = {
             coinflip: { module: 'utility', status: ON },
             roll: { module: 'utility', status: ON },
             alias: { module: 'utility', status: ON },
+            vote: { module: 'utility', status: ON },
         }},
     slots: { module: 'lottery', status: ON,
         subs: {
@@ -44,7 +62,7 @@ const switchboard = {
     fun: { module: 'fun', status: ON,
         subs: {
             brag: { module: 'fun', status: ON },
-            wewon: { module: 'fun', status: ON },
+            win: { module: 'fun', status: ON },
         }},
     audio: { module: 'audio', status: ON,
         subs: {
@@ -55,6 +73,8 @@ const switchboard = {
     pictures: { module: 'pictures', status: ON,
         subs: {
             burger: { module: 'pictures', status: ON },
+            waifu: { module: 'pictures', status: ON },
+            rem: { module: 'pictures', status: ON },
         }},
     quotes: { module: 'quotes', status: ON },
     requests: { module: 'requests', status: ON },
@@ -66,6 +86,7 @@ const switchboard = {
                     loan: { module: 'bank', status: DISABLED },
                     iou: { module: 'bank', status: ON },
                     allowance: { module: 'payroll', status: LOCKED },
+                    bankruptcy: { module: 'bank', status: REPAIR },
                 }},
             inventory: { module: 'inventory', status: REPAIR },
             profile: { module: 'inventory', status: REPAIR },
@@ -181,7 +202,7 @@ class SwitchBoard extends Component {
         const prefs = await this.storage.get('preference')
         Object.keys(prefs).forEach((pref) => {
             let swi = switches[pref]
-            if (swi.status == ON || swi.status == OFF) {
+            if (swi && (swi.status == ON || swi.status == OFF)) {
                 if (prefs[pref]) {
                     swi.status = ON
                 } else {
