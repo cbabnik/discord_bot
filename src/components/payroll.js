@@ -1,7 +1,6 @@
-const { Component } = require( '../component' );
-const { BUCKS, CONFIG } = require( '../constants' );
+const { Component } = require( './component' );
+const { BUCKS, CONFIG } = require( '../core/constants' );
 const { bank } = require( './bank' );
-const { inventory } = require( './inventory' );
 const debug = require( 'debug' )( 'basic' );
 
 const ID = 'payroll';
@@ -97,24 +96,7 @@ class Payroll extends Component {
     payout( amnt ) {
         debug( 'Payroll just paid out!' );
         Object.values( BUCKS ).forEach( id => {
-            let multiplier = 1;
-            if ( inventory.has( id, 'goldenmarble' ) ) {
-                multiplier *= 1.1;
-            }
-            if ( inventory.has( id, 'platinummarble' ) ) {
-                multiplier *= 1.2;
-            }
-            if ( inventory.has( id, 'modmarble' ) ) {
-                multiplier *= 1.1;
-            }
-            bank.addAmount( id, amnt*multiplier );
-
-            // IRS
-            if ( inventory.has( id, 'lumpOfCoal' ) ) {
-                bank.addAmount( id, -2 );
-                const to = bank.mostInDebtTo( id );
-                bank.payOffLoan( id, to, 2 );
-            }
+            bank.addAmount( id, amnt );
         } );
     }
 }
