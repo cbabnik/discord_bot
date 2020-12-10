@@ -201,7 +201,11 @@ const Actor = ( client ) => {
                     } else if ( ins.audioLink ) {
                         broadcast.play( ins.audioLink, {bitrate: 192000} );
                     }
-                    connection.play( broadcast );
+                    const dispatcher = connection.play( broadcast );
+                    const identifier = Math.random()
+                    dispatcher.on("speaking", is_speaking => {
+                        client.strikes[vc.id] = 0;
+                    })
                 }, error => {
                     throw error
                 } );
