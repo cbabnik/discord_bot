@@ -1,4 +1,5 @@
 const { Component } = require( './component' );
+const { bank } = require( './component' );
 const { BUCKS, CONFIG, ACTIONS } = require( '../core/constants' );
 const _ = require( 'lodash' );
 
@@ -22,7 +23,14 @@ const BIRTHDAYS = {
     XXCOWFACE: {y:1995,m:7,d:14},
     LUNES: {y:1995,m:5,d:24},
     QEWE: {y:1996,m:6,d:9},
-    THEEVILSHOGUN: {y:1995,m:9,d:25}
+    THEEVILSHOGUN: {y:1995,m:9,d:25},
+    CRENDEN: {y:1995,m:12,d:25},
+    ARENDULE: {y:1995,m:2,d:25},
+    SEPULCHER: {y:1995,m:5,d:11},
+    DANTEHVETZORZ: {y:1995,m:11,d:11},
+    MILLSY13: {y:1995,m:4,d:17},
+    SHIBELOCKWOW: {y:1996,m:3,d:12},
+    PATRIONES: {y:1997,m:8,d:7},
 };
 
 const HOLIDAYS = {
@@ -35,7 +43,7 @@ const HOLIDAYS = {
     BUGSIVERSARY: {v:50,m:9,d:9,s:'Bugsiversary :bee:'},
     BIGBUCKHAUNTERS: {v:50,m:10,d:31,s:'Big Buck Haunters :ghost:'},
     REMEMBERENCEDAY: {v:50,m:11,d:11,s:'REMemberence Day :reminder_ribbon:'},
-    REMEMBERENCEDAY: {v:50,m:12,d:25,s:'Buckmas Day :christmas_tree:'},
+    BUCKMASDAY: {v:50,m:12,d:25,s:'Buckmas Day :christmas_tree:'},
 };
 
 class Calendar extends Component {
@@ -64,6 +72,7 @@ class Calendar extends Component {
                 this.setAction( 'message', `Happy birthday ${name}! Have 100 credits!` );
                 this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
                 this.actor.handle( this.commitAction(), null );
+                bank.addAmount(BUCKS[k], 100)
             }
         } );
 
@@ -211,23 +220,10 @@ class Calendar extends Component {
     }
 
     // eslint-disable-next-line no-unused-vars
-    payout( amnt ) {
-        /*
-        debug( 'Payroll just paid out!' );
-        Object.values( BUCKS ).forEach( id => {
-            let multiplier = 1;
-            if ( inventory.has( id, 'goldenmarble' ) ) {
-                multiplier *= 1.1;
-            }
-            if ( inventory.has( id, 'platinummarble' ) ) {
-                multiplier *= 1.2;
-            }
-            if ( inventory.has( id, 'modmarble' ) ) {
-                multiplier *= 1.1;
-            }
-            bank.addAmount( id, amnt*multiplier );
+    async payout( amnt ) {
+        Object.values( BUCKS ).forEach( async id => {
+            await bank.addAmount( id, amnt );
         } );
-        */
     }
 
 }
