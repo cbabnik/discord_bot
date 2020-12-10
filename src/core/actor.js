@@ -13,6 +13,7 @@ const debug = require( 'debug' )( 'actor' );
 const debugExtra = require( 'debug' )( 'extra' );
 const ytdl = require( 'ytdl-core' );
 const fs = require( 'fs' );
+const _ = require("lodash")
 
 const messagesForEdit = {};
 
@@ -100,7 +101,7 @@ const Actor = ( client ) => {
         if ( ins.message && ins.message.includes( 'user#' ) ) {
             Object.keys( BUCKS ).forEach( k => {
                 const name = k.charAt( 0 ) + k.slice( 1 ).toLowerCase();
-                ins.message = ins.message.replace( `user#${BUCKS[k]}`, name );
+                ins.message = _.replace(ins.message, new RegExp(`user#${BUCKS[k]}`,'g'), name );
             } );
         }
         if ( ins.asUsername ) {
