@@ -7,6 +7,7 @@ class BaseSlotMachine {
     //     frames: String[]
     //     frameDelay: Number
     //     increasingDelay: Number (0)
+    //     images: String[] ([])
     // }
     roll() {}
 

@@ -10,6 +10,8 @@ const ID = 'lottery';
 const cslots_machine = require('./slot_machines/cslots');
 const gslots_machine = require('./slot_machines/gslots');
 const mslots_machine = require('./slot_machines/mslots');
+const bslots_machine = require('./slot_machines/bslots');
+const bgslots_machine = require('./slot_machines/bgslots');
 
 class Lottery extends Component {
     constructor() {
@@ -19,6 +21,9 @@ class Lottery extends Component {
         this.addCommand( /^-cslots$/, (mi) => this.roll("cslots", mi), "cslots" );
         this.addCommand( /^-gslots$/, (mi) => this.roll("gslots", mi), "gslots" );
         this.addCommand( /^-mslots$/, (mi) => this.roll("mslots", mi), "mslots" );
+        this.addCommand( /^-bgslots$/, (mi) => this.roll("bgslots", mi), "bgslots" );
+        this.addCommand( /^-privacy on$/ , this.privacyOn );
+        this.addCommand( /^-privacy off$/ , this.privacyOff );
     }
 
     async roll(slot_machine_name, mi) {
@@ -30,6 +35,7 @@ class Lottery extends Component {
             case "cslots": machine = cslots_machine; break;
             case "gslots": machine = gslots_machine; break;
             case "mslots": machine = mslots_machine; break;
+            case "bgslots": machine = bgslots_machine; break;
         }
         const cost = machine.cost();
 
@@ -51,7 +57,7 @@ class Lottery extends Component {
 
         let results
         try {
-            results = machine.roll(user, id)
+            results = await machine.roll(user, id)
         } catch (err) {
             console.error(err)
         }
@@ -65,6 +71,7 @@ class Lottery extends Component {
             winnings: 0,
             frameDelay: 1,
             increasingDelay: 0,
+            images: [],
         }
         results = { ...defaults, ...results }
 
@@ -96,10 +103,12 @@ class Lottery extends Component {
             attempts += await statistics.storage.get(`lottery_attempts.${id}.${slot_machine_name}.poop`)
             statistics.storage.set(`lottery_average.${id}.${slot_machine_name}`, totalWinnings/attempts);
         })(statistics);
+        statistics.add(`lottery_buckrolls_earned.${id}.${slot_machine_name}`, results.buckrolls)
 
         results.frames[results.frames.length-1] += `\nYour new balance is ${await bank.balance( id )}`
         const uuid = uuidv4();
         this.setAction("message", results.frames[0])
+        if(results.images.length > 0) this.setAction("image", results.images[0]);
         this.setAction("messageId", uuid)
         for(var i = 1; i < results.frames.length; i++) {
             this.queueAction()
@@ -108,10 +117,34 @@ class Lottery extends Component {
             this.setAction("editId", uuid)
         }
         const num_frames = results.frames.length;
-        const totalDelay = results.frameDelay * (num_frames-1) + results.increasingDelay*(num_frames)*(num_frames-1)/2
-        this.offLimitsFor(totalDelay)
+        let totalDelay = results.frameDelay * (num_frames-1) + results.increasingDelay*(num_frames)*(num_frames-1)/2
 
+        if (results.buckrolls) {
+            for(var i = 0; i < results.buckrolls; i++) {
+                const results = await bslots_machine.roll(user, id)
+                this.queueAction();
+                this.setAction("delay", 1)  
+                this.setAction("message", results.frames[0])  
+                this.setAction("image", results.images[0])
+                statistics.add(`lottery_winnings.${id}.bslots`, results.winnings)
+                bank.addAmount(id, results.winnings)
+            }
+            totalDelay += 1*results.buckrolls
+        }
+
+        this.offLimitsFor(totalDelay)
     }
+
+    privacyOn( mi ) {
+        this.storage.set( `${mi.authorId}.privacy`, true );
+        this.setAction( 'message', 'Option set.' );
+    }
+    privacyOff( mi ) {
+        this.storage.set( `${mi.authorId}.privacy`, false );
+        this.setAction( 'message', 'Option set.' );
+    }
+
+    // helpers
 
     offLimitsFor( seconds ) {
         this.waitUntil = new Date().getTime() + 1000*seconds;

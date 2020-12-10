@@ -84,7 +84,7 @@ class MazeSlotMachine extends BaseSlotMachine {
             winnings,
             buckrolls: deerWins,
             frames,
-            frameDelay: 1.2,
+            frameDelay: 1.7,
         }
     }
 
