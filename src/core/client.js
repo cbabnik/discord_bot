@@ -37,26 +37,19 @@ const Client = ( max_messages, login_token ) => {
         state = "disconnected"
     });
 
-    const bytes_sent = {};
-    const strikes = {};
+    cli.strikes = {};
     // after ~8 seconds of inactivity disconnect from voice channels
     cli.setInterval( () => {
         try {
             cli.voice.connections.array().forEach( ( c ) => {
                 const vc = c.channel;
-                const n = vc.name;
+                const n = vc.id
 
-                const streamCount = c.player.streamingData.count;
-                if ( streamCount === bytes_sent[n] ) {
-                    strikes[n] = strikes[n]+1 || 1;
-                    if ( strikes[n] > 2 ) {
-                        vc.leave();
-                        strikes[n] = 0;
-                    }
-                } else {
-                    strikes[n] = 0;
+                cli.strikes[n] = cli.strikes[n]+1 || 1;
+                if ( cli.strikes[n] > 2 ) {
+                    vc.leave();
+                    cli.strikes[n] = 0;
                 }
-                bytes_sent[n] = streamCount;
             } );
         } catch ( e ) {
             console.error( 'Client recovered from an error' );
