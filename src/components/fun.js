@@ -2,6 +2,7 @@ const { Component } = require( './component' );
 const _ = require( 'lodash' );
 const { getId }  = require( '../core/util' );
 const { PERMISSION_LEVELS, CONFIG } = require( '../core/constants' );
+const { statistics } = require( './statistics' );
 
 const ID = 'fun';
 
@@ -11,6 +12,7 @@ class Fun extends Component {
         this.addCommand( /^-[bB]rag$/, this.brag, "brag" );
         this.addCommand( /^-[hH]umble ?[bB]rag$/, this.humblebrag, "brag" );
         this.addCommand( /^-[wW][iI][nN]\!?$/, this.win, "win" );
+        this.addCommand( /^\+slots$/, this.kawaiiSlots, "fun" );
     }
 
     async brag ( metaInfo ) {
@@ -38,6 +40,29 @@ class Fun extends Component {
         const wins = await this.storage.add(`wins.${metaInfo.authorId}`)
         const suffix = wins%10==2?"nd":wins%10==3?"rd":"th"
         this.setAction( 'message', `**${metaInfo.author}** won! This is **${metaInfo.author}**'s *${wins}${suffix}* win!` );
+    }
+
+    async kawaiiSlots ( metaInfo ) {
+        const id = metaInfo.authorId;
+        const fruit = [":watermelon:",":cherries:",":strawberry:",":tangerine:",":lemon:",":apple:",":grapes:",":pear:"]
+        let roll = [_.sample(fruit),_.sample(fruit),_.sample(fruit)]
+
+        let won = false;
+        if (roll[0] === roll[1] && roll[0] === roll[2]) won = true;
+        let almost = false;
+        if (roll[0] === roll[1] || roll[0] === roll[2] || roll[1] === roll[2]) almost = true;
+
+        this.setAction("message",`**${metaInfo.author}** rolled the slots...
+**[** ${roll.join("")} **]**
+and ${won?"won! :tada:":almost?"almost won.":"lost..."}`)
+
+        if (won) {
+            statistics.add(`kawaii_slots.${id}.win`)
+        } else if (almost) {
+            statistics.add(`kawaii_slots.${id}.almost`)
+        } else {
+            statistics.add(`kawaii_slots.${id}.lose`)
+        }
     }
 }
 
