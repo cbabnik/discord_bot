@@ -126,16 +126,18 @@ const Actor = ( client ) => {
         }
         const embeds = {};
         if ( ins.image ) {
-            let path = 'res/images/' + ins.image;
-            if ( ins.image.includes( ':\\' ) ) {
-                path = ins.image;
-            } else if ( !ins.image.includes( '.' ) ) {
-                path += '.jpg';
+            if ( ! ins.messageId ) {
+                let path = 'res/images/' + ins.image;
+                if ( ins.image.includes( ':\\' ) ) {
+                    path = ins.image;
+                } else if ( !ins.image.includes( '.' ) ) {
+                    path += '.jpg';
+                }
+                embeds.files = [{
+                    attachment: path,
+                    name: ins.image
+                }];
             }
-            embeds.files = [{
-                attachment: path,
-                name: ins.image
-            }];
         } else if ( ins.imageLink ) {
             embeds.files = Array.isArray( ins.imageLink ) ? ins.imageLink : [ins.imageLink];
         }
