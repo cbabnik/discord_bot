@@ -1,3 +1,4 @@
+let _ = require("lodash")
 
 class BaseSlotMachine {
 
@@ -15,11 +16,6 @@ class BaseSlotMachine {
 
     onceAtATime() {
         return true;
-    }
-
-    useLodashInContext() {
-        // should ONLY be run in test environments!
-        _ = _.runInContext();
     }
 }
 

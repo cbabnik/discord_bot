@@ -1,33 +1,29 @@
-const { lottery } = require( '../components/lottery' );
-const { bank } = require( '../components/bank' );
-const { pictures } = require( '../components/pictures' );
-const { CONFIG } = require( '../constants' );
+const seed = require("./seed.js")
+
+const { CONFIG } = require( '../src/core/constants' );
+
+const cslots_machine = require('../src/components/slot_machines/cslots');
+const gslots_machine = require('../src/components/slot_machines/gslots');
+const mslots_machine = require('../src/components/slot_machines/mslots');
+const bslots_machine = require('../src/components/slot_machines/bslots');
+const bgslots_machine = require('../src/components/slot_machines/bgslots');
+
 const _ = require( 'lodash' );
 
 const sinon = require( 'sinon' );
 const expect = require( 'chai' ).expect;
-const seed = require( 'seed-random' );
 
-const START_AMOUNT = 999999999;
 const metaInfo = {
     channelId: CONFIG.MAIN_CHANNEL,
     author: 'test',
     authorId: '0'
 };
-let hasMantle;
 
 describe( 'Lottery', () => {
 
     before( () => {
         sinon.restore();
-        sinon.stub( lottery, 'saveJSON' );
-        sinon.stub( lottery, 'offLimitsFor' );
-        sinon.stub( lottery, 'isOffLimits' ).callsFake( () => false );
-        sinon.stub( lottery, 'createImage' ).callsFake( () => '' );
-        sinon.stub( bank, 'saveJSON' );
-        sinon.stub( pictures, 'saveJSON' );
-
-        hasMantle = sinon.stub( lottery, 'hasHolyMantle' ).callsFake( () => false );
+        sinon.stub( bslots_machine, "createImage" ).callsFake( async () => '' )
     } );
 
     after( () => {
@@ -36,16 +32,6 @@ describe( 'Lottery', () => {
 
     beforeEach( () => {
         seed( 'test', {global: true} );
-        lottery.useLodashInContext();
-
-        lottery.json = {};
-        bank.json = {
-            '0': {
-                'credits': START_AMOUNT
-            }
-        };
-
-        hasMantle.resetHistory();
     } );
 
     afterEach( () => {
@@ -71,74 +57,59 @@ describe( 'Lottery', () => {
 
     describe( 'results', () => {
         it( 'multiply interaction is correct', () => {
-            const r = lottery.results( wins );
+            const r = mslots_machine.results( wins );
             expect( r.winnings ).to.equal( -773955000 );
             expect( r.deerWins ).to.equal( -992250*3 );
-        } );
-        it( 'overrules work', () => {
-            const r = lottery.results( wins, overrules );
-            expect( r.winnings ).to.equal( 764032500 );
-            expect( r.deerWins ).to.equal( 992250*3 );
         } );
     } );
 
     describe( '-cslots', () => {
-        it( 'Passes all tests', () => {
-            for ( let i = 0; i < 100; i++ ) {
-                lottery.coinslots( metaInfo );
+        it( 'Wins appropriate amount', () => {
+            let totalWinnings = 0
+            for ( let i = 0; i < 100000; i++ ) {
+                const r = cslots_machine.roll( metaInfo.user, metaInfo.userId );
+                totalWinnings += r.winnings
             }
-            // wins an appropriate amount
-            const totalWinnings = lottery.json['0']['coin']['winnings'];
-            expect( totalWinnings ).to.equal( 92 );
-            // bank is modified correctly
-            expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 100 );
-            // holy mantle not called
-            expect( hasMantle.called ).to.equal( true );
+            expect( totalWinnings ).to.equal( 95575 );
         } );
     } );
 
     describe( '-gslots', () => {
-        it( 'Passes all tests', () => {
-            for ( let i = 0; i < 100; i++ ) {
-                lottery.gridslots( metaInfo );
+        it( 'Wins appropriate amount', async () => {
+            let totalWinnings = 0
+            let buckrolls = 0
+            for ( let i = 0; i < 10000; i++ ) {
+                const r = await gslots_machine.roll( metaInfo.user, metaInfo.userId );
+                totalWinnings += r.winnings
+                buckrolls += r.buckrolls
             }
-            // wins an appropriate amount
-            const totalWinnings = lottery.json['0']['grid']['winnings'] + _.get( lottery.json['0'], 'buck.winnings', 0 );
-            expect( totalWinnings ).to.equal( 695 );
-            // bank is modified correctly
-            expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 500 );
-            // holy mantle called
-            expect( hasMantle.called ).to.equal( true );
+            expect( totalWinnings ).to.equal( 27655 );
+            expect( buckrolls ).to.equal( 174 );
         } );
     } );
 
     describe( '-mslots', () => {
-        it( 'Passes all tests', () => {
-            for ( let i = 0; i < 100; i++ ) {
-                lottery.mazeSlots( metaInfo );
+        it( 'Wins appropriate amount', async  () => {
+            let totalWinnings = 0
+            let buckrolls = 0
+            for ( let i = 0; i < 1000; i++ ) {
+                const r = await mslots_machine.roll( metaInfo.user, metaInfo.userId );
+                totalWinnings += r.winnings
+                buckrolls += r.buckrolls
             }
-            // wins an appropriate amount
-            const totalWinnings = lottery.json['0']['maze']['winnings'] + _.get( lottery.json['0'], 'buck.winnings', 0 );
-            expect( totalWinnings ).to.equal( 2480 );
-            // bank is modified correctly
-            expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings - 2000 );
-            // holy mantle called
-            expect( hasMantle.called ).to.equal( true );
+            expect( totalWinnings ).to.equal( 15905 );
+            expect( buckrolls ).to.equal( 299 );
         } );
     } );
 
     describe( '-bslots', () => {
-        it( 'Passes all tests', () => {
-            for ( let i = 0; i < 100; i++ ) {
-                lottery.buckSlots( 'test','0' );
+        it( 'Wins appropriate amount', async () => {
+            let totalWinnings = 0
+            for ( let i = 0; i < 200; i++ ) {
+                const r = await bslots_machine.roll( metaInfo.user, metaInfo.userId );
+                totalWinnings += r.winnings
             }
-            // wins an appropriate amount
-            const totalWinnings = lottery.json['0']['buck']['winnings'];
-            expect( totalWinnings ).to.equal( 3377 );
-            // bank is modified correctly
-            expect( bank.json['0']['credits'] ).to.equal( START_AMOUNT + totalWinnings );
-            // holy mantle not called
-            expect( hasMantle.called ).to.equal( false );
+            expect( totalWinnings ).to.equal( 4929 );
         } );
     } );
 } );

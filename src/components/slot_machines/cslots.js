@@ -6,7 +6,7 @@ class CoinSlotMachine extends BaseSlotMachine {
     roll(user) {
         let chain = 0;
         let frames = []
-        for ( ; Math.random() < 0.505; ) {
+        for ( ; Math.random() > 0.51; ) {
             chain += 1;
             frames.push(this.newFrame(user,chain,false))
         }
