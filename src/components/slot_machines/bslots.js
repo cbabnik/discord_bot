@@ -1,6 +1,7 @@
 const { BaseSlotMachine } = require( "./base" )
 const _ = require("lodash")
 const { statistics } = require( '../statistics' );
+const { bank } = require( '../bank' );
 const { pictures } = require( '../pictures' );
 const gm = require( 'gm' );
 const tmp = require( 'tmp' );
@@ -63,7 +64,7 @@ class BuckSlotMachine extends BaseSlotMachine {
             statistics.add(`lottery_buckwins.${id}.kiwi`)
             bank.addAmount( id, 3, 'buckbucks' );
             resultStr = 'Nice win! 3 buck bucks awarded.';
-            this.setAction( 'audioFile', 'isitkewe' );
+            // is it kewe audio here
             break;
         default:
             won = false;
@@ -93,7 +94,6 @@ class BuckSlotMachine extends BaseSlotMachine {
             }
         }
         const fileName = await this.createImage( roll );
-        const frame = resultStr
 
         /*
         if ( cuties ) {
