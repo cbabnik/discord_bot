@@ -5,6 +5,7 @@ const { bank } = require( '../bank' );
 const { pictures } = require( '../pictures' );
 const gm = require( 'gm' );
 const tmp = require( 'tmp' );
+const { BUCKS } = require( '../../core/constants' )
 
 class BuckSlotMachine extends BaseSlotMachine {
 
