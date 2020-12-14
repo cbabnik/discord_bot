@@ -5,11 +5,11 @@ exports.CLIENT_CONNECTED = 0;
 exports.DMCHANNEL = 'dm';
 
 const CONFIG = {
+    STORAGE_DIRECTORY: './storage/test/',
     LOG_DIRECTORY: './logs',
     INVISIBLE: true,
 };
 const TEST = {
-    STORAGE_DIRECTORY: './storage/test/',
     VERSION: 'test',
 };
 const ALPHA = {

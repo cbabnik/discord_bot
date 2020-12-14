@@ -1,18 +1,25 @@
 /* no-console: 2 */
+slots = "all"
+var args = process.argv.slice(2);
+if (args.length === 1) {
+    slots = args[0]
+}
 
-const { lottery } = require( '../components/lottery' );
-const { bank } = require( '../components/bank' );
-const { pictures } = require( '../components/pictures' );
-const { CONFIG } = require( '../constants' );
+const cslots_machine = require('../src/components/slot_machines/cslots');
+const gslots_machine = require('../src/components/slot_machines/gslots');
+const mslots_machine = require('../src/components/slot_machines/mslots');
+const bslots_machine = require('../src/components/slot_machines/bslots');
+const bgslots_machine = require('../src/components/slot_machines/bgslots');
+
+const { statistics } = require( '../src/components/statistics' );
+const { bank } = require( '../src/components/bank' );
+
+const { CONFIG } = require( '../src/core/constants' );
 
 const _ = require( 'lodash' );
-const ChartjsNode = require( 'chartjs-node' );
-//const Chart = require('chart.js');
-//Chart.defaults.global.defaultColor = 'rgba(1,0,0,1)';
 
 const sinon = require( 'sinon' );
 
-const START_AMOUNT = 999999999;
 const metaInfo = {
     channelId: CONFIG.MAIN_CHANNEL,
     author: 'test',
@@ -20,246 +27,91 @@ const metaInfo = {
 };
 const report = {};
 let lastWinnings = 0;
-const buckRolls = 0;
+let lastBuckrolls = 0;
 
-const reportWinnings = ( winnings, type, cost ) => {
-    _.set( report, `${type}.winnings`, _.get( report, `${type}.winnings`, 0 ) + winnings );
-    if ( winnings < 0 ) {
-        _.set( report, `${type}.bigLoss`, _.get( report, `${type}.bigLoss`, 0 ) + 1 );
-    } else if ( winnings === 0 ) {
-        _.set( report, `${type}.losses`, _.get( report, `${type}.losses`, 0 ) + 1 );
-    } else if ( winnings < cost ) {
-        _.set( report, `${type}.partialWin`, _.get( report, `${type}.partialWin`, 0 ) + 1 );
-    } else if ( winnings === cost ) {
-        _.set( report, `${type}.tie`, _.get( report, `${type}.tie`, 0 ) + 1 );
-    } else if ( winnings > cost ) {
-        _.set( report, `${type}.wins`, _.get( report, `${type}.wins`, 0 ) + 1 );
-    }
-    _.set( report, `${type}.graph[${winnings}]`, _.get( report, `${type}.graph[${winnings}]`, 0 ) + 1 );
-};
 
-sinon.restore();
-sinon.stub( lottery, 'saveJSON' );
-sinon.stub( lottery, 'offLimitsFor' );
-sinon.stub( lottery, 'isOffLimits' ).callsFake( () => false );
-sinon.stub( lottery, 'createImage' ).callsFake( () => '' );
-sinon.stub( lottery, 'hasHolyMantle' ).callsFake( () => false );
-sinon.stub( bank, 'saveJSON' );
-sinon.stub( pictures, 'saveJSON' );
-sinon.stub( lottery, 'setAction' );
+( async () => {
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-bank.json = {
-    '0': {
-        'credits': START_AMOUNT
-    }
-};
+    sinon.stub( statistics.storage, "apply" ).callsFake( async () => '' )
+    sinon.stub( statistics.storage, "add" ).callsFake( async () => '' )
+    sinon.stub( bank.storage, "add" ).callsFake( async () => 0 )
+    sinon.stub( bank.storage, "get" ).callsFake( async () => 0 )
 
-lottery.json = {};
-lottery.useLodashInContext();
+    sinon.stub( bslots_machine, "createImage" ).callsFake( async () => '' )
+    sinon.stub( bank, "addAmount" ).callsFake( async () => '' )
+    sinon.stub( bank, "balance" ).callsFake( async () => 0 )
 
-for ( let i = 0; i < 10000; i++ ) {
-    if ( i%10000 === 0 ) {
-        console.log( `${i/1000}%` );
-    }
-    lottery.coinslots( metaInfo );
-    const winnings = lottery.json['0']['coin']['winnings'] - lastWinnings;
-    lastWinnings = lottery.json['0']['coin']['winnings'];
-    reportWinnings( winnings, 'coin', 1 );
-}
-report.coin.buckRolls = _.get( lottery.json['0'], 'buck.attempts', 0 );
-
-lastWinnings = 0;
-_.set( lottery.json['0'], 'buck', {} );
-for ( let i = 0; i < 10000; i++ ) {
-    if ( i%10000 === 0 ) {
-        console.log( `${i/1000}%` );
-    }
-    lottery.gridslots( metaInfo );
-    const winnings = lottery.json['0']['grid']['winnings'] - lastWinnings;
-    lastWinnings = lottery.json['0']['grid']['winnings'];
-    reportWinnings( winnings, 'grid', 5 );
-}
-report.grid.buckRolls = _.get( lottery.json['0'], 'buck.attempts', 0 );
-
-_.set( lottery.json['0'], 'buck', {} );
-lastWinnings = 0;
-for ( let i = 0; i < 10000; i++ ) {
-    if ( i%10000 === 0 ) {
-        console.log( `${i/1000}%` );
-    }
-    lottery.mazeSlots( metaInfo );
-    const winnings = lottery.json['0']['maze']['winnings'] - lastWinnings;
-    lastWinnings = lottery.json['0']['maze']['winnings'];
-    reportWinnings( winnings, 'maze', 20 );
-}
-report.maze.buckRolls = _.get( lottery.json['0'], 'buck.attempts', 0 );
-
-lastWinnings = 0;
-_.set( lottery.json['0'], 'buck', {} );
-for ( let i = 0; i < 10000; i++ ) {
-    if ( i%10000 === 0 ) {
-        console.log( `${i/1000}%` );
-    }
-    lottery.buckSlots( 'test','0' );
-    const winnings = lottery.json['0']['buck']['winnings'] - lastWinnings;
-    lastWinnings = lottery.json['0']['buck']['winnings'];
-    reportWinnings( winnings, 'buck', 0 );
-}
-report.buck.buckRolls = _.get( lottery.json['0'], 'buck.attempts', 0 );
-
-console.log( lottery.json );
-console.log( bank.json );
-console.log( report );
-
-const draw = ( name,data ) => {
-    const chartNode = new ChartjsNode( 600, 600 );
-    const chartJSOptions =  {
-        type: 'line',
-        data: {
-            labels: Object.keys( data ),
-            datasets: [{
-                label: '# of Occurences',
-                data: Object.values( data ),
-                backgroundColor: 'rgba(255,255,255,0.5)',
-                borderColor: 'rgba(255,255,255,1)',
-                pointRadius: 0,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            },
-            title: {
-                display: true,
-                text: name,
+    if (slots === "all" || slots === "buck") {
+        lastWinnings = 0
+        for ( let i = 0; i < 100000; i++ ) {
+            if ( i%10000 === 0 ) {
+                console.log( `bslots simulation ${i/1000}%` );
             }
+            const r = await bslots_machine.roll( metaInfo.user, metaInfo.userId );
+            lastWinnings += r.winnings
         }
-    };
-    return chartNode.drawChart( chartJSOptions )
-        .then( () => {
-            return chartNode.getImageBuffer( 'image/png' );
-        } )
-        .then( buffer => {
-            return chartNode.getImageStream( 'image/png' );
-        } )
-        .then( streamResult => {
-            return chartNode.writeImageToFile( 'image/png', `./images/charts/${name}.png` );
-        } )
-        .then( () => {
-            console.log( `${name} written` );
-        } );
-};
-
-const draw2 = ( name,data ) => {
-    const chartNode = new ChartjsNode( 600, 600 );
-    const chartJSOptions =  {
-        type: 'line',
-        data: {
-            labels: Object.keys( data ).filter( k => k > 100 ),
-            datasets: [{
-                label: '# of Occurences',
-                data: Object.keys( data ).filter( k => k > 100 ).map( k => data[k] ),
-                backgroundColor: 'rgba(255,255,255,0.5)',
-                borderColor: 'rgba(255,255,255,1)',
-                pointRadius: 0,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            },
-            title: {
-                display: true,
-                text: name,
+        report.buck = {}
+        report.buck.winnings = lastWinnings
+    }
+    if (slots === "all" || slots === "coin") {
+        lastWinnings = 0
+        for ( let i = 0; i < 1000000; i++ ) {
+            if ( i%100000 === 0 ) {
+                console.log( `cslots simulation ${i/10000}%` );
             }
+            const r = await cslots_machine.roll( metaInfo.user, metaInfo.userId );
+            lastWinnings += r.winnings
         }
-    };
-    return chartNode.drawChart( chartJSOptions )
-        .then( () => {
-            return chartNode.getImageBuffer( 'image/png' );
-        } )
-        .then( buffer => {
-            return chartNode.getImageStream( 'image/png' );
-        } )
-        .then( streamResult => {
-            return chartNode.writeImageToFile( 'image/png', `./images/charts/${name}.png` );
-        } )
-        .then( () => {
-            console.log( `${name} written` );
-        } );
-};
-
-const draw3 = ( name,data ) => {
-    const chartNode = new ChartjsNode( 600, 600 );
-    const chartJSOptions =  {
-        type: 'bar',
-        data: {
-            labels: ['< 0', '0', '1 to 25', '26 to 100', '100+'],
-            datasets: [{
-                label: '# of Occurences',
-                data: [
-                    _.sum( Object.keys( data ).filter( k => k < 0 ).map( k => data[k] ) ),
-                    _.sum( Object.keys( data ).filter( k => k === '0' ).map( k => data[k] ) ),
-                    _.sum( Object.keys( data ).filter( k => k > 0 && k <= 25 ).map( k => data[k] ) ),
-                    _.sum( Object.keys( data ).filter( k => k > 25 && k <= 100 ).map( k => data[k] ) ),
-                    _.sum( Object.keys( data ).filter( k => k > 100 ).map( k => data[k] ) )
-                ],
-                backgroundColor: 'rgba(255,255,255,0.5)',
-                borderColor: 'rgba(255,255,255,1)',
-                pointRadius: 0,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            },
-            title: {
-                display: true,
-                text: name,
+        report.coin = {}
+        report.coin.winnings = lastWinnings
+    }
+    if (slots === "all" || slots === "grid") {
+        lastWinnings = 0
+        lastBuckrolls = 0
+        for ( let i = 0; i < 100000; i++ ) {
+            if ( i%10000 === 0 ) {
+                console.log( `gslots simulation ${i/1000}%` );
             }
+            const r = await gslots_machine.roll( metaInfo.user, metaInfo.userId );
+            lastWinnings += r.winnings
+            lastBuckrolls += r.buckrolls
         }
-    };
-    return chartNode.drawChart( chartJSOptions )
-        .then( () => {
-            return chartNode.getImageBuffer( 'image/png' );
-        } )
-        .then( buffer => {
-            return chartNode.getImageStream( 'image/png' );
-        } )
-        .then( streamResult => {
-            return chartNode.writeImageToFile( 'image/png', `./images/charts/${name}.png` );
-        } )
-        .then( () => {
-            console.log( `${name} written` );
-        } );
-};
-
-draw( 'coin', report.coin.graph );
-draw( 'grid', report.grid.graph );
-draw( 'maze', report.maze.graph );
-draw( 'buck', report.buck.graph );
-draw2( 'coinzoom', report.coin.graph );
-draw2( 'gridzoom', report.grid.graph );
-draw2( 'mazezoom', report.maze.graph );
-draw2( 'buckzoom', report.buck.graph );
-draw3( 'coinbar', report.coin.graph );
-draw3( 'gridbar', report.grid.graph );
-draw3( 'mazebar', report.maze.graph );
-draw3( 'buckbar', report.buck.graph );
-
-sinon.restore();
+        report.grid = {}
+        report.grid.winnings = lastWinnings
+        report.grid.buckrolls = lastBuckrolls
+    }
+    if (slots === "all" || slots === "maze") {
+        lastWinnings = 0
+        lastBuckrolls = 0
+        for ( let i = 0; i < 100000; i++ ) {
+            if ( i%10000 === 0 ) {
+                console.log( `mslots simulation ${i/1000}%` );
+            }
+            const r = await mslots_machine.roll( metaInfo.user, metaInfo.userId );
+            lastWinnings += r.winnings
+            lastBuckrolls += r.buckrolls
+        }
+        report.maze = {}
+        report.maze.winnings = lastWinnings
+        report.maze.buckrolls = lastBuckrolls
+    }
+    if (slots === "all" || slots === "bgrid") {
+        lastWinnings = 0
+        lastBuckrolls = 0
+        for ( let i = 0; i < 10000; i++ ) {
+            if ( i%1000 === 0 ) {
+                console.log( `bgslots simulation ${i/100}%` );
+            }
+            const r = await bgslots_machine.roll( metaInfo.user, metaInfo.userId );
+            lastWinnings += r.winnings
+            lastBuckrolls += r.buckrolls
+        }
+        report.bgrid = {}
+        report.bgrid.winnings = lastWinnings
+        report.bgrid.buckrolls = lastBuckrolls
+    }
+    
+    console.log(report)
+    
+})();
