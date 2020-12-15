@@ -1,5 +1,5 @@
 const { Component } = require( './component' );
-const { bank } = require( './component' );
+const { bank } = require( './bank' );
 const { BUCKS, CONFIG, ACTIONS } = require( '../core/constants' );
 const _ = require( 'lodash' );
 

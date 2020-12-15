@@ -62,7 +62,7 @@ class Component {
         // This triggers 3 seconds after constructor to allow several things to set up before actions are made
     }
 
-    addScheduledEvent( time=util.time.today(), field='timestamps.default', delay=DAYMS ) {
+    async addScheduledEvent( time=util.time.today(), field='timestamps.default', delay=DAYMS ) {
         // TODO: add repeat = false option to scheduled events, or some manner of unscheduling
         if ( typeof time !== 'number' ) {
             time = time.getTime();
@@ -75,7 +75,7 @@ class Component {
             lastTime = time - Math.ceil( ( time-currentTime )/delay )*delay;
         }
         const nextTime = lastTime+delay;
-        const timestamp = this.storage.get( field );
+        const timestamp = await this.storage.get( field );
         if ( typeof timestamp === 'undefined' ) {
             this.scheduledEvent( -1, field );
             this.storage.set( field, lastTime );

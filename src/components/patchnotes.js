@@ -9,15 +9,13 @@ const ID = 'patchnotes';
 class PatchNotes extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^\?[pP]atch ?[nN]otes$/, this.patchNotesHistory, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes$/, this.patchNotesLatest, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +minor$/, this.patchNotesLatest, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +list$/, this.patchNotesHistory, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +all$/, this.patchNotesHistory, 'patchnotes' )
-        this.addCommand( /^-[pP]atch ?[nN]otes +history$/, this.patchNotesHistory, 'patchnotes' )
+        this.addCommand( /^-[pP]atch ?([nN]otes +)?history$/, this.patchNotesHistory, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +major$/, this.patchNotesMajor, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +(\d+.\d+.\d+)$/, this.patchNotes, 'patchnotes' )
-        this.addCommand( /^\?[pP]atch ?[nN]otes +.*$/, this.patchNotesHistory, 'patchnotesHistory' )
     }
 
     patchNotesHistory() {
@@ -50,12 +48,13 @@ class PatchNotes extends Component {
     patchNotes(patchString) {
         if (!Object.keys(notes).includes(patchString)) {
             this.patchNotesHistory();
-            console.log(patchString);
         }
-        this.setAction( 'message', notes[patchString] )
         if ( Object.keys(banners).includes(patchString) ) {
             this.setAction( 'image', banners[patchString] )
+            this.queueAction()
+            this.setAction( 'delay', 0.2 )
         }
+        this.setAction( 'message', notes[patchString] )
     }
 
     // helpers
@@ -64,7 +63,6 @@ class PatchNotes extends Component {
         const regex = /^(\d+).(\d+).(\d+)$/
         const match = patchString.match(regex)
         const [ _, major, minor, patch ] = match
-        console.log(patchString, match)
         return [Number(major),Number(minor),Number(patch)]
     }
 
@@ -118,8 +116,12 @@ Release was delayed by Covid :yum: :fingers_crossed:
 **NEW FEATURES**
 + added \`-patchnotes\` cmd
 + added admin module (30 commands for debugging/control)
-+ added switchboard module (\`-switchboard\`) for admins to toggle features
-* added statistics module
++ added switchboard module (\`#switchboard\`) for admins to toggle features
+* added \`-statistics\` module (tracks several statistics and can handle basic queries)
+* \`+slots\` (RIP Kawaii)
+* \`-strawpoll\` command (thanks for good suggestion)
+* \`-rem\` & \`-waifu\`
+* \`-win\`
 + Curtis gets emailed by buckbot whenever the bot crashes
 
 **FRAMEWORK EXPANDED**
@@ -130,10 +132,15 @@ Release was delayed by Covid :yum: :fingers_crossed:
 **REMASTERING**
 + added \`-humble brag\`
 + colton.mp3 added
-+
-+
-+
++ -play gives some audio controls
++ -burger (and other picture commands) allows to specify a number
++ adding burgers is as easy as editting a pastebin
+* grid slots was buffed
 
+**OTHER**
+* Economy is reset
+* loans removed
+* Alpha testers will get a marble in an upcoming update
 `
 }
 oneline = {

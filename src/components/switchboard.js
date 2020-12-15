@@ -22,7 +22,7 @@ const componentsEnabled = [
     'lottery',
     //'inventory',
     //'shop',
-    'help'];
+    'help']; // help has to go last
 if ( CONFIG.VERSION == "alpha" ) {
 
 }
@@ -100,13 +100,18 @@ class SwitchBoard extends Component {
     constructor() {
         super( ID );
         this.addCommand( /^####BUG####$/, () => {} ) // first command not recognized
-        this.addCommand( /^#switch on (\S+)$/, (name, mi) => this.switch(name, true, mi) )
-        this.addCommand( /^#switch off brag$/, this.bragSafeGuard )
-        this.addCommand( /^#switch off (\S+)$/, (name, mi) => this.switch(name, false, mi) )
-        this.addCommand( /^#switchboard$/, this.switchboard )
-        this.addCommand( /^#features$/, this.switchboard )
+        this.addCommand( /^#switch on (\S+)$/, (name, mi) => this.switch(name, true, mi), "switchboard" )
+        this.addCommand( /^#switch off brag$/, this.bragSafeGuard, "switchboard" )
+        this.addCommand( /^#switch off (\S+)$/, (name, mi) => this.switch(name, false, mi), "switchboard" )
+        this.addCommand( /^#switchboard$/, this.switchboard, "switchboard" )
+        this.addCommand( /^#features$/, this.switchboard, "switchboard" )
+        this.addCommand( /^#switch /, this.switchHelp )
 
         this.switchboard_setup(switchboard)
+    }
+
+    switchHelp(metaInfo) {
+        this.setAction("message", "Try `switch on <feature>`")
     }
 
     bragSafeGuard(metaInfo) {
