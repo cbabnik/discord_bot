@@ -69,10 +69,10 @@ class Calendar extends Component {
             const bd = BIRTHDAYS[k];
             const name = k.charAt( 0 ).toUpperCase() + k.toLowerCase().substr( 1 );
             if ( this.isDay( bd, new Date() ) ) {
-                this.setAction( 'message', `Happy birthday ${name}! Have 100 credits!` );
+                this.setAction( 'message', `Happy birthday ${name}! Have 50 credits!` );
                 this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
                 this.actor.handle( this.commitAction(), null );
-                bank.addAmount(BUCKS[k], 100)
+                bank.addAmount(BUCKS[k], 50)
             }
         } );
 
