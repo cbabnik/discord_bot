@@ -9,7 +9,6 @@ const ID = 'patchnotes';
 class PatchNotes extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^\?[pP]atch ?[nN]otes$/, this.patchNotesHistory, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes$/, this.patchNotesLatest, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +minor$/, this.patchNotesLatest, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +list$/, this.patchNotesHistory, 'patchnotes' )
