@@ -37,9 +37,15 @@ class Fun extends Component {
     }
 
     async win ( metaInfo ) {
-        const wins = await this.storage.add(`wins.${metaInfo.authorId}`)
-        const suffix = wins%10==2?"nd":wins%10==3?"rd":"th"
-        this.setAction( 'message', `**${metaInfo.author}** won! This is **${metaInfo.author}**'s *${wins}${suffix}* win!` );
+        if (Math.random() < 0.01) {
+            this.setAction( 'message', `You lose. suck it.` );
+            this.storage.set(`wins.${metaInfo.authorId}`, 0)
+        } else {
+            const wins = await this.storage.add(`wins.${metaInfo.authorId}`)
+            statistics.storage.set(`wins.${metaInfo.authorId}`, wins)
+            const suffix = wins%100===1?"st":(wins%10===2&&wins%100!==12)?"nd":(wins%10===3&&wins%100!==13)?"rd":"th"
+            this.setAction( 'message', `**${metaInfo.author}** won! This is **${metaInfo.author}**'s *${wins}${suffix}* win!` );
+        }
     }
 
     async kawaiiSlots ( metaInfo ) {

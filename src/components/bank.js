@@ -16,7 +16,8 @@ class Bank extends Component {
         this.addCommand( /^-give (.+) (\d+)$/, this.give, "bank" );
         this.addCommand( /^-give (.+) (-\d+)$/, this.stealWarning, "bank" );
         this.addCommand( /^-[iI][oO][uU] (.+) (\d+)$/, this.iou, "iou" );
-        this.addCommand( /^-[iI][oO][uU] (.+) (\d*\.\d+)$/, this.iou, "iou" );
+        this.addCommand( /^-[iI][oO][uU] (.+) (\d*\.\d{0,3})$/, this.iou, "iou" );
+        this.addCommand( /^-[iI][oO][uU] (.+) (\d*\.\d{4,100})$/, this.giveWarning, "iou" );
         this.addCommand( /^#give (.+) (\d*\.\d{0,5})$/, this.admingive);
         this.addCommand( /^#give (.+) (\d+)$/, this.admingive);
     }

@@ -49,7 +49,8 @@ class Audio extends Component {
             return;
         }
         this.setAction( 'audioFile', fileName );
-        statistics.add(`audio_played.${mi.authorId}.${fileName}`)
+        const without_suffix = fileName.split('.')[0]
+        statistics.add(`audio_played.${mi.authorId}.${without_suffix}`)
         this.setPlayerReaction(mi);
     }
 

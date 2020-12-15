@@ -21,7 +21,7 @@ class Player {
         this.setUpSpeechListener();
     }
 
-    play(vc, res, opts) {
+    play(vc, res, opts, repeats=0) {
         this.paused = false;
         this.lastSpoke = Date.now();
         this.strikes = {};
@@ -35,7 +35,7 @@ class Player {
             })
             this.dispatcher = dispatcher;
     
-            this.repeat_instruction = 0;
+            this.repeat_instruction = repeats;
     
             if (this.currentTimeout) {
                 clearInterval(this.currentTimeout)
@@ -106,6 +106,7 @@ class Player {
     }
 
     handleEnd() {
+        console.log(this.repeat_instruction)
         if (this.repeat_instruction === -1) {
         } else if (this.repeat_instruction > 0) {
             this.repeat_instruction -= 1;
@@ -116,19 +117,22 @@ class Player {
             return;
         }
         const si = this.saved_instructions
-        this.play(si.vc, si.res, si.opts)
+        this.play(si.vc, si.res, si.opts, this.repeat_instruction)
     }
 
     repeat(val) {
         this.repeat_instruction = val;
-        if (this.currentTimeout === undefined  && Object.keys(this.saved_instructions).length > 0) {
+        if (val === 0) {
+            return;
+        }
+        if (this.currentTimeout === undefined  && this.saved_instructions && Object.keys(this.saved_instructions).length > 0) {
             this.handleEnd();
         }
     }
 
     repeatOnceMore() {
         this.repeat_instruction += 1;
-        if (this.currentTimeout === undefined && Object.keys(this.saved_instructions).length > 0) {
+        if (this.currentTimeout === undefined && this.saved_instructions && Object.keys(this.saved_instructions).length > 0) {
             this.handleEnd();
         }
     }

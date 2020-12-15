@@ -49,15 +49,14 @@ class Lottery extends Component {
             this.setAction( 'message', 'Please make your slot rolls public.' );
             return;
         }
-        if ( !await bank.payAmount( id, cost ) ) {
-            this.setAction( 'message', `Sorry **${user}**, but this costs **${cost}** credit(s). You don't have enough.` );
-            return;
-        }
         if ( machine.onceAtATime() && this.isOffLimits() ) {
             this.setAction( 'message', 'Please wait your turn. Someone else is rolling' );
             return;
         }
-
+        if ( !await bank.payAmount( id, cost ) ) {
+            this.setAction( 'message', `Sorry **${user}**, but this costs **${cost}** credit(s). You don't have enough.` );
+            return;
+        }
 
         let results
         try {
