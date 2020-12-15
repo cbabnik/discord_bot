@@ -12,8 +12,8 @@ const MONTH_NAMES = ['January','February','March','April','May','June','July','A
 class Quotes extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-new ?[qQ]uote ([^ ]+) "(.+)"$/, ( username, quote ) => this.newQuote( username, undefined, quote ), 'quotes' );
-        this.addCommand( /^-new ?[qQ]uote ([^ ]+) (.+) "(.+)"$/, this.newQuote, 'quotes' );
+        this.addCommand( /^-new ?[qQ]uote ([^ ]+) "([^"]+)"$/, ( username, quote ) => this.newQuote( username, undefined, quote ), 'quotes' );
+        this.addCommand( /^-new ?[qQ]uote ([^ ]+) (.+) "([^"]+)"$/, this.newQuote, 'quotes' );
         this.addCommand( /^-new ?[qQ]uote ([^ ]+) (.+)$/, ( username, quote ) => this.newQuote( username, undefined, quote ), 'quotes' );
         this.addCommand( /^-quote ([^ ]+) (\d+)$/, this.quote, 'quotes' );
         this.addCommand( /^-quote ([^ ]+)$/, ( username ) => this.quote( username, undefined ), 'quotes' );

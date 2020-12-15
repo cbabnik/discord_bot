@@ -19,9 +19,13 @@ class Lottery extends Component {
         this.waitUntil = new Date().getTime();
 
         this.addCommand( /^-cslots$/, (mi) => this.roll("cslots", mi), "cslots" );
+        this.addCommand( /^-slots coin$/, (mi) => this.roll("cslots", mi), "cslots" );
         this.addCommand( /^-gslots$/, (mi) => this.roll("gslots", mi), "gslots" );
+        this.addCommand( /^-slots grid$/, (mi) => this.roll("gslots", mi), "gslots" );
         this.addCommand( /^-mslots$/, (mi) => this.roll("mslots", mi), "mslots" );
+        this.addCommand( /^-slots maze$/, (mi) => this.roll("mslots", mi), "mslots" );
         this.addCommand( /^-bgslots$/, (mi) => this.roll("bgslots", mi), "bgslots" );
+        this.addCommand( /^-slots big grid$/, (mi) => this.roll("bgslots", mi), "bgslots" );
         this.addCommand( /^-privacy on$/ , this.privacyOn );
         this.addCommand( /^-privacy off$/ , this.privacyOff );
     }

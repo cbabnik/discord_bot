@@ -7,7 +7,7 @@ if (args.length === 1) {
     const arg = args[0]
     args = [
         `legacy/storage/beta/${arg}.json`,
-        `storage/alpha/${arg}`,
+        `storage/beta/${arg}`,
     ]
 }
 if (args.length > 2) {

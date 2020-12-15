@@ -1,9 +1,7 @@
-const { example } = require( '../components/example' );
+const { example } = require( '../src/components/example' );
 
 const expect = require( 'chai' ).expect;
 const sinon = require( 'sinon' );
-
-const saveStub = sinon.stub( example, 'saveJSON' );
 
 describe( 'Example', () => {
     beforeEach( () => {
@@ -40,10 +38,6 @@ describe( 'Example', () => {
                 a: 6,
                 b: 3,
             } );
-        } );
-        it( 'should call saveJSON', () => {
-            example.win( {author: 'a'} );
-            expect( saveStub.called );
         } );
     } );
 

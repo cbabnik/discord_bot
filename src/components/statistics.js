@@ -21,6 +21,7 @@ class Statistics extends Component {
         field_string = field_string.replace(".min", ".v")
         field_string = field_string.replace(".max", ".^")
         field_string = field_string.replace(".all", ".&")
+        field_string = field_string.replace(".me", "."+mi.author)
         if (!order.includes("+")) {
             order = order + "+"
         }

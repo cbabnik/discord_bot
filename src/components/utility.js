@@ -42,9 +42,9 @@ class Utility extends Component {
         this.addCommand( /^-alias --edit --inline "([^"]*)" "([^"]*)"$/, ( t, f, mi ) => this.alias( t, f, {inline:true, edit:true}, mi ), "alias" );
         this.addCommand( /^-aliases$/, this.aliasPrint, "alias" );
         this.addCommand( /^-aliases clear$/, this.aliasClearAll, "alias" );
-        this.addCommand( /^-[sS]traw ?[pP]oll +\"(.*)\"$/, (a,b) => this.strawpoll(a,"yes,no",false,b), "vote" );
-        this.addCommand( /^-[sS]traw ?[pP]oll +\"(.*)\" +([^ ]*)$/, (a,b,c) => this.strawpoll(a,b,false,c), "vote" );
-        this.addCommand( /^-[sS]traw ?[pP]oll +\"(.*)\" +([^ ]*) +\[multi\]$/, (a,b,c) => this.strawpoll(a,b,true,c), "vote" );
+        this.addCommand( /^-[sS]traw ?[pP]oll +\"([^"]*)\"$/, (a,b) => this.strawpoll(a,"yes,no",false,b), "vote" );
+        this.addCommand( /^-[sS]traw ?[pP]oll +\"([^"]*)\" +"([^"]*)"$/, (a,b,c) => this.strawpoll(a,b,false,c), "vote" );
+        this.addCommand( /^-[sS]traw ?[pP]oll +\"([^"]*)\" +"([^"]*)" +\[multi\]$/, (a,b,c) => this.strawpoll(a,b,true,c), "vote" );
         this.addCommand( /^-[pP]ast ?[pP]olls$/, this.pastPolls, "vote" );
         this.addCommand( /^-vote.*$/, this.vote, "vote" );
     }

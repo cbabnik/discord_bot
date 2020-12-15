@@ -1,14 +1,118 @@
 const { Component } = require( './component' );
+const { switchboard } = require( './switchboard' );
 const fs = require( 'fs' );
 const _ = require( 'lodash' );
 
 const ID = 'help';
+
+const helps = {
+    "switchboard": {
+        regex: /^\?switch.*$|\?features*$/,
+        module: "switchboard",
+        info: `Because switchboard is for admins, # must be prepended instead of -
+Access is limited to admins (Lunes/Kenricasueberry) and super users (Coltsu/Bugslinger)
+\`#switch on <x>\` to switch a feature on.
+\`#switch off <x>\` to switch a feature off.
+\`#switchboard\` to see the current switchboard state`,
+    },
+    "patchnotes": {
+        regex: /^\?patch.*$/,
+        module: "patchnotes",
+        info: `patch notes module:
+\`-patchnotes\` - display the latest patch notes
+\`-patchnotes major\` - display the latest major patch notes
+\`-patchnotes history\` - display the latest major patch notes
+\`-patchnotes history\` - display the latest major patch notes`,
+    },
+    "fun": {
+        regex: /^\?fun/,
+        module: "fun",
+        info: `These are just for fun items, try them out. \`win\` and \`brag\``,
+    },
+    "win": {
+        regex: /^\?win/,
+        module: "win",
+        info: `\`\-win\` for when you just need a win`,
+    },
+    "brag": {
+        regex: /^\?brag/,
+        module: "brag",
+        info: `\`\-brag\` so everyone can know you're the shit.
+\`-humblebrag\` if you don't mean to brag.`,
+    },
+    "pictures": {
+        regex: /^\?(:?pictures|burger|rem|waifu|pic|addpic)/,
+        module: "pictures",
+        info: `Cute pics
+\`-burger\` for a raging burger picture
+\`-rem\` for a luxury rem pic
+\`-waifu\` for a cute lil gif
+\`-pic\` for whatever cancer people add
+\`-addpic\` to see where to add pics for \`-pic\`.
+
+Add a number to get a specific picture. Example: \`-burger 69\`
+
+If you want to moderate one of these categories, let Curtis know.`,
+    },
+    "lottery": {
+        regex: /^[\?-](:?lottery|slots).*$/,
+        module: "slots",
+        info: `\`-slots\`
+Try your luck at the slots!
+    \`-slots coin\` - ($1) For the slow rollers
+    \`-slots grid\` - ($5) For the high rollers
+    \`-slots pig\` - ($10) UNDER MODIFICATION
+    \`-slots maze\` - ($20) For the foolish who want to win it all
+    \`-slots big grid\` - ($1000) For those with just too much money
+
+There is also \`+slots\` if you're a diehard kawaiibot fan.`
+    },
+    "vote": {
+        regex: /^\?vote.*$/,
+        module: "vote",
+        info: `\`-vote\` is a simple command that just reacts Y and N to make things easier.
+Try \`-strawpoll\` for something more involved.`
+    },
+    "strawpoll": {
+        regex: /^\?strawpoll.*$/,
+        module: "vote",
+        info: `\`-strawpoll\`
+Examples of use:
+\`-strawpoll "is chat cute"\` for a simple yes no vote
+\`-strawpoll "is chat cute" "yes,definitely,omega cute"\` to specify options
+\`-strawpoll "is chat cute" "yes,definitely,omega cute" [multi]\` to allow multi voting
+
+Use \`-pastpolls\` to see polls made in the past`
+    },
+}
+
+const commands = {
+    "patchnotes": ["patchnotes"],
+    "statistics": ["stats"],
+    "random": ["random"],
+    "math": ["math"],
+    "coinflip": ["coinflip"],
+    "alias": ["alias"],
+    "vote": ["vote", "strawpoll"],
+    "lottery": ["slots"],
+    "fun": ["win", "brag"],
+    "pictures": ["pic", "burger", "rem", "waifu"],
+    "quotes": ["quote", "newquote"],
+    "requests": ["request"],
+    "bank": ["balance", "give", "iou"],
+    "payroll": ["allowance"],
+    "audio": ["play", "live", "endAudio"],
+    "calendar": ["calendar", "nextBirthday", "allBirthdays", "nextHoliday", "allHolidays"],
+    "vote": ["vote", "strawpoll"],
+}
 
 class Help extends Component {
     constructor() {
         super( ID );
         this.addCommand( /^-help/, this.help, 'help' );
         this.addCommand( /^\?help/, this.help, 'help' );
+        this.addCommand( /^\?commands/, this.help, 'help' );
+        this.addCommand( /^-commands/, this.help, 'help' );
         this.addCommand( /^-list/, this.playListHelp, 'play' );
         this.addCommand( /^!list/, this.playListHelp, 'play' );
         this.addCommand( /^\?roll/, this.rollHelp, 'roll' );
@@ -16,12 +120,6 @@ class Help extends Component {
         this.addCommand( /^\?math/, this.mathHelp, 'math' );
         this.addCommand( /^-math$/, this.mathHelp, 'math' );
         this.addCommand( /^\?coinflip/, this.coinflipHelp, 'coinflip' );
-        this.addCommand( /^\?burger/, this.burgerHelp, 'burger' );
-        this.addCommand( /^\?add[bB]urger/, this.addBurgerHelp, 'burger' );
-        this.addCommand( /^\?slotstats/, this.slotStatsHelp, 'slots' );
-        this.addCommand( /^\?slotstatistics/, this.slotStatisticsHelp, 'slots' );
-        this.addCommand( /^\?slots/, this.slotsHelp, 'slots' );
-        this.addCommand( /^-slots$/, this.slotsHelp, 'slots' );
         this.addCommand( /^\?!/, this.playHelp, 'play' );
         this.addCommand( /^\?play/, this.playHelp, 'play' );
         this.addCommand( /^-play$/, this.playHelp, 'play' );
@@ -41,17 +139,31 @@ class Help extends Component {
         this.addCommand( /^\?live/, this.liveHelp, 'live' );
         this.addCommand( /^\?new ?[qQ]uote/, this.quoteHelp, 'quote' );
         this.addCommand( /^\?quote/, this.quoteHelp, 'quote' );
-        this.addCommand( /^-new ?[qQ]uote$/, this.quoteHelp, 'new quote' );
+        this.addCommand( /^-new ?[qQ]uote$/, this.quoteHelp, 'quote' );
+
+
+        Object.keys(helps).forEach((k) => {
+            this.addCommand(helps[k].regex, () => this.print(helps[k].module, helps[k].info), helps[k].module)
+        });
         this.addCommand( /^\?(.+)/, this.helpInfo, 'help' );
     }
 
+    print(swi, str) {
+        if (switchboard.isEnabled(swi)) {
+            this.setAction("message", str)
+        }
+    }
+
     help() {
-        const COMMANDS = [
-            'roll', 'random', 'math', 'coinflip', 'burger', 'slots', 'play', 'endAudio', 'secrets', 'balance',
-            'allowance', 'slotstats', 'give', 'request', 'slotstatistics', 'allBirthdays', 'nextBirthday',
-            'nextHoliday', 'allHolidays', 'calendar', 'queueItUp', 'bankruptcy', 'patchnotes', 'live', 'brag',
-            'quote', 'newquote', 'iou', 'loan'
-        ].map( c => `-${c}`.padEnd( 25 ) );
+        let cmds = []
+        Object.keys(commands).forEach((sw) => {
+            if (switchboard.isEnabled(sw)) {
+                commands[sw].forEach((cmd) => {
+                    cmds.push(cmd)
+                })
+            }
+        })
+        const COMMANDS = cmds.map( c => `-${c}`.padEnd( 25 ) );
         this.setAction( 'message', 'Here is a list of commands!\n' +
             'To learn more about any of them, try them with a ? upfront. example: `?roll`.\n' +
             _.chunk( COMMANDS, 3 ).map( chunk => `\`${chunk.join( '' )}\`` ).join( '\n' )
@@ -159,9 +271,7 @@ Try your luck at the slots!
     \`-slots grid\` - ($5) For the high rollers
     \`-slots pig\` - ($10) For the push coin addicts
     \`-slots maze\` - ($20) For the foolish who want to win it all
-    \`-slots big grid\` - ($1000) For those with just too much money
-Put \` odds\` at the end of a command to see the odds! Ex. \`-slots coin odds\`
-Use \`-freeRolls\` to see if you have any free rolls saved up`
+    \`-slots big grid\` - ($1000) For those with just too much money`
         );
     }
 
@@ -235,13 +345,6 @@ Give away your cash, you won't.`
     \`-requests new\` - read your new requests
     \`-requests N\` - read request number N
     \`-requests delete N\` - delete request number N`
-        );
-    }
-
-    slotStatisticsHelp() {
-        this.setAction( 'message',
-            `\`-slotstatistics\`
-Gives some brief overall statistics.`
         );
     }
 }

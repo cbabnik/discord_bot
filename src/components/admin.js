@@ -41,7 +41,14 @@ class Admin extends Component {
         this.addCommand( /^#display +([^ ]+) +([^ ]+)$/, this.displayData )
         this.addCommand( /^#setval +([^ ]+) +([^ ]+) +"(.+)"$/, this.setDataString )
         this.addCommand( /^#setval +([^ ]+) +([^ ]+) +(\d+)$/, this.setDataValue )
+        this.addCommand( /^#admin$/, this.listAdmins )
     }
+
+    listAdmins() {
+        this.setAction( 'security', PERMISSION_LEVELS.SUPERUSER );
+        this.setAction( 'message' , "Admin commands include: setval,display,displaykeys,invite,say,ready?,diagnostics,error,status,set avatar,set nickname,react,sayin,...")
+    }
+
 
     setNickName( nickname, metaInfo ) {
         this.setAction( 'security', PERMISSION_LEVELS.ADMIN );

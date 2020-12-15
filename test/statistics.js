@@ -5,6 +5,12 @@ const sinon = require( 'sinon' );
 
 const util = require( '../src/core/util' );
 
+
+const metaInfo = {
+    authorId: '2',
+    author: 'Two',
+};
+
 describe( 'Statistics', () => {
 
     before(async () => {
@@ -48,43 +54,43 @@ describe( 'Statistics', () => {
 
     describe( '-stats', () => {
         it( "handles +.+", async () => {
-            await statistics.stats( "lottery_winnings.+.+", "+^v" );
+            await statistics.stats( "lottery_winnings.+.+", "+^v", metaInfo );
             const result = statistics.commitAction();
             expect( result.message ).to.include( '880' );
         });
         it( "handles v.v", async () => {
-            await statistics.stats( "lottery_winnings.v.v", "+^v" );
+            await statistics.stats( "lottery_winnings.v.v", "+^v", metaInfo );
             const result = statistics.commitAction();
             expect( result.message ).to.include( '10' );
         });
         it( "handles ^.^", async () => {
-            await statistics.stats( "lottery_winnings.^.^", "+^v" );
+            await statistics.stats( "lottery_winnings.^.^", "+^v", metaInfo );
             const result = statistics.commitAction();
             expect( result.message ).to.include( '500' );
         });
         it( "handles &.^", async () => {
-            await statistics.stats( "lottery_winnings.&.^", "+^v" );
+            await statistics.stats( "lottery_winnings.&.^", "+^v", metaInfo );
             const result = statistics.commitAction();
             expect( result.message ).to.include( '200' );
             expect( result.message ).to.include( '500' );
         });
         it( "handles ^.+ [+^]", async () => {
-            await statistics.stats( "lottery_winnings.^.+", "+^" );
+            await statistics.stats( "lottery_winnings.^.+", "+^", metaInfo );
             const result = statistics.commitAction();
             expect( result.message ).to.include( '620' );
         });
         it( "handles ^.+ [^+]", async () => {
-            await statistics.stats( "lottery_winnings.^.+", "^+" );
+            await statistics.stats( "lottery_winnings.^.+", "^+", metaInfo );
             const result = statistics.commitAction();
             expect( result.message ).to.include( '800' );
         });
         it( "handles v.^ [^v]", async () => {
-            await statistics.stats( "lottery_winnings.v.^", "^v" );
+            await statistics.stats( "lottery_winnings.v.^", "^v", metaInfo );
             const result = statistics.commitAction();
             expect( result.message ).to.include( '50' );
         });
         it( "handles v.^ [v^]", async () => {
-            await statistics.stats( "lottery_winnings.v.^", "^v" );
+            await statistics.stats( "lottery_winnings.v.^", "^v", metaInfo );
             const result = statistics.commitAction();
             expect( result.message ).to.include( '50' );
         });
