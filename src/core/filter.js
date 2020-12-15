@@ -71,12 +71,18 @@ const Filter = ( client, dispatcher ) => {
 
     // eslint-disable-next-line no-unused-vars
     client.on( 'messageReactionAdd', async ( reaction ) => {
-        // stub
+        if (reaction.me) {
+            return
+        }
+        dispatcher.processReaction( reaction )
     } );
 
     // eslint-disable-next-line no-unused-vars
     client.on( 'messageReactionRemove', async ( reaction ) => {
-        // stub
+        if (reaction.me) {
+            return
+        }
+        dispatcher.processReaction( reaction )
     } );
 
 };

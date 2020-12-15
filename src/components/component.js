@@ -33,6 +33,10 @@ class Component {
         this.commands.push( {regex, cb, groupName} );
     }
 
+    subscribeReactions(cb) {
+
+    }
+
     getAllCommands() {
         return this.commands;
     }

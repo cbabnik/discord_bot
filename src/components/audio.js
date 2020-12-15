@@ -23,6 +23,8 @@ class Audio extends Component {
         this.addCommand( /^-play (.+)$/, ( url, mi  ) => this.playYoutube( 0, url, mi  ), 'play' );
         this.addCommand( /^! from([\d.]+) (.+)$/, this.playYoutube, 'play' );
         this.addCommand( /^!(.+)$/, ( url, mi ) => this.playYoutube( 0, url, mi  ), 'play' );
+
+        this.currentAudioId = 0;
     }
 
     playListHelp(mi) {
@@ -48,6 +50,7 @@ class Audio extends Component {
         }
         this.setAction( 'audioFile', fileName );
         statistics.add(`audio_played.${mi.authorId}.${fileName}`)
+        this.setPlayerReaction(mi);
     }
 
     playYoutubeLive( url, mi ) {
@@ -74,6 +77,7 @@ class Audio extends Component {
         }
 
         statistics.add(`audio_played.${mi.authorId}.youtube`)
+        this.setPlayerReaction(mi)
     }
 
     endAudio(mi) {
@@ -85,6 +89,57 @@ class Audio extends Component {
         const f = _.sample( fs.readdirSync( 'res/audio' ) );
         this.setAction( 'audioFile', f );
         statistics.add(`audio_played.${mi.authorId}.random`)
+        this.setPlayerReaction(mi)
+        this.subscribeReaction(mi.message.id, this.nextRandomReaction, {audioId: this.currentAudioId}, '⏭️', true)
+        this.setAction( 'reaction', ['⏯️','⏹️','🔂','⏭️'])
+    }
+
+    // reactions
+
+    playPauseReaction(msg, emoji, args, ) {
+        if (args.audioId !== this.currentAudioId) {
+            return;
+        }
+        this.setAction("togglePause", true)
+    }
+    endAudioReaction(msg, emoji, args, ) {
+        if (args.audioId !== this.currentAudioId) {
+            return;
+        }
+        this.setAction("endAudio", true)
+    }
+
+    repeatReaction(msg, emoji, args, ) {
+        if (args.audioId !== this.currentAudioId) {
+            return;
+        }
+        this.setAction("audioRepeatOnce", true)
+    }
+
+    repeatForeverReaction(msg, emoji, args, ) {
+        if (args.audioId !== this.currentAudioId) {
+            return;
+        }
+        this.setAction("audioRepeats", -1)
+    }
+
+    nextRandomReaction(msg, emoji, args, ) {
+        if (args.audioId !== this.currentAudioId) {
+            return;
+        }
+        const f = _.sample( fs.readdirSync( 'res/audio' ) );
+        this.setAction( 'audioFile', f );
+    }
+
+    // helper
+
+    setPlayerReaction(mi) {
+        this.currentAudioId += 1;
+        this.setAction( 'reaction', ['⏯️','⏹️','🔂'])
+        this.subscribeReaction(mi.message.id, this.playPauseReaction, {audioId: this.currentAudioId}, '⏯️', true)
+        this.subscribeReaction(mi.message.id, this.endAudioReaction, {audioId: this.currentAudioId}, '⏹️', true)
+        this.subscribeReaction(mi.message.id, this.repeatReaction, {audioId: this.currentAudioId}, '🔂', true)
+        this.subscribeReaction(mi.message.id, this.repeatForeverReaction, {audioId: this.currentAudioId}, '🔁', true)
     }
 }
 
