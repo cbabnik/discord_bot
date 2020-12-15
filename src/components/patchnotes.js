@@ -17,7 +17,6 @@ class PatchNotes extends Component {
         this.addCommand( /^-[pP]atch ?([nN]otes +)?history$/, this.patchNotesHistory, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +major$/, this.patchNotesMajor, 'patchnotes' )
         this.addCommand( /^-[pP]atch ?[nN]otes +(\d+.\d+.\d+)$/, this.patchNotes, 'patchnotes' )
-        this.addCommand( /^\?[pP]atch ?[nN]otes +.*$/, this.patchNotesHistory, 'patchnotesHistory' )
     }
 
     patchNotesHistory() {
