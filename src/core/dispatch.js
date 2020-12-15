@@ -27,7 +27,8 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         clist.forEach( c => {
             registerCommand( c.regex, component, c.cb, c.groupName );
         } );
-        component.setActor( actor ); // indiscriminately give components access to actor
+        component.setActor( actor ); // indiscriminately give components access to 
+        component.subscribeReaction = subscribeReaction(component);
     };
 
     const process = async ( content, msg ) => {
@@ -66,8 +67,41 @@ const DispatcherGenerator = ( Scanner ) => ( actor ) => {
         actor.handle( instructions, msg );
     };
 
+    reaction_mapping = {}
+    const processReaction = async ( reaction ) => {
+        let obj, cb, args, component
+        if (reaction_mapping[reaction.message.id + reaction._emoji.name]) {
+            obj = reaction_mapping[reaction.message.id + reaction._emoji.name]
+        } else if (reaction_mapping[reaction.message.id]) {
+            obj = reaction_mapping[reaction.message.id]
+        } else {
+            return;
+        }
+        cb = obj.cb
+        args = obj.args
+        component = obj.component
+
+        if (obj.remove){
+            // can't implement yet
+        }
+
+        const msg_reacted_to = reaction.message;
+        const emoji = reaction._emoji.name;
+        await cb.call( component, msg_reacted_to, emoji, args );
+        const instructions = component.commitAction();
+        actor.handle( instructions, msg_reacted_to );
+    }
+    const subscribeReaction = (comp) => async ( msg_id, cb, additional_args={}, emoji=undefined, remove=false) => {
+        if (emoji) {
+            reaction_mapping[msg_id + emoji] = {cb, args: additional_args, component: comp, remove}
+        } else {
+            reaction_mapping[msg_id] = {cb, args: additional_args, component: comp, remove}
+        }
+    }
+
     return {
         registerComponent,
+        processReaction,
         process,
         rawPost,
     };

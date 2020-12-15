@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "alpha": "cross-env DEBUG=actor,dispatcher,basic node src/core/app --alpha",
-    "beta": "mocha --exit & cross-env DEBUG=actor,dispatcher,basic node src/core/app --beta || node scripts/emailCurtis",
+    "alpha": "cross-env DEBUG=actor,dispatcher,basic node src/core/app --alpha --trace-warnings",
+    "beta": "mocha --exit & cross-env DEBUG=actor,dispatcher,basic node src/core/app --beta --trace-warnings || node scripts/emailCurtis",
     "tests": "mocha --exit",
     "lint": "eslint ./",
     "lintfix": "eslint --fix ./"

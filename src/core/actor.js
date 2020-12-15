@@ -175,46 +175,55 @@ const Actor = ( client ) => {
 
         // audio
         // _____
-        if ( ins.endAudio ) {
-            client.voice.connections.array().forEach( ( c ) => {
-                c.disconnect()
-            } );
-        }
         if ( ins[ACTIONS.VOICE_CHANNEL] && ( ins.audioFile || ins.audioYoutube || ins.audioLink || ins.audioYoutubeLive ) ) {
             try {
                 const vc = client.channels.resolve( ins.voiceChannel );
-                vc.join().then( connection => {
-                    const broadcast = client.voice.createBroadcast();
-                    if ( ins.audioFile ) {
-                        if ( !ins.audioFile.includes( '.' ) ) {
-                            ins.audioFile += '.mp3';
-                        }
-                        const path = 'res/audio/' + ins.audioFile;
-                        if ( fs.existsSync( path ) ) {
-                            broadcast.play( path, {bitrate: 192000} );
-                        } else {
-                            debug( `File ${ins.audioFile} not found` );
-                        }
-                    } else if ( ins.audioYoutube ) {
-                        const stream = ytdl( ins.audioYoutube, { filter: 'audioonly' } );
-                        broadcast.play( stream, {seek: ins.audioSeek, bitrate: 192000} );
-                    } else if ( ins.audioYoutubeLive ) {
-                        const stream = ytdl( ins.audioYoutubeLive );
-                        broadcast.play( stream, {seek: ins.audioSeek, quality: '95'} );
-                    } else if ( ins.audioLink ) {
-                        broadcast.play( ins.audioLink, {bitrate: 192000} );
+                let res, opts;
+                if ( ins.audioFile ) {
+                    if ( !ins.audioFile.includes( '.' ) ) {
+                        ins.audioFile += '.mp3';
                     }
-                    const dispatcher = connection.play( broadcast );
-                    const identifier = Math.random()
-                    dispatcher.on("speaking", is_speaking => {
-                        client.strikes[vc.id] = 0;
-                    })
-                }, error => {
-                    throw error
-                } );
+                    const path = 'res/audio/' + ins.audioFile;
+                    if ( fs.existsSync( path ) ) {
+                        res = path,
+                        opts = {bitrate: 192000}
+                    } else {
+                        debug( `File ${ins.audioFile} not found` );
+                    }
+                } else if ( ins.audioYoutube ) {
+                    const stream = ytdl( ins.audioYoutube, { filter: 'audioonly' } );
+                    res = stream,
+                    opts = {seek: ins.audioSeek, bitrate: 192000}
+                } else if ( ins.audioYoutubeLive ) {
+                    const stream = ytdl( ins.audioYoutubeLive );
+                    res = stream,
+                    opts = {seek: ins.audioSeek, quality: '95'}
+                } else if ( ins.audioLink ) {
+                    res = ins.audioLink
+                    opts = {bitrate: 192000}
+                }
+                client.player.play(vc, res, opts)
             } catch ( err ) {
                 debug( 'Audio error: ' + err.message );
             }
+        }
+
+        // audio player controls
+        if ( ins.endAudio ) {
+            debug("Audio ended")
+            client.player.stop();
+        }
+        if( ins.audioRepeats !== undefined ) {
+            debug("Audio repeated")
+            client.player.repeat(ins.audioRepeats);
+        }
+        if( ins.audioRepeatOnce ) {
+            debug("Audio repeated once")
+            client.player.repeatOnceMore();
+        }
+        if( ins.togglePause ) {
+            debug("Audio toggled")
+            client.player.togglePause();
         }
 
         // chaining instructions
