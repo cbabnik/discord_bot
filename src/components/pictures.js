@@ -21,10 +21,8 @@ class Pictures extends Component {
         this.addCommand( /^-waifu$/, () => this.pic("eYuUA9ty"), 'waifu' );
         this.addCommand( /^-rem$/, () => this.pic("pcd5bd9z"), 'rem' );
         this.addCommand( /^-burger +(\d+)$/, (idx) => this.pic("AVzHYQFm", idx), 'burger' );
-        this.addCommand( /^-pic +(\d+)$/, (idx) => this.pic("tw7sXUeU", idx), 'pictures' );
         this.addCommand( /^-waifu +(\d+)$/, (idx) => this.pic("eYuUA9ty", idx), 'waifu' );
         this.addCommand( /^-rem +(\d+)$/, (idx) => this.pic("pcd5bd9z", idx), 'rem' );
-        this.addCommand( /^-add ?pic[sS]$/, this.addpics, 'pictures' );
     }
 
     async pic(bin, idx='random') {
@@ -42,10 +40,6 @@ class Pictures extends Component {
             const img = imgs[index];
             this.setAction( 'imageLink', img );
         }
-    }
-
-    async addpics() {
-        this.setAction( 'message', 'Paste them here, one per line\nhttps://pastebin.com/tw7sXUeU' );
     }
 
     async bugs() {

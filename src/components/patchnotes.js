@@ -141,11 +141,34 @@ Release was delayed by Covid :yum: :fingers_crossed:
 * Economy is reset
 * loans removed
 * Alpha testers will get a marble in an upcoming update
-`
+`,
+"0.1.1" : `**PATCH 0.1.1**
+**DAY 1 HOTFIXES**
++ You no longer pay for slots when you're forced to wait in line
++ iou has max digits
++ \`-win\` got some love
++ \`?iou\` help added and \`?quote\` help fixed
++ \`pic\` feature removed (since pastebins are not public editable)
++ audio repeat fixed
++ adding requests fixed
++ !random and youtube have statistics in audio_played fixed. (reset audio_played statistic)
++ fixed buck rolls not showing
+
+**Notes**
++ England timezone now a feature, enjoy income at 2:19
+
++ Coin slots now uses a weighted coin.
+New Commands: \`-calendar -allBirthdays -nextBirthday -nextHoliday -allHolidays -queueItUp -bankruptcy -patchnotes -live -quote -newquote -brag\`
+New Audio: \`prooh readygo\`
+
+Sound effects now only happen if the user is in a voice channel, and it happens in the same voice channel they are in.
+Live music can be played with \`-live url\`
+`,
 }
 oneline = {
     "0.0.2" : "Slots are now fun!",
     "0.1.0" : "The Big Refactor Update",
+    "0.1.1" : "Drunk day one hot fixes",
 }
 banners = {
     "0.1.0" : "updates/bigrefactor.png",

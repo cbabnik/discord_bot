@@ -34,7 +34,7 @@ class Requests extends Component {
 
     bootUp() {
         (async () => {
-            requests = await this.storage.get('requests');
+            requests = await this.storage.get('requests', []);
             ready = true;
         })();
     }

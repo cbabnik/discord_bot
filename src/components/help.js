@@ -84,6 +84,18 @@ Examples of use:
 
 Use \`-pastpolls\` to see polls made in the past`
     },
+    "iou": {
+        regex: /^\?iou.*$/,
+        module: "bank",
+        info: `\`-iou <user> <amount>\`
+Marks that you owe user an amount. iou reduced by using the \`-give\` command.`
+    },
+    "iou": {
+        regex: /^\?iou.*$/,
+        module: "bank",
+        info: `\`-iou <user> <amount>\`
+Marks that you owe user an amount. iou reduced by using the \`-give\` command.`
+    },
 }
 
 const commands = {
@@ -137,9 +149,9 @@ class Help extends Component {
         this.addCommand( /^\?(?:next) ?[bB]irthday/, this.eventsHelp, 'next birthday' );
         this.addCommand( /^\?(?:all) ?[bB]irthdays/, this.eventsHelp, 'birthdays');
         this.addCommand( /^\?live/, this.liveHelp, 'live' );
-        this.addCommand( /^\?new ?[qQ]uote/, this.quoteHelp, 'quote' );
-        this.addCommand( /^\?quote/, this.quoteHelp, 'quote' );
-        this.addCommand( /^-new ?[qQ]uote$/, this.quoteHelp, 'quote' );
+        this.addCommand( /^\?new ?[qQ]uote/, this.quoteHelp, 'quotes' );
+        this.addCommand( /^\?quote/, this.quoteHelp, 'quotes' );
+        this.addCommand( /^-new ?[qQ]uote$/, this.quoteHelp, 'quotes' );
 
 
         Object.keys(helps).forEach((k) => {

@@ -129,7 +129,7 @@ const Actor = ( client ) => {
         if ( ins.image ) {
             if ( ! ins.messageId ) {
                 let path = 'res/images/' + ins.image;
-                if ( ins.image.includes( ':\\' ) ) {
+                if ( ins.image.includes( ':\\' ) || ins.image.includes("tmp/") ) {
                     path = ins.image;
                 } else if ( !ins.image.includes( '.' ) ) {
                     path += '.jpg';
