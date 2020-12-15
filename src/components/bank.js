@@ -17,6 +17,18 @@ class Bank extends Component {
         this.addCommand( /^-give (.+) (-\d+)$/, this.stealWarning, "bank" );
         this.addCommand( /^-[iI][oO][uU] (.+) (\d+)$/, this.iou, "iou" );
         this.addCommand( /^-[iI][oO][uU] (.+) (\d*\.\d+)$/, this.iou, "iou" );
+        this.addCommand( /^#give (.+) (\d*\.\d{0,3})$/, this.admingive);
+    }
+
+    async admingive(user, amount) {
+        const id = util.getId( user );
+        if (!PERMISSION_LEVELS.ADMIN.includes( metaInfo.authorId ) ) {
+            return
+        }
+        value = Number( amount );
+        await this.storage.add(`${id}.credits`, value)
+        this.setAction("message", `**${user}** has been granted ${value} credits.`)
+        this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
     }
 
     async getAmount( exact, metaInfo ) {
