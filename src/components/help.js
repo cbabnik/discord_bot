@@ -22,7 +22,7 @@ Access is limited to admins (Lunes/Kenricasueberry) and super users (Coltsu/Bugs
 \`-patchnotes\` - display the latest patch notes
 \`-patchnotes major\` - display the latest major patch notes
 \`-patchnotes history\` - display the latest major patch notes
-\`-patchnotes history\` - display the latest major patch notes`,
+\`-patchnotes <version>\` - see specific patchnotes`,
     },
     "fun": {
         regex: /^\?fun/,
