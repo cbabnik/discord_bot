@@ -155,15 +155,7 @@ Release was delayed by Covid :yum: :fingers_crossed:
 + fixed buck rolls not showing
 
 **Notes**
-+ England timezone now a feature, enjoy income at 2:19
-
-+ Coin slots now uses a weighted coin.
-New Commands: \`-calendar -allBirthdays -nextBirthday -nextHoliday -allHolidays -queueItUp -bankruptcy -patchnotes -live -quote -newquote -brag\`
-New Audio: \`prooh readygo\`
-
-Sound effects now only happen if the user is in a voice channel, and it happens in the same voice channel they are in.
-Live music can be played with \`-live url\`
-`,
++ England timezone now a feature, enjoy income at 2:19`,
 }
 oneline = {
     "0.0.2" : "Slots are now fun!",
