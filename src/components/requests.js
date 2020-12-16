@@ -18,8 +18,7 @@ class Requests extends Component {
         super( ID );
         this.addCommand( /^-request all$/, ( metaInfo ) => this.listRequests( 'all', metaInfo ), "requests" );
         this.addCommand( /^-requests all$/, ( metaInfo ) => this.listRequests( 'all', metaInfo ), "requests" );
-        this.addCommand( /^-request new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ), "requests" );
-        this.addCommand( /^-requests new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ), "requests" );
+        this.addCommand( /^-requests? new$/, ( metaInfo ) => this.listRequests( 'new', metaInfo ), "requests" );
         this.addCommand( /^-requests (\d+)$/, ( n, metaInfo ) => this.listRequests( n, metaInfo ), "requests" );
         this.addCommand( /^-requests delete (\d+)$/, this.deleteRequestN, "requests" );
         this.addCommand( /^-requests accept (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ), "requests" );
@@ -28,7 +27,9 @@ class Requests extends Component {
         this.addCommand( /^-requests reject (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, reply, metaInfo ), "requests" );
         this.addCommand( /^-requests reply (\d+) (.+)$/, this.reply, "requests" );
         this.addCommand( /^-requests/, this.checkRequests, "requests" );
-        this.addCommand( /^-new ?[rR]equest (.*)$/s, this.addRequest, "requests" );
+        this.addCommand( /^-new ?[rR]equest .*hitler.*$/, this.noHilter, "requests" );
+        this.addCommand( /^-new ?[rR]equest .*http.*$/, this.noLinks, "requests" );
+        this.addCommand( /^-new ?[rR]equest (.*)$/, this.addRequest, "requests" );
         this.addCommand( /^-request (.*)$/, this.requestInfo, "requests" );
     }
 
@@ -37,6 +38,14 @@ class Requests extends Component {
             requests = await this.storage.get('requests', []);
             ready = true;
         })();
+    }
+
+    noHilter(mi) {
+        this.setAction( 'message', `**${mi.author}**, Stop with the hitler pics.` );
+    }
+
+    noLinks(mi) {
+        this.setAction( 'message', `**${mi.author}**, No links. Make it an invalid url if its important.` );
     }
 
     requestInfo() {

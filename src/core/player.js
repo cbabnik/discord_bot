@@ -14,6 +14,7 @@ class Player {
         this.currentTimeout = undefined;
         this.saved_instructions = undefined;
         this.lastSpoke = undefined;
+        this.spokenYet = false;
 
         this.repeat_instruction = 0;
 
@@ -32,8 +33,10 @@ class Player {
             dispatcher.on("speaking", is_speaking => {
                 this.strikes = {};
                 this.lastSpoke = Date.now();
+                this.spokenYet = true;
             })
             this.dispatcher = dispatcher;
+            this.spokenYet = false;
     
             this.repeat_instruction = repeats;
     
@@ -98,7 +101,7 @@ class Player {
     heartbeat() {
         const now = Date.now();
         const time_passed = now-this.lastSpoke;
-        if ( time_passed > 100 && !this.paused) {
+        if ( time_passed > 100 && !this.paused && this.spokenYet) {
             clearInterval(this.currentTimeout);
             this.currentTimeout = undefined;
             this.handleEnd();
@@ -138,7 +141,7 @@ class Player {
     }
     
     setUpSpeechListener() {
-        // after ~8 seconds of inactivity disconnect from voice channels
+        // after ~15 seconds of inactivity disconnect from voice channels
         
         this.client.setInterval( () => {
             try {
@@ -147,7 +150,7 @@ class Player {
                     const n = vc.id
     
                     this.strikes[n] = this.strikes[n]+1 || 1;
-                    if ( this.strikes[n] > 2 ) {
+                    if ( this.strikes[n] > 5 ) {
                         vc.leave();
                         this.strikes[n] = 0;
                     }

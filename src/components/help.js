@@ -41,14 +41,13 @@ Access is limited to admins (Lunes/Kenricasueberry) and super users (Coltsu/Bugs
 \`-humblebrag\` if you don't mean to brag.`,
     },
     "pictures": {
-        regex: /^\?(:?pictures|burger|rem|waifu|pic|addpic)/,
+        regex: /^\?(:?pictures|burger|rem|waifu|pic|addpic|2b)/,
         module: "pictures",
         info: `Cute pics
 \`-burger\` for a raging burger picture
 \`-rem\` for a luxury rem pic
 \`-waifu\` for a cute lil gif
-\`-pic\` for whatever cancer people add
-\`-addpic\` to see where to add pics for \`-pic\`.
+\`-2b\` for something in black and white
 
 Add a number to get a specific picture. Example: \`-burger 69\`
 
@@ -300,7 +299,7 @@ valid use: \`-addburger <link url>\` - Add another burger!`
     }
 
     playHelp() {
-        const files = fs.readdirSync( './audio' ).map( f => f.padEnd( 25 ) );
+        const files = fs.readdirSync( './res/audio' ).map( f => f.padEnd( 25 ) );
         this.setAction( 'message', 'Play a sound!\nEither `-play 20.mp3` or `!20` will work.\n' +
             _.chunk( files, 3 ).map( chunk => `\`${chunk.join( '' )}\`` ).join( '\n' )
         );

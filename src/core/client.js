@@ -34,7 +34,6 @@ const Client = ( max_messages, login_token ) => {
         );
     } ).catch( console.error );        
 
-
     cli.on("disconnected", () => {
         state = "disconnected"
     });
@@ -46,6 +45,27 @@ const Client = ( max_messages, login_token ) => {
     });
 
     cli.player = new Player(cli);
+
+    // display grenich time
+    const current_secs =  Math.floor( new Date().getTime()/1000%60 );
+    const secs_left = 65-current_secs
+    cli.setTimeout(() => {
+        cli.setInterval(() => {
+            const date = new Date();
+            let hours = date.getUTCHours();
+            let mins = date.getUTCMinutes();
+            let pm = false;
+            if (hours >= 12) {
+                pm = true;
+                hours -= 12
+            }
+            if(hours === 0) {
+                hours = 12
+            }
+            timestr = `It's ${hours}:${mins}${pm?"p.m.":"a.m."} in England`
+            cli.user.setActivity(timestr)
+        },1000*60)
+    },1000*secs_left)
 
     return cli;
 };
