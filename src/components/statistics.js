@@ -2,6 +2,8 @@ const { Component } = require( './component' );
 const fs = require( 'fs' );
 const _ = require( 'lodash' );
 const util = require( '../core/util' );
+const { BUCKS } = require( '../core/constants' );
+
 
 // sum + / each & / min v, max^
 // <stat>.<user>.<subcategories>
@@ -18,10 +20,15 @@ class Statistics extends Component {
 
     async stats(field_string, order, mi) {
         field_string = field_string.replace(".sum", ".+")
+        field_string = field_string.replace(" sum", ".+")
         field_string = field_string.replace(".min", ".v")
+        field_string = field_string.replace(" min", ".v")
         field_string = field_string.replace(".max", ".^")
+        field_string = field_string.replace(" max", ".^")
         field_string = field_string.replace(".all", ".&")
+        field_string = field_string.replace(" all", ".&")
         field_string = field_string.replace(".me", "."+mi.author)
+        field_string = field_string.replace(" me", "."+mi.author)
         if (!order.includes("+")) {
             order = order + "+"
         }
@@ -176,6 +183,11 @@ class Statistics extends Component {
             if (val !== undefined && val !== Number.MAX_SAFE_INTEGER && val !== Number.MIN_SAFE_INTEGER) {
                 msg = `${msg}\n${title}: \`${val}\``
             }
+            Object.keys(BUCKS).forEach((key) => {
+                const id = BUCKS[key];
+                msg = _.replace(msg, new RegExp(`user#${id}`,'g'), key.toLowerCase() );
+                msg = _.replace(msg, new RegExp(`${id}`,'g'), key.toLowerCase() );
+            })
         })
         if( msg.length > 2000 ) {
             this.setAction("message", "This list is too long. Please subcategorize. Try \`-stats\` for more info.")

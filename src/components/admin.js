@@ -20,6 +20,7 @@ class Admin extends Component {
         this.addCommand( /^#status$/, this.status );
         this.addCommand( /^#set status (.*)$/, this.setStatus )
         this.addCommand( /^#set activity (.*)$/, this.setActivity )
+        this.addCommand( /^#clear activity$/, (mi) => this.setActivity(null, mi) )
         this.addCommand( /^#set avatar (.*)$/, this.setAvatar )
         this.addCommand( /^#set username (.*)$/, this.setUsername ) // once an hour
         this.addCommand( /^#set nickname (.*)$/, this.setNickName )
@@ -294,12 +295,19 @@ class Admin extends Component {
         this.setAction( 'security', PERMISSION_LEVELS.MOD );
         const cli = util.getClient()
         const a = cli.user.presence.activity
+        
+        const ms = Number(cli.uptime)
+        let d, h,m,s;
+        d = Math.floor(ms/1000/60/60/24);
+        h = Math.floor((ms/1000/60/60/24 - d)*24);
+        m = Math.floor(((ms/1000/60/60/24 - d)*24 - h)*60);
+        s = Math.floor((((ms/1000/60/60/24 - d)*24 - h)*60 - m)*60);
+
         let msg = `
 readySince \`${cli.readyAt}\`
-uptime \`${cli.uptime}\`
+uptime \`${d} days, ${h} hours, ${m} minutes, ${s} seconds\`
 status \`${cli.user.presence.status}\`
 avatar \`${cli.user.displayAvatarURL()}\`
-activity \`${a?`${a.name} (${a.type}) url${a.url}`:"None"}\`
 `
         this.setAction( 'message', msg )
     }

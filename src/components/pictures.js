@@ -1,5 +1,5 @@
 const { Component } = require( './component' );
-const { BUCKS } = require( '../core/constants' );
+const { BUCKS, PERMISSION_LEVELS } = require( '../core/constants' );
 
 const ID = 'pictures';
 
@@ -12,17 +12,33 @@ const pastebin = new PastebinAPI({
     'api_user_password' : PASTEBIN_PASSWORD,
 })
 
+const BURGER_BIN = "AVzHYQFm"
+const REM_BIN = "pcd5bd9z"
+const WAIFU_BIN = "eYuUA9ty"
+const TWOB_BIN = "cFEzEdZv"
+
 class Pictures extends Component {
     constructor() {
         super( ID );
-        this.addCommand( /^-burger$/, () => this.pic("AVzHYQFm"), 'burger' );
         this.addCommand( /^-bugs$/, this.bugs, 'pictures' );
-        this.addCommand( /^-pic$/, () => this.pic("tw7sXUeU"), 'pictures' );
-        this.addCommand( /^-waifu$/, () => this.pic("eYuUA9ty"), 'waifu' );
-        this.addCommand( /^-rem$/, () => this.pic("pcd5bd9z"), 'rem' );
-        this.addCommand( /^-burger +(\d+)$/, (idx) => this.pic("AVzHYQFm", idx), 'burger' );
-        this.addCommand( /^-waifu +(\d+)$/, (idx) => this.pic("eYuUA9ty", idx), 'waifu' );
-        this.addCommand( /^-rem +(\d+)$/, (idx) => this.pic("pcd5bd9z", idx), 'rem' );
+        this.addCommand( /^-burger$/, () => this.pic(BURGER_BIN), 'burger' );
+        this.addCommand( /^-waifu$/, () => this.pic(WAIFU_BIN), 'waifu' );
+        this.addCommand( /^-rem$/, () => this.pic(REM_BIN), 'rem' );
+        this.addCommand( /^-2[bB]$/, () => this.pic(TWOB_BIN), 'pictures' );
+        this.addCommand( /^-burger +(\d+)$/, (idx) => this.pic(BURGER_BIN, idx), 'burger' );
+        this.addCommand( /^-waifu +(\d+)$/, (idx) => this.pic(WAIFU_BIN, idx), 'waifu' );
+        this.addCommand( /^-rem +(\d+)$/, (idx) => this.pic(REM_BIN, idx), 'rem' );
+        this.addCommand( /^-2[bB] +(\d+)$/, (idx) => this.pic(TWOB_BIN, idx), 'pictures' );
+        this.addCommand( /^#pic ?urls$/, this.picurls, 'pictures' );
+    }
+
+    picurls() {
+        this.setAction( "security", PERMISSION_LEVELS.ADMIN )
+        this.setAction( "message", `Pastebin urls for image collections:
+Burgers - https://pastebin.com/${BURGER_BIN}
+Waifus - https://pastebin.com/${WAIFU_BIN}
+2b - https://pastebin.com/${TWOB_BIN}
+Rem - https://pastebin.com/${REM_BIN}` )
     }
 
     async pic(bin, idx='random') {

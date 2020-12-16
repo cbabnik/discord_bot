@@ -156,11 +156,24 @@ Release was delayed by Covid :yum: :fingers_crossed:
 
 **Notes**
 + England timezone now a feature, enjoy income at 2:19`,
+"0.1.2" : `**PATCH 0.1.2**
+**DAY 2 HOTFIXES**
++ Hardcoded a few nicknames, as buckbot is having troubles picking up on nicknames
++ display time in England as activity
++ **fix youtube audio**
++ buck slots profits tracked in lottery_profit statistic
++ \`2b\` command
++ admin command \`#status\` shows human readable uptime
++ fixed audio file listing
++ statistic to track given credits
++ removed hitler
++ removed \`pic\` command from help`,
 }
 oneline = {
     "0.0.2" : "Slots are now fun!",
     "0.1.0" : "The Big Refactor Update",
     "0.1.1" : "Drunk day one hot fixes",
+    "0.1.2" : "Day two actual hot fixes",
 }
 banners = {
     "0.1.0" : "updates/bigrefactor.png",

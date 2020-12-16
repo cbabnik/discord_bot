@@ -1,4 +1,5 @@
 const { Component } = require( './component' );
+const { statistics } = require( './statistics' )
 const _ = require( 'lodash' );
 const util = require( '../core/util' );
 const debug = require( 'debug' )( 'basic' );
@@ -140,6 +141,7 @@ class Bank extends Component {
     }
 
     async give( user, amnt, metaInfo ) {
+        amnt = Number(amnt)
         const id = util.getId( user );
         if ( !id ) {
             this.setAction( 'message', `Sorry, I could not find user **${user}**` );
@@ -154,6 +156,8 @@ class Bank extends Component {
             }
             await this.addAmount( id, amnt );
             this.setAction( 'message', `**${metaInfo.author}** has given ${amnt} credits to **${user}**` );
+            statistics.add(`credits_transfered_from_to.${metaInfo.authorId}.${id}`, amnt)
+            statistics.add(`credits_transfered_from_to.${id}.${metaInfo.authorId}`, -amnt)
         } else {
             this.setAction( 'message', `**${metaInfo.author}**, you don't have enough credits. Check with \`-balance\`` );
         }

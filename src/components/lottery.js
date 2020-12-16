@@ -104,7 +104,8 @@ class Lottery extends Component {
             attempts += await statistics.storage.get(`lottery_attempts.${id}.${slot_machine_name}.partial_win`)
             attempts += await statistics.storage.get(`lottery_attempts.${id}.${slot_machine_name}.loss`)
             attempts += await statistics.storage.get(`lottery_attempts.${id}.${slot_machine_name}.poop`)
-            statistics.storage.set(`lottery_average.${id}.${slot_machine_name}`, totalWinnings/attempts);
+            const avg = Math.round(100*totalWinnings/attempts)/100
+            statistics.storage.set(`lottery_average.${id}.${slot_machine_name}`, avg);
         })(statistics);
         statistics.add(`lottery_buckrolls_earned.${id}.${slot_machine_name}`, results.buckrolls)
 
@@ -130,6 +131,7 @@ class Lottery extends Component {
                 this.setAction("message", results.frames[0])  
                 this.setAction("image", results.images[0])
                 statistics.add(`lottery_winnings.${id}.bslots`, results.winnings)
+                statistics.add(`lottery_profit.${id}.bslots`, results.winnings)
                 bank.addAmount(id, results.winnings)
             }
             totalDelay += 1*results.buckrolls
