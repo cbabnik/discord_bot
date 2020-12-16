@@ -185,6 +185,7 @@ class Statistics extends Component {
             }
             Object.keys(BUCKS).forEach((key) => {
                 const id = BUCKS[key];
+                msg = _.replace(msg, new RegExp(`user#${id}`,'g'), key.toLowerCase() );
                 msg = _.replace(msg, new RegExp(`${id}`,'g'), key.toLowerCase() );
             })
         })
