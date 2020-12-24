@@ -89,16 +89,26 @@ Use \`-pastpolls\` to see polls made in the past`
         info: `\`-iou <user> <amount>\`
 Marks that you owe user an amount. iou reduced by using the \`-give\` command.`
     },
-    "iou": {
-        regex: /^\?iou.*$/,
-        module: "bank",
-        info: `\`-iou <user> <amount>\`
-Marks that you owe user an amount. iou reduced by using the \`-give\` command.`
+    "alias": {
+        regex: /^\?alias.*$/,
+        module: "utility",
+        info: `\`-alias "<from>" "<to>"\` - interprets any message you give as <from> as <to>
+\`-alias --inline\` to replace a word/phrase in the middle of your message
+\`-aliases\` to view aliases
+\`-aliases clear\` to delete aliases
+
+Examples:
+\`-alias "!crazy frog" "https://www.youtube.com/watch?v=k85mRPqvMbE"\`
+\`!crazy frog\`
+plays bad music
+\`-alias --inline "cool guy" "RemRod"\`
+\`-give cool guy 5\`
+gives 5 credits to RemRod`
     },
 }
 
 const commands = {
-    "patchnotes": ["patchnotes"],
+    "patchnotes": ["patchnotes"], 
     "statistics": ["stats"],
     "random": ["random"],
     "math": ["math"],
