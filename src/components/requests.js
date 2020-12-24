@@ -22,7 +22,7 @@ class Requests extends Component {
         this.addCommand( /^-requests (\d+)$/, ( n, metaInfo ) => this.listRequests( n, metaInfo ), "requests" );
         this.addCommand( /^-requests delete (\d+)$/, this.deleteRequestN, "requests" );
         this.addCommand( /^-requests accept (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ), "requests" );
-        this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, undefined, metaInfo ), "requests" );
+        this.addCommand( /^-requests reject (\d+)$/, ( n, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, undefined, metaInfo ), "requests" );
         this.addCommand( /^-requests accept (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_ACCEPTED, reply, metaInfo ), "requests" );
         this.addCommand( /^-requests reject (\d+) (.+)$/, ( n, reply, metaInfo ) => this.changeStatus( n, STATUS_REJECTED, reply, metaInfo ), "requests" );
         this.addCommand( /^-requests reply (\d+) (.+)$/, this.reply, "requests" );
