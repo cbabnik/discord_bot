@@ -43,9 +43,15 @@ const Filter = ( client, dispatcher ) => {
         return content;
     };
 
+    const applyTransformation = async ( content ) => {
+        content = content.replace( RegExp( "“" ), "\"")
+        return content;
+    }
+
     const filterContent = async ( msg ) => {
         let content = msg.content;
         content = await applyAliases(msg.author.id, content)
+        content = await applyTransformation(content)
         return content;
     }
 
