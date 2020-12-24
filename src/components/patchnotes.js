@@ -168,12 +168,24 @@ Release was delayed by Covid :yum: :fingers_crossed:
 + statistic to track given credits
 + removed hitler
 + removed \`pic\` command from help`,
+"0.1.3" : `**PATCH 0.1.3** - Dec 24 2020
++ removed \`+slots\` (rest in peace Kawaii)
++ fixed balance not showing your buckbucks
++ fix for statistics
++ new statistic for how close you got to 1019 with \`-allowance\`
++ mobile quotations work as normal quotations
++ non working audio controls were removed
++ \`?alias\` for alias help
++ \`!depot\`
++ \`-slots odds\`
++ \`-slots rewards\``,
 }
 oneline = {
     "0.0.2" : "Slots are now fun!",
     "0.1.0" : "The Big Refactor Update",
     "0.1.1" : "Drunk day one hot fixes",
     "0.1.2" : "Day two actual hot fixes",
+    "0.1.3" : "Its 1019 aaaa mmmm",
 }
 banners = {
     "0.1.0" : "updates/bigrefactor.png",
