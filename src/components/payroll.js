@@ -1,6 +1,7 @@
 const { Component } = require( './component' );
 const { BUCKS, CONFIG } = require( '../core/constants' );
 const { bank } = require( './bank' );
+const { statistics } = require( './statistics' );
 const debug = require( 'debug' )( 'basic' );
 
 const ID = 'payroll';
@@ -41,24 +42,54 @@ class Payroll extends Component {
 
     // COMMANDS
 
-    allowanceInfo() {
+    async allowanceInfo(mi) {
+        const id = mi.authorId;
+        const name = mi.author;
+
+        const now = Date.now();
+        const last_time = await this.storage.get(`${id}.last`);
+        await this.storage.set(`${id}.last`, now );
+        if (last_time) {
+            const time_passed = now - last_time
+            if (time_passed < 500) {
+                if (Math.random() > 0.90) {
+                    this.setAction( 'message', `Quit spamming. I ignore allowances that are less than 500ms apart.` );
+                }
+                return
+            }
+        }
+
         const nextPayout = this.nextPayout();
 
         const ms = nextPayout.getTime() - new Date().getTime();
         const hours = Math.floor( ms/1000/60/60%24 );
         const minutes = Math.floor( ms/1000/60%60 );
         const seconds = Math.floor( ms/1000%60 );
+        const milliseconds = Math.floor( ms%1000 );
+
+        statistics.storage.apply(`closest_to_1019.${id}`, ms, ms, Math.min)
 
         if ( hours > 0 ) {
             this.setAction( 'message', `Allowance is due in ${hours} hours, and ${minutes} minutes. The amount is set to ${ALLOWANCE_AMOUNT} credits.` );
         } else if ( minutes > 0 ) {
             this.setAction( 'message', `Allowance is due in ${minutes} minutes, and ${seconds} seconds. The amount is set to ${ALLOWANCE_AMOUNT} credits.` );
+        } else if ( seconds > 10 ) {
+            this.setAction( 'message', `Allowance is due in ${seconds} seconds! Get Ready!` );
+        } else if ( seconds > 3 ) {
+            this.setAction( 'message', `Allowance is due in ${seconds} seconds! Oh boy!` );
         } else if ( seconds > 0 ) {
-            if ( Math.random() > 0.5 ) {
-                this.setAction( 'message', `Allowance is due in ${seconds} seconds! Oh boy!` );
-            } else {
-                this.setAction( 'message', `Allowance is due in ${seconds} seconds! Get Ready!` );
-            }
+            this.setAction( 'message', `Allowance is due in ${seconds} seconds! Oh papa!` );
+        } else if ( milliseconds > 250 ) {
+            this.setAction( 'message', `Allowance is due in ${milliseconds} milliseconds! Try to get closer!` );
+        } else if ( milliseconds > 100 ) {
+            bank.addAmount( id, 1 );
+            this.setAction( 'message', `${milliseconds} milliseconds **${name}**! 1 credit consolation prize. Try to get closer!` );
+        } else if ( milliseconds > 10 ) {
+            this.payout( ALLOWANCE_AMOUNT );
+            this.setAction( 'message', `${milliseconds} milliseconds **${name}**! Badda Boom! You triggered a bonus payout!` );
+        } else if ( milliseconds > 0 ) {
+            this.payout( 50 );
+            this.setAction( 'message', `${milliseconds} milliseconds **${name}**! Freaking Bullseye! Everyone gets 50 credits` );
         }
         if ( nextPayout.getHours() === 22 ) {
             this.setAction( 'audioFile', 'kevin1019' );
