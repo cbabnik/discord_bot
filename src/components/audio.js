@@ -51,6 +51,7 @@ class Audio extends Component {
         this.setAction( 'audioFile', fileName );
         const without_suffix = fileName.split('.')[0]
         statistics.add(`audio_played.${mi.authorId}.${without_suffix}`)
+        this.subscribeReaction(mi.message.id, this.repeatReaction, {audioId: this.currentAudioId}, '🔂', true)
         this.setPlayerReaction(mi);
     }
 
@@ -92,7 +93,8 @@ class Audio extends Component {
         statistics.add(`audio_played.${mi.authorId}.random`)
         this.setPlayerReaction(mi)
         this.subscribeReaction(mi.message.id, this.nextRandomReaction, {audioId: this.currentAudioId}, '⏭️', true)
-        this.setAction( 'reaction', ['⏯️','⏹️','🔂','⏭️'])
+        this.subscribeReaction(mi.message.id, this.repeatReaction, {audioId: this.currentAudioId}, '🔂', true)
+        this.setAction( 'reaction', ['⏹️','🔂','⏭️'])
     }
 
     // reactions
@@ -136,10 +138,10 @@ class Audio extends Component {
 
     setPlayerReaction(mi) {
         this.currentAudioId += 1;
-        this.setAction( 'reaction', ['⏯️','⏹️','🔂'])
-        this.subscribeReaction(mi.message.id, this.playPauseReaction, {audioId: this.currentAudioId}, '⏯️', true)
+        this.setAction( 'reaction', ['⏹️','🔂'])
+        //this.subscribeReaction(mi.message.id, this.playPauseReaction, {audioId: this.currentAudioId}, '⏯️', true)
         this.subscribeReaction(mi.message.id, this.endAudioReaction, {audioId: this.currentAudioId}, '⏹️', true)
-        this.subscribeReaction(mi.message.id, this.repeatReaction, {audioId: this.currentAudioId}, '🔂', true)
+        //this.subscribeReaction(mi.message.id, this.repeatReaction, {audioId: this.currentAudioId}, '🔂', true)
         this.subscribeReaction(mi.message.id, this.repeatForeverReaction, {audioId: this.currentAudioId}, '🔁', true)
     }
 }
