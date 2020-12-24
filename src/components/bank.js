@@ -19,8 +19,8 @@ class Bank extends Component {
         this.addCommand( /^-[iI][oO][uU] (.+) (\d+)$/, this.iou, "iou" );
         this.addCommand( /^-[iI][oO][uU] (.+) (\d*\.\d{0,3})$/, this.iou, "iou" );
         this.addCommand( /^-[iI][oO][uU] (.+) (\d*\.\d{4,100})$/, this.giveWarning, "iou" );
-        this.addCommand( /^#give (.+) (\d*\.\d{0,5})$/, this.admingive);
-        this.addCommand( /^#give (.+) (\d+)$/, this.admingive);
+        this.addCommand( /^#give (.+) (\-?\d*\.\d{0,5})$/, this.admingive);
+        this.addCommand( /^#give (.+) (\-?\d+)$/, this.admingive);
     }
 
     async admingive(user, amount, metaInfo) {
@@ -38,7 +38,7 @@ class Bank extends Component {
         const id = metaInfo.authorId;
         const user = metaInfo.author;
         let amount;
-        const bamount = this.balance( id, 'buckbucks' );
+        const bamount = await this.balance( id, 'buckbucks' );
         if ( exact ) {
             amount = await this.exactBalance( id );
         } else {
