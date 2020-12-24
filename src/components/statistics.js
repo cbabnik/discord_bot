@@ -83,9 +83,13 @@ class Statistics extends Component {
                 const f = fields.shift()
                 const subdata = _.get(stat_data, f)
                 if ( ["&","^","+","v"].includes(subcat)) {
-                    Object.keys(subdata).forEach((key) => {
-                        fields.push(f+"."+key)
-                    })
+                    try {
+                        Object.keys(subdata).forEach((key) => {
+                            fields.push(f+"."+key)
+                        })
+                    } catch {
+                        fields.push(key)
+                    }
                 } else {
                     fields.push(f+"."+subcat)
                 }
