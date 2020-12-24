@@ -1,6 +1,6 @@
 const { BaseSlotMachine } = require( "./base" )
 const _ = require("lodash")
-const bank = require("../bank");
+const { bank } = require("../bank");
 
 const SIGNS = [
     {grid_amount: 35, emote: ':kiwi:',     value: 200},

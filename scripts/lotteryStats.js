@@ -69,9 +69,9 @@ let lastBuckrolls = 0;
     if (slots === "all" || slots === "grid") {
         lastWinnings = 0
         lastBuckrolls = 0
-        for ( let i = 0; i < 100000; i++ ) {
-            if ( i%10000 === 0 ) {
-                console.log( `gslots simulation ${i/1000}%` );
+        for ( let i = 0; i < 1000000; i++ ) {
+            if ( i%100000 === 0 ) {
+                console.log( `gslots simulation ${i/10000}%` );
             }
             const r = await gslots_machine.roll( metaInfo.user, metaInfo.userId );
             lastWinnings += r.winnings
@@ -79,6 +79,7 @@ let lastBuckrolls = 0;
         }
         report.grid = {}
         report.grid.winnings = lastWinnings
+        report.grid.winnings += 23*lastBuckrolls
         report.grid.buckrolls = lastBuckrolls
     }
     if (slots === "all" || slots === "maze") {
@@ -94,6 +95,7 @@ let lastBuckrolls = 0;
         }
         report.maze = {}
         report.maze.winnings = lastWinnings
+        report.maze.winnings += 23*lastBuckrolls
         report.maze.buckrolls = lastBuckrolls
     }
     if (slots === "all" || slots === "bgrid") {
@@ -109,6 +111,7 @@ let lastBuckrolls = 0;
         }
         report.bgrid = {}
         report.bgrid.winnings = lastWinnings
+        report.bgrid.winnings += 23*lastBuckrolls
         report.bgrid.buckrolls = lastBuckrolls
     }
     

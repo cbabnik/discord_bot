@@ -53,6 +53,31 @@ Add a number to get a specific picture. Example: \`-burger 69\`
 
 If you want to moderate one of these categories, let Curtis know.`,
     },
+    "rewards": {
+        regex: /^[\?-](:?slots +|lottery +)?(:?reward|value)s?.*$/,
+        module: "slots",
+        info: `lottery reward values
+:poop::poop::poop: -10 in gslots, -1x in mslots
+:two::two::two: 2X multiplier (other numbers are similar)
+:deer::deer::deer: Bonus BuckRoll
+
+:strawberry::strawberry::strawberry: \`5\`
+:melon::melon::melon: \`10\`
+:lemon::lemon::lemon: \`25\`
+:tangerine::tangerine::tangerine: \`50\`
+:cherries::cherries::cherries: \`100\`
+:kiwi::kiwi::kiwi: \`200\`
+`
+    },
+    "slot_odds": {
+        regex: /^[\?-](:?slots +|lottery +)?odds.*$/,
+        module: "slots",
+        info: `lottery odds
+\`-cslots\` has 96% payout, with a 49% chance for each coinflip to be money
+\`-gslots\` has 90% payout, the best machine for getting buck rolls
+\`-mslots\` has 80% payout, with high chance for gain or loss
+`
+    },
     "lottery": {
         regex: /^[\?-](:?lottery|slots).*$/,
         module: "slots",
@@ -64,7 +89,19 @@ Try your luck at the slots!
     \`-slots maze\` - ($20) For the foolish who want to win it all
     \`-slots big grid\` - ($1000) For those with just too much money
 
-There is also \`+slots\` if you're a diehard kawaiibot fan.`
+\`-slots odds\` to see some odds
+\`-slots values\` to see the following chart
+:poop::poop::poop: -10 in gslots, -1x in mslots
+:two::two::two: 2X multiplier (other numbers are similar)
+:deer::deer::deer: Bonus BuckRoll
+
+:strawberry::strawberry::strawberry: \`5\`
+:melon::melon::melon: \`10\`
+:lemon::lemon::lemon: \`25\`
+:tangerine::tangerine::tangerine: \`50\`
+:cherries::cherries::cherries: \`100\`
+:kiwi::kiwi::kiwi: \`200\`
+`
     },
     "vote": {
         regex: /^\?vote.*$/,
