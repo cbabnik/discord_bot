@@ -1,6 +1,6 @@
 const { BaseSlotMachine } = require( "./base" )
 const _ = require("lodash")
-
+const bank = require("../bank");
 
 const SIGNS = [
     {grid_amount: 35, emote: ':kiwi:',     value: 200},
@@ -148,6 +148,11 @@ Reward: **${winnings}**${deerWins?`\nYou've also won ${deerWins} rolls of Buck S
 ${best?`Best Row: ${bestString}`:''}`)
             }
         }
+
+        bank.addAmount(id, -winnings)
+        setTimeout(() => {
+            bank.addAmount(id, winnings);
+        }, (frames.length-1)*15*1000 );
 
         return {
             winnings,
