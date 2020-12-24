@@ -142,7 +142,7 @@ Release was delayed by Covid :yum: :fingers_crossed:
 * loans removed
 * Alpha testers will get a marble in an upcoming update
 `,
-"0.1.1" : `**PATCH 0.1.1**
+"0.1.1" : `**PATCH 0.1.1** - Dec 15 2020
 **DAY 1 HOTFIXES**
 + You no longer pay for slots when you're forced to wait in line
 + iou has max digits
@@ -156,7 +156,7 @@ Release was delayed by Covid :yum: :fingers_crossed:
 
 **Notes**
 + England timezone now a feature, enjoy income at 2:19`,
-"0.1.2" : `**PATCH 0.1.2**
+"0.1.2" : `**PATCH 0.1.2** - Dec 16 2020
 **DAY 2 HOTFIXES**
 + Hardcoded a few nicknames, as buckbot is having troubles picking up on nicknames
 + display time in England as activity

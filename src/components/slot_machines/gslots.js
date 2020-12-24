@@ -4,13 +4,13 @@ const _ = require("lodash")
 
 const SIGNS = [
     {grid_amount: 6, emote: ':kiwi:',     value: 200},
-    {grid_amount: 6, emote: ':cherries:',  value: 100},
+    {grid_amount: 8, emote: ':cherries:',  value: 100},
     {grid_amount: 10, emote: ':tangerine:', value: 50},
-    {grid_amount: 10, emote: ':lemon:',     value: 25},
-    {grid_amount: 11, emote: ':melon:',     value: 10},
-    {grid_amount: 11, emote: ':strawberry:',value: 5},
-    {grid_amount: 9, emote: ':deer:', special: 'Bonus Buck Roll'},
-    {grid_amount: 7, emote: ':poop:',  value: -10},
+    {grid_amount: 12, emote: ':lemon:',     value: 25},
+    {grid_amount: 14, emote: ':melon:',     value: 10},
+    {grid_amount: 10, emote: ':strawberry:',value: 5},
+    {grid_amount: 16, emote: ':deer:', special: 'Bonus Buck Roll'},
+    {grid_amount: 6, emote: ':poop:',  value: -10},
 ];
 
 const VALID_LINES = [
