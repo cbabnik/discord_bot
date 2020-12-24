@@ -12,7 +12,7 @@ class Fun extends Component {
         this.addCommand( /^-[bB]rag$/, this.brag, "brag" );
         this.addCommand( /^-[hH]umble ?[bB]rag$/, this.humblebrag, "brag" );
         this.addCommand( /^-[wW][iI][nN]\!?$/, this.win, "win" );
-        this.addCommand( /^\+slots$/, this.kawaiiSlots, "fun" );
+        //this.addCommand( /^\+slots$/, this.kawaiiSlots, "fun" );
     }
 
     async brag ( metaInfo ) {
