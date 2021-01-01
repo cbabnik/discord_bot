@@ -79,7 +79,7 @@ class Calendar extends Component {
         Object.keys( HOLIDAYS ).forEach( k => {
             const hd = HOLIDAYS[k];
             if ( this.isDay( hd, new Date() ) ) {
-                this.setAction( 'message', `It's ${k.s}! Everyone gets ${k.v} credits` );
+                this.setAction( 'message', `It's ${hd.s}! Everyone gets ${hd.v} credits` );
                 this.setAction( 'channelId', CONFIG.MAIN_CHANNEL );
                 this.actor.handle( this.commitAction(), null );
                 this.payout( hd.v );
