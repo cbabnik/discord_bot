@@ -156,6 +156,7 @@ Release was delayed by Covid :yum: :fingers_crossed:
 
 **Notes**
 + England timezone now a feature, enjoy income at 2:19`,
+
 "0.1.2" : `**PATCH 0.1.2** - Dec 16 2020
 **DAY 2 HOTFIXES**
 + Hardcoded a few nicknames, as buckbot is having troubles picking up on nicknames
@@ -168,6 +169,7 @@ Release was delayed by Covid :yum: :fingers_crossed:
 + statistic to track given credits
 + removed hitler
 + removed \`pic\` command from help`,
+
 "0.1.3" : `**PATCH 0.1.3** - Dec 24 2020
 + removed \`+slots\` (rest in peace Kawaii)
 + fixed balance not showing your buckbucks
@@ -179,13 +181,19 @@ Release was delayed by Covid :yum: :fingers_crossed:
 + \`!depot\`
 + \`-slots odds\`
 + \`-slots rewards\``,
+
+"0.1.4" : `**PATCH 0.1.4** - Mar 27 2021
++ timezone is Vancouver`,
+
 }
+
 oneline = {
     "0.0.2" : "Slots are now fun!",
     "0.1.0" : "The Big Refactor Update",
     "0.1.1" : "Drunk day one hot fixes",
     "0.1.2" : "Day two actual hot fixes",
     "0.1.3" : "Its 1019 aaaa mmmm",
+    "0.1.4" : "Buckbot comes back from England",
 }
 banners = {
     "0.1.0" : "updates/bigrefactor.png",
