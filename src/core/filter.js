@@ -67,7 +67,7 @@ const Filter = ( client, dispatcher ) => {
         if ( ! filterChannel( msg ) ) {
             return;
         }
-        dispatcher.rawPost( ":eye:", msg )
+        //dispatcher.rawPost( ":eye:", msg )
     } );
 
     // eslint-disable-next-line no-unused-vars
