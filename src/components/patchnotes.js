@@ -183,7 +183,11 @@ Release was delayed by Covid :yum: :fingers_crossed:
 + \`-slots rewards\``,
 
 "0.1.4" : `**PATCH 0.1.4** - Mar 27 2021
-+ timezone is Vancouver`,
++ timezone is Vancouver
++ removed eyeball
++ fixed -list
++ added !rwj
+`,
 
 }
 
