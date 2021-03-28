@@ -35,9 +35,13 @@ class Audio extends Component {
 
     playHelp() {
         const files = fs.readdirSync( 'res/audio' ).map( f => f.padEnd( 25 ) );
-        this.setAction( 'message', 'Play a sound!\nEither `-play 20.mp3` or `!20` will work.\n' +
-            _.chunk( files, 3 ).map( chunk => `\`${chunk.join( '' )}\`` ).join( '\n' )
-        );
+        const chunks = _.chunk(_.chunk( files, 3 ).map( chunk => `\`${chunk.join( '' )}\`` ), 20) // 25 lines
+        this.setAction( 'message', 'Play a sound!\nEither `-play 20.mp3` or `!20` will work.\n' 
+            + chunks[0].join( '\n' ));
+        for ( var i = 1; i < chunks.length; i++ ) {
+            this.queueAction()
+            this.setAction( 'message', ".\n" + chunks[i].join('\n'))
+        }
     }
 
     playAudio( fileName, mi ) {
