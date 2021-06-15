@@ -2,18 +2,75 @@ const { BaseSlotMachine } = require( "./base" )
 const _ = require("lodash")
 const { bank } = require("../bank");
 
-const SIGNS = [
+const REG_SIGNS = [
     {grid_amount: 35, emote: ':kiwi:',     value: 200},
     {grid_amount: 40, emote: ':cherries:',  value: 100},
     {grid_amount: 45, emote: ':tangerine:', value: 50},
-    {grid_amount: 50, emote: ':lemon:',     value: 25},
+    {grid_amount: 50, emote: ':lemon:',  value: 25},
     {grid_amount: 20, emote: ':deer:', special: 'Bonus Buck Roll'},
     {grid_amount: 1, emote: ':poop:',  value: -10},
+];
+
+const CURSED_SIGNS = [
+    {grid_amount: 125, emote: ':peach:',  value: 1000},
+    {grid_amount: 875, emote: ':poop:',  value: -10},
+];
+
+const POOP_SIGNS = [
+    {grid_amount: 1000, emote: ':poop:',  value: -10},
+];
+
+const PEANUT_SIGNS = [
+    {grid_amount: 100, emote: ':peanuts:', value: 1},
+];
+
+const RANDOM_SIGNS = [
+    {grid_amount: 30, emote: ':burger:',  value: 2000},
+    {grid_amount: 55, emote: ':peach:',  value: 1000},
+    {grid_amount: 70, emote: ':pineapple:',  value: 500},
+    {grid_amount: 80, emote: ':banana:',  value: 69},
+    {grid_amount: 100, emote: ':kiwi:',     value: 200},
+    {grid_amount: 100, emote: ':cherries:',  value: 100},
+    {grid_amount: 100, emote: ':tangerine:', value: 50},
+    {grid_amount: 100, emote: ':lemon:',  value: 25},
+    {grid_amount: 100, emote: ':melon:',  value: 10},
+    {grid_amount: 100, emote: ':peanuts:',  value: 1},
+    {grid_amount: 100, emote: ':deer:', special: 'Bonus Buck Roll'},
+    {grid_amount: 100, emote: ':poop:',  value: -10},
 ];
 
 class BigGridSlotMachine extends BaseSlotMachine {
 
     roll(user, id) {
+        let SIGNS = REG_SIGNS
+        let TIMER = 30
+        let INSTANT = false
+
+        const mode_selector = _.random();
+        if (mode_selector < 0.4) {
+            mode="REGULAR"
+        } else if(mode_selector < 0.5) {
+            mode="SLOW"
+            TIMER=90
+        } else if(mode_selector < 0.7) {
+            mode="LEMONS"
+        } else if(mode_selector < 0.75) {
+            mode="PEANUTS"
+            SIGNS=PEANUT_SIGNS
+            INSTANT = true
+        } else if(mode_selector < 0.80) {
+            mode="CURSED"
+            SIGNS=CURSED_SIGNS
+        } else if(mode_selector < 0.99) {
+            mode="RANDOM"
+            SIGNS=RANDOM_SIGNS
+        } else {
+            mode="POOP"
+            SIGNS=POOP_SIGNS
+            INSTANT = true
+        }
+
+
         const bag = [];
         SIGNS.forEach( ( sign ) => {
             bag.push( ...Array( sign.grid_amount ).fill( sign.emote ) );
@@ -21,6 +78,12 @@ class BigGridSlotMachine extends BaseSlotMachine {
         let grid = _.chunk( Array( 81 ), 9 );
         grid = grid.map( ( row ) => row.map( () => _.sample( bag ) ) );
         const visible_grid = _.chunk( Array( 81 ).fill( ':black_large_square:' ), 9 );
+
+        for ( let x = 1; x < 9; x++ ) {
+            if (_.random() < 0.6) {
+                grid[y][x] = grid[y][x-1]
+            }
+        }
 
         let winnings = 0;
         let deerWins = 0;
@@ -152,13 +215,17 @@ ${best?`Best Row: ${bestString}`:''}`)
         bank.addAmount(id, -winnings)
         setTimeout(() => {
             bank.addAmount(id, winnings);
-        }, (frames.length-1)*15*1000 );
+        }, (frames.length-1)*TIMER*1000 );
+
+        if (INSTANT) {
+            frames = [frames[-1]]
+        }
 
         return {
             winnings,
             buckrolls: deerWins,
             frames,
-            frameDelay: 15
+            frameDelay: TIMER
         }
     }
 
