@@ -17,7 +17,7 @@ const CURSED_SIGNS = [
 ];
 
 const POOP_SIGNS = [
-    {grid_amount: 1000, emote: ':poop:',  value: -10},
+    {grid_amount: 1000, emote: ':poop:',  value: -2},
 ];
 
 const PEANUT_SIGNS = [
@@ -41,19 +41,21 @@ const RANDOM_SIGNS = [
 
 class BigGridSlotMachine extends BaseSlotMachine {
 
-    roll(user, id) {
+    async roll(user, id) {
+        let mode = "REGULAR"
         let SIGNS = REG_SIGNS
         let TIMER = 30
         let INSTANT = false
 
-        const mode_selector = _.random();
-        if (mode_selector < 0.4) {
+        const mode_selector = Math.random();
+        if (mode_selector < 0.45) {
             mode="REGULAR"
-        } else if(mode_selector < 0.5) {
+        } else if(mode_selector < 0.6) {
             mode="SLOW"
             TIMER=90
         } else if(mode_selector < 0.7) {
             mode="LEMONS"
+            TIMER=3
         } else if(mode_selector < 0.75) {
             mode="PEANUTS"
             SIGNS=PEANUT_SIGNS
@@ -69,6 +71,7 @@ class BigGridSlotMachine extends BaseSlotMachine {
             SIGNS=POOP_SIGNS
             INSTANT = true
         }
+        console.log(mode)
 
 
         const bag = [];
@@ -79,10 +82,25 @@ class BigGridSlotMachine extends BaseSlotMachine {
         grid = grid.map( ( row ) => row.map( () => _.sample( bag ) ) );
         const visible_grid = _.chunk( Array( 81 ).fill( ':black_large_square:' ), 9 );
 
-        for ( let x = 1; x < 9; x++ ) {
-            if (_.random() < 0.6) {
-                grid[y][x] = grid[y][x-1]
+        if (mode == "REGULAR") {
+            for ( let x = 1; x < 9; x++ ) {
+                if (Math.random() < 0.6) {
+                    grid[8][x] = grid[8][x-1]
+                }
             }
+        }
+
+        if (mode == "LEMONS") {
+            for (let i = 0; i < 9; i++) {
+                grid[i][0] = ":lemon:"
+                grid[0][i] = ":lemon:"
+                grid[8][i] = ":lemon:"
+                grid[i][8] = ":lemon:"
+            }
+            grid[0][4] = ":kiwi:"
+            grid[4][0] = ":kiwi:"
+            grid[8][4] = ":kiwi:"
+            grid[4][8] = ":kiwi:"
         }
 
         let winnings = 0;
@@ -212,13 +230,13 @@ ${best?`Best Row: ${bestString}`:''}`)
             }
         }
 
-        bank.addAmount(id, -winnings)
-        setTimeout(() => {
-            bank.addAmount(id, winnings);
+        await bank.addAmount(id, -winnings)
+        setTimeout( async () => {
+            await bank.addAmount(id, winnings);
         }, (frames.length-1)*TIMER*1000 );
 
         if (INSTANT) {
-            frames = [frames[-1]]
+            frames = [frames[frames.length-1]]
         }
 
         return {
