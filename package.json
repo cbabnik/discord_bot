@@ -24,7 +24,7 @@
     "gm": "^1.23.1",
     "lavalink": "^2.8.2",
     "libsodium-wrappers": "^0.7.6",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "mocha": "^8.2.1",
     "node-gyp": "^5.0.7",
     "node-opus": "^0.3.3",
