@@ -20,8 +20,8 @@ const componentsEnabled = [
     'payroll',
     'audio',
     'lottery',
-    'inventory',
-    'shop',
+    //'inventory',
+    //'shop',
     'help']; // help has to go last
 if ( CONFIG.VERSION == "alpha" ) {
 
