@@ -1,7 +1,7 @@
-const { Component } = require( '../component' );
-const { ACTIONS, BUCKS } = require( '../constants' );
+const { Component } = require( './component' );
+const { ACTIONS, BUCKS } = require( '../core/constants' );
 
-const ID = 'inventory';
+const ID = 'shop';
 const { inventory } = require( './inventory' );
 const { bank } = require( './bank' );
 
@@ -10,72 +10,65 @@ class Shop extends Component {
         super( ID );
         this.addCommand( /^-shop$/, this.browse );
         this.addCommand( /^-browse$/, this.browse );
-        this.addCommand( /^-buy (.*)$/, this.buy );
-        this.addCommand( /^-purchase (.*)$/, this.buy );
+        this.addCommand( /^-buy +(.+)$/, this.buy );
+        this.addCommand( /^-purchase +(.+)$/, this.buy );
     }
 
     browse() {
-        this.setAction( ACTIONS.MESSAGE, `Items in shop:
-\`grid slots gift card - $5            : Use to get a free roll!\`
-\`maze slots gift card - $20           : Use to get a free roll!\`
+        this.setAction( ACTIONS.MESSAGE, `Buy stuff! example: \`buy golden marble\`
+Items in shop:
 \`golden marble        - $300          : Raises income by 10%\`
 \`platinum marble      - 5 Buck bucks  : Raises income by 20%\`
-\`excalibur            - 30 Buck bucks : Useful for the quest update\`
+\`bait                 - $10           : Lets you try to catch a fish\`
 ` );
     }
 
-    buy( item, metaInfo ) {
+    async buy( item, metaInfo ) {
         item = item.toLowerCase();
         const itemId = item.replace( /\s/g, '' );
         //const obj = inventory.get( 'items.${itemId}' );
         const id = metaInfo.authorId;
         let cost = 0;
         let costbb = 0;
+        let togain = 0;
 
         switch ( item.toLowerCase() ) {
-        case 'grid slots gift card':
-            cost = 5;
-            break;
-        case 'maze slots gift card':
-            cost = 20;
+        case 'bait':
+            togain = 1101;
+            cost = 10;
             break;
         case 'golden marble':
-            if ( inventory.has( id, itemId ) ) {
+            if ( await inventory.has( id, 101 ) !== false ) {
                 this.setAction( ACTIONS.MESSAGE, 'One per customer.' );
                 return;
             }
+            togain = 101;
             cost = 300;
             break;
         case 'platinum marble':
-            if ( inventory.has( id, itemId ) ) {
+            if ( await inventory.has( id, 102 ) !== false ) {
                 this.setAction( ACTIONS.MESSAGE, 'One per customer.' );
                 return;
             }
+            togain = 102;
             costbb = 5;
-            break;
-        case 'excalibur':
-            if ( inventory.get( 'relics.excalibur.owner' ) !== BUCKS.BUCKBOT ) {
-                this.setAction( ACTIONS.MESSAGE, 'Sorry, I already sold that.' );
-                return;
-            }
-            costbb = 30;
             break;
         default:
             this.setAction( ACTIONS.MESSAGE, 'That item isn\'t in the shop.' );
             return;
         }
 
-        if ( !bank.payAmount( id, cost ) ) {
+        if ( !await bank.payAmount( id, cost ) ) {
             this.setAction( ACTIONS.MESSAGE, 'You can\'t afford it.' );
             return;
         }
-        if ( !bank.payAmount( id, costbb, 'buckbucks' ) ) {
+        if ( !await bank.payAmount( id, costbb, 'buckbucks' ) ) {
             this.setAction( ACTIONS.MESSAGE, 'You can\'t afford it.' );
             return;
         }
 
+        await inventory.gainItem(metaInfo.authorId, togain)
         this.setAction( ACTIONS.MESSAGE, 'Purchase Made' );
-        inventory.getItem( id, item.toLowerCase().replace( /\s/g, '' ) );
     }
 }
 
