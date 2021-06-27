@@ -189,6 +189,15 @@ Release was delayed by Covid :yum: :fingers_crossed:
 + added !rwj
 `,
 
+"0.1.5" : `**PATCH 0.1.5** - Jun 27 2021
++ reduced BuckBot's brain power to 40%
++ Did some groundwork for more AWS features
++ updated ytdl to stay up follow youtube's achanges (fixed yt sound)
++ changed -coinflip coin to 2014 silver dollar
++ added !unravel
++ added rem and petey nicknames
+`,
+
 }
 
 oneline = {
@@ -198,6 +207,7 @@ oneline = {
     "0.1.2" : "Day two actual hot fixes",
     "0.1.3" : "Its 1019 aaaa mmmm",
     "0.1.4" : "Buckbot comes back from England",
+    "0.1.5" : "Lobotomy",
 }
 banners = {
     "0.1.0" : "updates/bigrefactor.png",
