@@ -31,6 +31,7 @@ const BIRTHDAYS = {
     MILLSY13: {y:1995,m:4,d:17},
     SHIBELOCKWOW: {y:1996,m:3,d:12},
     PATRIONES: {y:1997,m:8,d:7},
+    SQUID: {y:1995,m:7,d:7},
 };
 
 const HOLIDAYS = {
