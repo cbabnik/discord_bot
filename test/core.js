@@ -29,9 +29,9 @@ describe('core', () => {
             }
         })
         after(() => {
-            fs.rmdirSync('storage/test/coreA', { recursive: true })
-            fs.rmdirSync('storage/test/coreB', { recursive: true })
-            fs.rmdirSync('storage/test/coreC', { recursive: true })
+            fs.rmSync('storage/test/coreA', { recursive: true })
+            fs.rmSync('storage/test/coreB', { recursive: true })
+            fs.rmSync('storage/test/coreC', { recursive: true })
         })
 
         // tests
