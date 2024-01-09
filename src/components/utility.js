@@ -2,7 +2,6 @@ const { Component } = require( './component' );
 const _ = require( 'lodash' );
 
 const bigInt = require( 'big-integer' );
-const request = require( 'request' )
 const { STRAWPOLL_API_KEY } = require( '../../auth' )
 
 const ID = 'utility';
@@ -167,34 +166,30 @@ class Utility extends Component {
             this.setAction("message","Atleast two options please.")
             return;
         }
-        request.post({
-            url: "https://strawpoll.com/api/poll",
-            followAllRedirects: true,
-            body: {
-                "poll": {
+        fetch('https://strawpoll.com/api/poll', {
+            method: 'POST',
+            headers: { 
+                "API-KEY": STRAWPOLL_API_KEY
+            },
+            json: true,
+            body: JSON.stringify({ 
+                poll: {
                     "title": title,
                     "answers": options,
                     "ma": ma,
                     "captcha": false,
                 }
-            },
-            headers: {
-                "API-KEY": STRAWPOLL_API_KEY
-            },
-            json: true,
-        }, (error, response, body) => {
-            if (error) {
+            })}).then(body => body.json()).then(body => {
+                if (!body.content_id ) {
+                    console.log(body)
+                    this.setAction("message", `Sorry **user**, there was an error processing your straw poll` )
+                } else {
+                    this.setAction("message", `**${metaInfo.author}**, your strawpoll is ready at https://strawpoll.com/${body.content_id}` )
+                    this.storage.append("past_polls",{title, id:body.content_id})
+                }
+            }).catch(err => {
                 console.error(`strawpoll error: ${err}`)
-            } else if (response.statusCode != 200) {
-                console.error(`strawpoll returned code: ${response.statusCode}`)
-            } else if (! body.content_id ) {
-                console.log(body)
-                this.setAction("message", `Sorry **user**, there was an error processing your straw poll` )
-            } else {
-                this.setAction("message", `**${metaInfo.author}**, your strawpoll is ready at https://strawpoll.com/${body.content_id}` )
-                this.storage.append("past_polls",{title, id:body.content_id})
-            }
-        })
+            }); 
         await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
