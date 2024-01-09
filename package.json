@@ -10,6 +10,7 @@
     "lintfix": "eslint --fix ./"
   },
   "dependencies": {
+    "@discordjs/opus": "^0.9.0",
     "archiver": "^6.0.1",
     "async-mutex": "^0.4.0",
     "big-integer": "^1.6.51",
@@ -19,7 +20,7 @@
     "debug": "^4.3.4",
     "discord.js": "^12.5.3",
     "erlpack": "^0.1.4",
-    "ffmpeg": "0.0.4",
+    "ffmpeg-static": "^5.2.0",
     "gm": "^1.25.0",
     "lavalink": "^2.13.0",
     "libsodium-wrappers": "^0.7.11",
@@ -27,12 +28,14 @@
     "node-opus": "^0.3.3",
     "node-persist": "^4.0.1",
     "nodemailer": "^6.9.1",
-    "pastebin-js": "^1.0.6",
+    "pastebin-js": "^0.4.0",
     "readline": "^1.3.0",
     "request": "^2.88.2",
     "sharp": "^0.33.1",
     "tmp": "^0.2.1",
+    "tough-cookie": "^4.1.3",
     "uuidv4": "^6.2.13",
+    "xml2js": "^0.6.2",
     "ytdl-core": "^4.11.2",
     "zlib-sync": "^0.1.8",
     "zucc": "^0.1.2"
