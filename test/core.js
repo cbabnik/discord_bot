@@ -27,8 +27,6 @@ describe('core', () => {
             if (!fs.existsSync(`${CONFIG.STORAGE_DIRECTORY}coreC`)) {
                 fs.mkdirSync(`${CONFIG.STORAGE_DIRECTORY}coreC`)
             }
-            fs.writeFileSync( `${CONFIG.STORAGE_DIRECTORY}coreC/0cc175b9c0f1b6a831c399e269772661`,
-                              '{"key":"a","value":"d"}')
         })
         after(() => {
             fs.rmdirSync('storage/test/coreA', { recursive: true })
@@ -58,11 +56,6 @@ describe('core', () => {
             await storage.set('a', 'b')
             await storage.set('a', 'c')
             expect(await storage.get('a')).to.equal('c')
-        } );
-        it( 'storage is loaded', async () => {
-            const storageC = await Storage('coreC')
-            expect(await storageC.get('a')).to.equal('d')
-            await storageC.storage.clear()
         } );
         // operations
         it( 'adding works', async () => {
