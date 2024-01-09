@@ -5,12 +5,12 @@ const ID = 'pictures';
 
 const { PASTEBIN_USERNAME, PASTEBIN_PASSWORD, PASTEBIN_API_KEY } = require( '../../auth' )
 
-const PastebinAPI = require('pastebin-js')
-const pastebin = new PastebinAPI({
-    'api_dev_key' : PASTEBIN_API_KEY,
-    'api_user_name' : PASTEBIN_USERNAME,
-    'api_user_password' : PASTEBIN_PASSWORD,
-})
+//import { Pastebin } from "pastedeno";
+//const pastebin = new Pastebin({
+//    api_dev_key : PASTEBIN_API_KEY,
+//    api_user_name : PASTEBIN_USERNAME,
+//    api_user_password : PASTEBIN_PASSWORD,
+//})
 
 const BURGER_BIN = "AVzHYQFm"
 const REM_BIN = "pcd5bd9z"
@@ -42,10 +42,11 @@ Rem - https://pastebin.com/${REM_BIN}` )
     }
 
     async pic(bin, idx='random') {
-        const paste = await pastebin.getPaste(bin)
+        //const paste = await pastebin.getPaste(bin)
+        const paste = "";
         const imgs = paste.split('\r\n')
-        if ( imgs.length === 0 ) {
-            this.setAction( 'message', 'Sorry, there are no burgers yet :(' );
+        if ( imgs.length === 1 && imgs[0] == "") {
+            this.setAction( 'message', 'Sorry, the dependencies of this feature are deprecated' );
         } else {
             let index;
             if (idx === 'random') {
